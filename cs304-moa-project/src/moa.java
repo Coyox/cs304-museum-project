@@ -43,7 +43,7 @@ public class moa {
 		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
-			//resetDB();			 
+			//resetDB();
 			
 ///////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
 			//gui = new moaGUI();
@@ -226,6 +226,7 @@ public class moa {
 		PreparedStatement ps;
 
 		try {
+			// cant be just member? either member_1, member_2, member_3?
 			ps = con.prepareStatement("DELETE FROM member WHERE mname='?' AND phoneNumber='?''");
 
 			System.out.print("\nMember Name: ");
@@ -342,6 +343,7 @@ public class moa {
 		Statement stmt;
 		String query = "";
 		String[] colNames;
+		int[] colType;
 		String result;
 		ResultSet rs;
 
@@ -362,23 +364,26 @@ public class moa {
 			// get number of columns
 			int numCols = rsmd.getColumnCount();
 			colNames = new String[numCols];
+			colType = new int[numCols];
 			System.out.println(" ");
 			// display column names;
 			for (int i = 0; i < numCols; i++) {
 				// get column name and print it
-				colNames[i] = rsmd.getColumnName(i + 1);
-				System.out.printf("%-18s", colNames[i]);
+
+				colNames[i] = rsmd.getColumnName(i+1);
+				colType[i] = rsmd.getColumnType(i+1);
+				System.out.printf("%-25s", colNames[i]);
 			}
 			System.out.println(" ");
 
 			while (rs.next()) {
-				// for display purposes get everything from Oracle
-				// as a string
-
-				// simplified output formatting; truncation may occur
-				for (int i = 0; i < numCols; i++) {
-					result = rs.getString(colNames[i]);
-					System.out.printf("%-18s", result);
+				for (int i = 0; i <numCols; i++) {
+					if (colType[i] == 91) {
+						System.out.print(rs.getDate(colNames[i]) + "        ");
+					} else {
+						result = rs.getString(colNames[i]);
+						System.out.printf("%-25s", result);
+					}
 				}
 				System.out.println(" ");
 			}
@@ -395,7 +400,7 @@ public class moa {
 	}
 
 	private int calculateFee(int age) {
-		if (age < 19 && age < 65) {
+		if (age < 19 || age > 65) {
 			return 45;
 		} else {
 			return 50;

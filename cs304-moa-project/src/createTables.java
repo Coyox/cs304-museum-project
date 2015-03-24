@@ -67,6 +67,7 @@ public class createTables {
 			}
 		}
 	}
+	
 	public void exampleUser(){
 		Statement stmt;
 		try {
