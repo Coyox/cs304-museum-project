@@ -95,8 +95,11 @@ public class moa {
 				System.out.print("6.  Insert Member\n");
 				System.out.print("7.  Query\n>>");
 
-				choice = Integer.parseInt(in.readLine());
-
+				try {
+					choice = Integer.parseInt(in.readLine());
+				} catch (Exception e) {
+			        choice = 0;
+			    }
 				System.out.println(" ");
 
 				switch (choice) {
@@ -123,6 +126,9 @@ public class moa {
 					break;
 				default:
 					System.out.println("Please enter a valid choice.");
+					// wait for RETURN before displaying menu again
+					String wait = in.readLine();
+					
 				}
 			}
 
