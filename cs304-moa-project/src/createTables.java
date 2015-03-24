@@ -1,3 +1,4 @@
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ public class createTables {
 			+ "PRIMARY KEY (ename), FOREIGN KEY (startDate, endDate, startTime, endTime) REFERENCES TimePeriod)";
 	String member_1 = "CREATE TABLE member_1(" + "mname VARCHAR(50) NOT NULL, "
 			+ "age INTEGER NOT NULL," + "addr VARCHAR(50),"
-			+ "email VARCHAR(50)," + "phone INTEGER NOT NULL,"
+			+ "email VARCHAR(50)," + "phone VARCHAR(12) NOT NULL,"
 			+ "PRIMARY KEY (mname, phone), " + "UNIQUE(mname, email)" + ")";
 	String member_2 = "CREATE TABLE member_2(" + "age INTEGER NOT NULL, "
 			+ "fee INTEGER NOT NULL, " + "PRIMARY KEY (age)" + ")";
@@ -39,7 +40,7 @@ public class createTables {
 			+ "PRIMARY KEY (title, objectID), "
 			+ "FOREIGN KEY (title) REFERENCES event_hold_for, "
 			+ "FOREIGN KEY (objectID) REFERENCES object_has_1)";
-	String RSVPs = "CREATE TABLE RSVPs(title VARCHAR(100), mname VARCHAR(50), phone INTEGER, "
+	String RSVPs = "CREATE TABLE RSVPs(title VARCHAR(100), mname VARCHAR(50), phone VARCHAR(12), "
 			+ "PRIMARY KEY (title, mname, phone), "
 			+ "FOREIGN KEY (title) REFERENCES event_hold_for, "
 			+ "FOREIGN KEY (mname, phone) REFERENCES member_1)";
@@ -48,7 +49,7 @@ public class createTables {
 			creates, exhibits, RSVPs };
 
 	public createTables(Connection con) {
-Statement stmt;
+		Statement stmt;
 		
 		for (int i = 0; i < 13; i++) {
 			try {
@@ -61,4 +62,5 @@ Statement stmt;
 			}
 		}
 	}
+
 }
