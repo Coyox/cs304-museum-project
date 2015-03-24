@@ -43,14 +43,18 @@ public class createTables {
 			+ "PRIMARY KEY (title, mname, phone), "
 			+ "FOREIGN KEY (title) REFERENCES event_hold_for, "
 			+ "FOREIGN KEY (mname, phone) REFERENCES member_1)";
+	String login = "CREATE TABLE login(email VARCHAR(50), password VARCHAR(30), PRIMARY KEY (email))";
 	String queries[] = { timePeriod, event, exhibit, member_1, member_2,
 			member_3, artist, object_has_1, object_has_2, object_has_3,
-			creates, exhibits, RSVPs };
+			creates, exhibits, RSVPs, login };
+	
+	private Connection con;
 
 	public createTables(Connection con) {
-Statement stmt;
-		
-		for (int i = 0; i < 13; i++) {
+		this.con = con;
+		Statement stmt;
+
+		for (int i = 0; i < queries.length; i++) {
 			try {
 				stmt = con.createStatement();
 				stmt.executeQuery(queries[i]);
@@ -59,6 +63,18 @@ Statement stmt;
 				System.out.println("Couldn't create creates table. Message: "
 						+ ex.getMessage());
 			}
+		}
+	}
+	
+	public void exampleUser(){
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			stmt.executeQuery("INSERT INTO login VALUES('leilamethnani@gmail.com', 'secret')");
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("Couldn't create insert user"
+					+ ex.getMessage());
 		}
 	}
 }
