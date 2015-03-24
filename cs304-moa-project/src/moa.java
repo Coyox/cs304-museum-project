@@ -96,8 +96,15 @@ public class moa {
 				System.out.print("5.  Quit\n");
 				System.out.print("6.  Insert Member\n");
 				System.out.print("7.  Query\n>>");
-
-				choice = Integer.parseInt(in.readLine());
+				
+				String cmd = in.readLine();
+				try {
+					choice = Integer.parseInt(cmd);
+				} catch (Exception e) {
+					System.out.println("Please enter a valid choice.");
+					choice = 0;
+				}
+				//choice = Integer.parseInt(in.readLine());
 
 				System.out.println(" ");
 
