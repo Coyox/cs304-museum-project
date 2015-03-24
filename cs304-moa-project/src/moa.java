@@ -43,10 +43,10 @@ public class moa {
 		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
-			//resetDB();
-			
-///////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
-			//gui = new moaGUI();
+			// resetDB();
+
+			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
+			gui = new moaGUI();
 			showMenu();
 		}
 	}
@@ -370,14 +370,14 @@ public class moa {
 			for (int i = 0; i < numCols; i++) {
 				// get column name and print it
 
-				colNames[i] = rsmd.getColumnName(i+1);
-				colType[i] = rsmd.getColumnType(i+1);
+				colNames[i] = rsmd.getColumnName(i + 1);
+				colType[i] = rsmd.getColumnType(i + 1);
 				System.out.printf("%-25s", colNames[i]);
 			}
 			System.out.println(" ");
 
 			while (rs.next()) {
-				for (int i = 0; i <numCols; i++) {
+				for (int i = 0; i < numCols; i++) {
 					if (colType[i] == 91) {
 						System.out.print(rs.getDate(colNames[i]) + "        ");
 					} else {
@@ -645,71 +645,41 @@ public class moa {
 			mainFrame.setSize(500, 500);
 			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			mainFrame.setLocationRelativeTo(null);
+
+			JPanel tabbedPanel = new JPanel(new GridLayout());
+			JTabbedPane tabs = new JTabbedPane();
 			
-			mainFrame.setLayout(new GridLayout(2,1));
+			//probably make this a method of its own
+			JPanel p = createTab("Profile");
+			JPanel p1 = createTab("Home");
+			JPanel p2 = createTab("RSVPs");
+			JPanel p3 = createTab("Exhibits");
 			
-			JPanel header = new JPanel();
-			header.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-			
-			JLabel welcome = new JLabel("Welcome! Let's get started :)");
-			final JLabel profile = new JLabel("My Profile");
-			
-			
-			profile.setHorizontalAlignment(JLabel.LEFT);
-			
-			header.add(profile, BorderLayout.NORTH);
-			header.add(welcome, BorderLayout.NORTH);
-			
-			//profile.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
-			profile.setForeground(Color.BLUE);
+			tabs.addTab("Profile", p);
+			tabs.setMnemonicAt(0, KeyEvent.VK_1);
+			tabs.addTab("Home", p1);
+			tabs.setMnemonicAt(1, KeyEvent.VK_2);
+			tabs.addTab("RSVPs", p2);
+			tabs.setMnemonicAt(2, KeyEvent.VK_3);
+			tabs.addTab("Exhibits", p3);
+			tabs.setMnemonicAt(3, KeyEvent.VK_4);
 
-			profile.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {
-					viewProfile();
-					Font font = profile.getFont();
-					Map attributes = font.getAttributes();
-					attributes.put(TextAttribute.UNDERLINE,
-							TextAttribute.UNDERLINE);
-					profile.setFont(font.deriveFont(attributes));
-					profile.removeMouseListener(this);
-				}
-
-				@Override
-				public void mousePressed(MouseEvent e) {
-					profile.setForeground(Color.darkGray);
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent e) {
-
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					Font font = profile.getFont();
-					Map attributes = font.getAttributes();
-					attributes.put(TextAttribute.UNDERLINE,
-							TextAttribute.UNDERLINE_ON);
-					profile.setFont(font.deriveFont(attributes));
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-					Font font = profile.getFont();
-					Map attributes = font.getAttributes();
-					attributes.put(TextAttribute.UNDERLINE,
-							TextAttribute.UNDERLINE);
-					profile.setFont(font.deriveFont(attributes));
-				}
-
-			});
-			profile.setToolTipText("Review your info");
-
-			//header.add(profile, BorderLayout.WEST);
-			//header.add(welcome);
-			mainFrame.add(header);
-
+			tabbedPanel.add(tabs);
+			mainFrame.add(tabbedPanel);
 			mainFrame.setVisible(true);
+		}
+
+		/**
+		 * @param title 
+		 * @return
+		 */
+		private JPanel createTab(String title) {
+			JPanel p = new JPanel(false);
+			JLabel filler = new JLabel(title);
+			filler.setHorizontalAlignment(JLabel.CENTER);
+			p.setLayout(new GridLayout(1, 1));
+			p.add(filler);
+			return p;
 		}
 
 		private void viewProfile() {
