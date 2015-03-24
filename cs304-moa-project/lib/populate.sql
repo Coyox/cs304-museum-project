@@ -136,3 +136,36 @@ INSERT INTO artist values
 INSERT INTO artist values
 ('Gorgo', '0518-09-27', 'Spartan');
 
+-- members
+INSERT INTO member_1 values
+('Suzie', 17, 'Wreak Beach', NULL, '7781122334');
+INSERT INTO member_2 values
+(17, 45);
+
+INSERT INTO member_1 values
+('Farshid', 50, '1234 EOSC', 'il-os@ubc.ca', '0314897556');
+INSERT INTO member_2 values
+(50, 50);
+INSERT INTO member_3 values
+('il-os@ubc.ca', '0001-01-01');
+
+INSERT INTO member_1 values
+('Darla the Snowoman', 101, NULL, 'marlborough@school.ca', '5703040404');
+INSERT INTO member_2 values
+(101, 45);
+INSERT INTO member_3 values
+('marlborough@school.ca', '2007-12-13');
+
+INSERT INTO member_1 values
+('Kimmy', 30, '5589 NYC', 'molewoman@babysitter.com', '0000000000');
+INSERT INTO member_2 values
+(30, 50);
+INSERT INTO member_3 values
+('molewoman@babysitter.com', '2014-06-06');
+
+INSERT INTO member_1 values
+('Lady', 29, '6565 Gage', 'sheep@calender.com', '6048756681');
+INSERT INTO member_2 values
+(29, 50);
+INSERT INTO member_3 values
+('sheep@calender.com', '2015-02-06');

@@ -369,7 +369,7 @@ public class moa {
 				// get column name and print it
 				colNames[i] = rsmd.getColumnName(i+1);
 				colType[i] = rsmd.getColumnType(i+1);
-				System.out.printf("%-18s", colNames[i]);
+				System.out.printf("%-25s", colNames[i]);
 			}
 			System.out.println(" ");
 
@@ -379,7 +379,7 @@ public class moa {
 						System.out.print(rs.getDate(colNames[i]) + "        ");
 					} else {
 						result = rs.getString(colNames[i]);
-						System.out.printf("%-18s", result);
+						System.out.printf("%-25s", result);
 					}
 				}
 				System.out.println(" ");
@@ -397,7 +397,7 @@ public class moa {
 	}
 
 	private int calculateFee(int age) {
-		if (age < 19 && age < 65) {
+		if (age < 19 || age > 65) {
 			return 45;
 		} else {
 			return 50;
