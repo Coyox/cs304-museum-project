@@ -1,8 +1,8 @@
-
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 // for reading from the command line
 import java.io.*;
 
@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 
 import javax.swing.SpringLayout;
 
@@ -42,10 +43,11 @@ public class moa {
 		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
-			resetDB();
+			//resetDB();			 
+			
+///////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
+			//gui = new moaGUI();
 			showMenu();
-			gui = new moaGUI();
-			// showMenu();
 		}
 	}
 
@@ -335,14 +337,14 @@ public class moa {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void enterQuery() {
 		Statement stmt;
 		String query = "";
 		String[] colNames;
 		String result;
 		ResultSet rs;
-		
+
 		try {
 			System.out.print("\nEnter Query: ");
 			try {
@@ -350,7 +352,7 @@ public class moa {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query);
 
@@ -364,7 +366,7 @@ public class moa {
 			// display column names;
 			for (int i = 0; i < numCols; i++) {
 				// get column name and print it
-				colNames[i] = rsmd.getColumnName(i+1);
+				colNames[i] = rsmd.getColumnName(i + 1);
 				System.out.printf("%-18s", colNames[i]);
 			}
 			System.out.println(" ");
@@ -374,7 +376,7 @@ public class moa {
 				// as a string
 
 				// simplified output formatting; truncation may occur
-				for (int i = 0; i <numCols; i++) {
+				for (int i = 0; i < numCols; i++) {
 					result = rs.getString(colNames[i]);
 					System.out.printf("%-18s", result);
 				}
@@ -404,7 +406,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			signIn();
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -481,11 +484,11 @@ public class moa {
 			mainFrame.add(footer, BorderLayout.SOUTH);
 
 			// anonymous inner class for closing the window
-//			mainFrame.addWindowListener(new WindowAdapter() {
-//				public void windowClosing(WindowEvent e) {
-//					System.exit(0);
-//				}
-//			});
+			// mainFrame.addWindowListener(new WindowAdapter() {
+			// public void windowClosing(WindowEvent e) {
+			// System.exit(0);
+			// }
+			// });
 
 			// visibility
 			mainFrame.pack();
@@ -631,8 +634,91 @@ public class moa {
 			mainFrame.setVisible(true);
 		}
 
-		public void start() {
-			showMenu();
+		private void start() {
+			// showMenu();
+			mainFrame = new JFrame("Welcome");
+			mainFrame.setSize(500, 500);
+			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			mainFrame.setLocationRelativeTo(null);
+			
+			mainFrame.setLayout(new GridLayout(2,1));
+			
+			JPanel header = new JPanel();
+			header.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			
+			JLabel welcome = new JLabel("Welcome! Let's get started :)");
+			final JLabel profile = new JLabel("My Profile");
+			
+			
+			profile.setHorizontalAlignment(JLabel.LEFT);
+			
+			header.add(profile, BorderLayout.NORTH);
+			header.add(welcome, BorderLayout.NORTH);
+			
+			//profile.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 100));
+			profile.setForeground(Color.BLUE);
+
+			profile.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent e) {
+					viewProfile();
+					Font font = profile.getFont();
+					Map attributes = font.getAttributes();
+					attributes.put(TextAttribute.UNDERLINE,
+							TextAttribute.UNDERLINE);
+					profile.setFont(font.deriveFont(attributes));
+					profile.removeMouseListener(this);
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					profile.setForeground(Color.darkGray);
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					Font font = profile.getFont();
+					Map attributes = font.getAttributes();
+					attributes.put(TextAttribute.UNDERLINE,
+							TextAttribute.UNDERLINE_ON);
+					profile.setFont(font.deriveFont(attributes));
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					Font font = profile.getFont();
+					Map attributes = font.getAttributes();
+					attributes.put(TextAttribute.UNDERLINE,
+							TextAttribute.UNDERLINE);
+					profile.setFont(font.deriveFont(attributes));
+				}
+
+			});
+			profile.setToolTipText("Review your info");
+
+			//header.add(profile, BorderLayout.WEST);
+			//header.add(welcome);
+			mainFrame.add(header);
+
+			mainFrame.setVisible(true);
+		}
+
+		private void viewProfile() {
+			JPanel profilePanel = new JPanel();
+			profilePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,
+					20));
+
+			JTextArea text = new JTextArea();
+			text.setText("select member and display info");
+			profilePanel.add(text);
+
+			mainFrame.add(profilePanel);
+			mainFrame.validate();
+			mainFrame.repaint();
 		}
 
 	}
