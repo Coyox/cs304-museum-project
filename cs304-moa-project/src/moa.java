@@ -1,3 +1,4 @@
+
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
 import java.util.Calendar;
@@ -89,7 +90,9 @@ public class moa {
 				System.out.print("2.  Browse Events\n");
 				System.out.print("3.  Browse Exhibits\n");
 				System.out.print("4.  Browse Artists\n");
-				System.out.print("5.  Quit\n>> ");
+				System.out.print("5.  Quit\n");
+				System.out.print("6.  Insert Member\n");
+				System.out.print("7.  Query\n>>");
 
 				choice = Integer.parseInt(in.readLine());
 
@@ -110,6 +113,15 @@ public class moa {
 					break;
 				case 5:
 					quit = true;
+					break;
+				case 6:
+					insertMember();
+					break;
+				case 7:
+					enterQuery();
+					break;
+				default:
+					System.out.println("Please enter a valid choice.");
 				}
 			}
 
@@ -169,6 +181,12 @@ public class moa {
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
 		}
+		// wait for RETURN before displaying menu again
+		try {
+			String wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void browseExhibits() {
@@ -221,14 +239,20 @@ public class moa {
 		} catch (IOException e) {
 			System.out.println("IOException!");
 		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
+			System.out.println("Message1: " + ex.getMessage());
 			try {
 				// undo the insert
 				con.rollback();
 			} catch (SQLException ex2) {
-				System.out.println("Message: " + ex2.getMessage());
+				System.out.println("Message2: " + ex2.getMessage());
 				System.exit(-1);
 			}
+		}
+		// wait for RETURN before displaying menu again
+		try {
+			String wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -239,7 +263,7 @@ public class moa {
 		Date signUpDate;
 		String addr;
 		String email;
-		int phoneNumber;
+		String phoneNumber;
 		PreparedStatement ps;
 		PreparedStatement ps2;
 		PreparedStatement ps3;
@@ -271,8 +295,8 @@ public class moa {
 			ps.setString(4, email);
 
 			System.out.print("\nMember Phone Number: ");
-			phoneNumber = Integer.parseInt(in.readLine());
-			ps.setInt(5, phoneNumber);
+			phoneNumber = in.readLine();
+			ps.setString(5, phoneNumber);
 
 			memberFee = calculateFee(age);
 			ps2.setInt(2, memberFee);
@@ -302,6 +326,68 @@ public class moa {
 				System.out.println("Message: " + ex2.getMessage());
 				System.exit(-1);
 			}
+		}
+		// wait for RETURN before displaying menu again
+		try {
+			String wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void enterQuery() {
+		Statement stmt;
+		String query = "";
+		String[] colNames;
+		String result;
+		ResultSet rs;
+		
+		try {
+			System.out.print("\nEnter Query: ");
+			try {
+				query = in.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+
+			// get info on ResultSet
+			ResultSetMetaData rsmd = rs.getMetaData();
+
+			// get number of columns
+			int numCols = rsmd.getColumnCount();
+			colNames = new String[numCols];
+			System.out.println(" ");
+			// display column names;
+			for (int i = 0; i < numCols; i++) {
+				// get column name and print it
+				colNames[i] = rsmd.getColumnName(i+1);
+				System.out.printf("%-18s", colNames[i]);
+			}
+			System.out.println(" ");
+
+			while (rs.next()) {
+				// for display purposes get everything from Oracle
+				// as a string
+
+				// simplified output formatting; truncation may occur
+				for (int i = 0; i <numCols; i++) {
+					result = rs.getString(colNames[i]);
+					System.out.printf("%-18s", result);
+				}
+				System.out.println(" ");
+			}
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("Message: " + ex.getMessage());
+		}
+		// wait for RETURN before displaying menu again
+		try {
+			String wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
