@@ -1,3 +1,5 @@
+alter session set nls_date_format = 'yyyy-mm-dd';
+
 -- drop tables in order of reference
 -- no references
 drop table member_2;
@@ -115,3 +117,22 @@ phone VARCHAR(12),
 PRIMARY KEY (title, mname, phone),
 FOREIGN KEY (title) REFERENCES event_hold_for,
 FOREIGN KEY (mname, phone) REFERENCES member_1);
+
+-- populate the tables with data!
+
+-- artist
+INSERT INTO artist values
+('Pablo', '1999-04-30', 'Spanish');
+
+INSERT INTO artist values
+('Frida', '1999-04-15', 'Mexican');
+
+INSERT INTO artist values
+('Theodore', '2100-12-25', 'American');
+
+INSERT INTO artist values
+('Dorian', '1891-06-20', 'British');
+
+INSERT INTO artist values
+('Gorgo', '0518-09-27', 'Spartan');
+
