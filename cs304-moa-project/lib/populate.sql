@@ -40,8 +40,7 @@ addr VARCHAR(50),
 email VARCHAR(50),
 phone VARCHAR(12) NOT NULL,
 signUpDate DATE,
-PRIMARY KEY (mname, phone),
-UNIQUE(mname, email));
+PRIMARY KEY (mname, phone));
 
 CREATE TABLE member_2
 (age INTEGER NOT NULL,
