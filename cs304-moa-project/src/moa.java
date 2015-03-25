@@ -43,7 +43,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_k8w8", "a20713137")) {
+		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
@@ -101,7 +101,6 @@ public class moa {
 				System.out.print("7.  Query\n");
 				System.out.print("8.  Delete Member\n");
 				System.out.print("9.  Update Member\n>>");
-
 				try {
 					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
@@ -354,6 +353,54 @@ public class moa {
 		}
 	}
 
+	private void insert(String mname, int age, String addr, String email,
+			String phoneNumber) throws SQLException {
+		int memberFee;
+		Date signUpDate;
+
+		PreparedStatement ps;
+		PreparedStatement ps2;
+		PreparedStatement ps3;
+
+		try {
+			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
+			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
+			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
+
+			ps.setString(1, mname);
+			ps.setInt(2, age);
+			if (addr.length() == 0) {
+				ps.setString(3, null);
+			} else {
+				ps.setString(3, addr);
+			}
+			ps.setString(4, email);
+			ps.setString(5, phoneNumber);
+
+			memberFee = calculateFee(age);
+			ps2.setInt(2, memberFee);
+			ps2.setInt(1, age);
+
+			signUpDate = Calendar.getInstance().getTime();
+			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
+			ps3.setString(1, email);
+			ps3.setDate(2, sqlDate);
+
+			ps.executeUpdate();
+			ps2.executeUpdate();
+			ps3.executeUpdate();
+
+			// commit work
+			con.commit();
+			ps.close();
+			ps2.close();
+			ps3.close();
+		} catch (SQLException ex) {
+			System.out.println("Message: " + ex.getMessage());
+			throw ex;
+		}
+	}
+
 	private void insertMember() {
 		String mname;
 		int age;
@@ -454,33 +501,33 @@ public class moa {
 
 			// get info on ResultSet
 			ResultSetMetaData rsmd = rs.getMetaData();
-
-			// get number of columns
-			int numCols = rsmd.getColumnCount();
-			colNames = new String[numCols];
-			colType = new int[numCols];
-			System.out.println(" ");
-			// display column names;
-			for (int i = 0; i < numCols; i++) {
-				// get column name and print it
-
-				colNames[i] = rsmd.getColumnName(i + 1);
-				colType[i] = rsmd.getColumnType(i + 1);
-				System.out.printf("%-25s", colNames[i]);
-			}
-			System.out.println(" ");
-
-			while (rs.next()) {
+				// get number of columns
+				int numCols = rsmd.getColumnCount();
+				colNames = new String[numCols];
+				colType = new int[numCols];
+				System.out.println(" ");
+				// display column names;
 				for (int i = 0; i < numCols; i++) {
-					if (colType[i] == 91) {
-						System.out.print(rs.getDate(colNames[i]) + "        ");
-					} else {
-						result = rs.getString(colNames[i]);
-						System.out.printf("%-25s", result);
-					}
+					// get column name and print it
+
+					colNames[i] = rsmd.getColumnName(i + 1);
+					colType[i] = rsmd.getColumnType(i + 1);
+					System.out.printf("%-25s", colNames[i]);
 				}
 				System.out.println(" ");
-			}
+
+				while (rs.next()) {
+					for (int i = 0; i < numCols; i++) {
+						if (colType[i] == 91) {
+							System.out.print(rs.getDate(colNames[i])
+									+ "        ");
+						} else {
+							result = rs.getString(colNames[i]);
+							System.out.printf("%-25s", result);
+						}
+					}
+					System.out.println(" ");
+				}
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
@@ -505,8 +552,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			start();
-			// signIn();
+			// start();
+			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -519,10 +566,10 @@ public class moa {
 
 		private void signIn() {
 			// Frame Stuff
-			mainFrame = new JFrame("Login");
-			mainFrame.setSize(300, 150);
-			mainFrame.setLocationRelativeTo(null);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			if (mainFrame != null) {
+				mainFrame.dispose();
+			}
+			setUpFrame("Login", 300, 150);
 
 			// Login Panels
 			JPanel labelPanel = new JPanel(new GridLayout(2, 1));
@@ -591,7 +638,6 @@ public class moa {
 
 			// visibility
 			mainFrame.pack();
-			mainFrame.setResizable(false);
 			mainFrame.setVisible(true);
 		}
 
@@ -610,6 +656,7 @@ public class moa {
 				if (rs.next()) {
 					con.commit();
 					ps.close();
+
 					return true;
 				} else {
 					System.out.println("user does not exist");
@@ -630,10 +677,7 @@ public class moa {
 		// insert new member into member table
 		private void signUp() {
 			mainFrame.dispose();
-			mainFrame = new JFrame("Sign Up");
-			mainFrame.setSize(400, 500);
-			mainFrame.setLocationRelativeTo(null);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setUpFrame("Sign Up", 400, 500);
 
 			final JPanel panel = new JPanel();
 			String[] labels = { "First Name: ", "Last Name: ", "Age: ",
@@ -667,7 +711,6 @@ public class moa {
 
 			signupButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					PreparedStatement ps;
 					Boolean incomplete = false;
 					for (int i = 0; i < fields.length; i++) {
 						if (fields[i].getText().isEmpty()) {
@@ -679,37 +722,29 @@ public class moa {
 						JOptionPane.showMessageDialog(mainFrame,
 								"Please fill in all fields");
 					} else {
+
+						String mname = fields[0].getText() + " "
+								+ fields[1].getText();
+						int age = Integer.parseInt(fields[2].getText());
+						String addr = fields[3].getText();
+						String email = fields[4].getText();
+						String phone = fields[5].getText();
 						try {
-							ps = con.prepareStatement("INSERT INTO member_1 VALUES (?, ?, ?, ?, ?)");
-
-							ps.setString(1, fields[0].getText() + " "
-									+ fields[1].getText());
-
-							ps.setInt(2, Integer.parseInt(fields[2].getText()));
-
-							ps.setString(3, fields[3].getText());
-
-							ps.setString(4, fields[4].getText());
-
-							ps.setInt(5, Integer.parseInt(fields[5].getText()));
-
-							ps.executeQuery();
-							con.commit();
-							ps.close();
-
-						} catch (SQLException ex) {
-							System.out.println("Message: " + ex.getMessage());
+							insert(mname, age, addr, email, phone);
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(mainFrame,
+									e1.getMessage());
 							try {
 								// undo the insert
 								con.rollback();
 							} catch (SQLException ex2) {
-								System.out.println("Message: "
+								System.out.println("Message2: "
 										+ ex2.getMessage());
 								System.exit(-1);
 							}
 						}
 						JOptionPane.showMessageDialog(mainFrame, "Success");
-						mainFrame.dispose();
+						signIn();
 					}
 				}
 			});
@@ -729,51 +764,219 @@ public class moa {
 			mainFrame.add(footer, BorderLayout.SOUTH);
 			// visibility
 			mainFrame.pack();
-			mainFrame.setResizable(false);
 			mainFrame.setVisible(true);
 		}
 
 		private void start() {
-			// showMenu();
-			mainFrame = new JFrame("Welcome");
-			mainFrame.setSize(500, 500);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			mainFrame.setLocationRelativeTo(null);
+			setUpFrame("Welcome", 500, 500);
 
 			JPanel tabbedPanel = new JPanel(new GridLayout());
 			JTabbedPane tabs = new JTabbedPane();
-			
-			//probably make this a method of its own
-			JPanel p = createTab("Profile");
-			JPanel p1 = createTab("Home");
-			JPanel p2 = createTab("RSVPs");
-			JPanel p3 = createTab("Exhibits");
-			
-			tabs.addTab("Profile", p);
+
+			// probably make this a method of its own
+			JPanel p = createProfileTab();
+			JPanel p1 = createTab("Browse exhibits and artifacts");
+			p1.setOpaque(false);
+			JPanel p2 = createTab("RSVP to an event");
+			p2.setOpaque(false);
+			JPanel p3 = createTab("Search for Artist");
+			p3.setOpaque(false);
+			JPanel p4 = createTab("Search for Member");
+			p4.setOpaque(false);
+
+			final JTextField searchField = new JTextField(20);
+			searchField.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Search Data Base for "
+							+ searchField.getText());
+				}
+
+			});
+			searchField.requestFocus();
+			p3.add(searchField);
+
+			final JTextField membSearchField = new JTextField(20);
+			membSearchField.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Search Data Base for "
+							+ membSearchField.getText());
+				}
+
+			});
+			membSearchField.requestFocus();
+			p4.add(membSearchField);
+
+			if (isAdmin) {
+				tabs.addTab("Members", p4);
+
+			} else {
+				tabs.addTab("Profile", p);
+			}
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
-			tabs.addTab("Home", p1);
+			tabs.addTab("Exhibits", p1);
 			tabs.setMnemonicAt(1, KeyEvent.VK_2);
-			tabs.addTab("RSVPs", p2);
+			tabs.addTab("Events", p2);
 			tabs.setMnemonicAt(2, KeyEvent.VK_3);
-			tabs.addTab("Exhibits", p3);
+			tabs.addTab("Search", p3);
 			tabs.setMnemonicAt(3, KeyEvent.VK_4);
 
 			tabbedPanel.add(tabs);
+
+			Container pane = mainFrame.getContentPane();
+			pane.setLayout(new BorderLayout());
+
+			JLabel adminLabel = new JLabel("signed in as admin");
+			adminLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+			Font font = new Font("Helvetica", Font.ITALIC, 12);
+			adminLabel.setFont(font);
+			if (isAdmin) {
+				pane.add(adminLabel, BorderLayout.NORTH);
+			}
+
 			mainFrame.add(tabbedPanel);
+
 			mainFrame.setVisible(true);
 		}
 
 		/**
-		 * @param title 
+		 * @param y
+		 * @param x
+		 * 
+		 */
+		private void setUpFrame(String title, int width, int height) {
+			mainFrame = new JFrame(title);
+			mainFrame.setSize(width, height);
+			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			mainFrame.setResizable(false);
+			mainFrame.setLocationRelativeTo(null);
+		}
+
+		/**
+		 * @param title
 		 * @return
 		 */
 		private JPanel createTab(String title) {
 			JPanel p = new JPanel(false);
 			JLabel filler = new JLabel(title);
 			filler.setHorizontalAlignment(JLabel.CENTER);
-			p.setLayout(new GridLayout(1, 1));
+			// p.setLayout(new GridLayout(2, 1));
 			p.add(filler);
 			return p;
+		}
+
+		private JPanel createProfileTab() {
+			JPanel p = new JPanel(new BorderLayout());
+			JPanel p2 = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(5, 1));
+			JPanel textPanel = new JPanel(new GridLayout(5, 1));
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
+
+			p.add(labPanel, BorderLayout.WEST);
+			p.add(textPanel, BorderLayout.CENTER);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
+			p2.add(p, BorderLayout.CENTER);
+			p2.add(footer, BorderLayout.SOUTH);
+
+			JLabel mname = new JLabel("Full Name: ");
+			labPanel.add(mname);
+			JTextField nameField = new JTextField(20);
+			nameField.setText("Select Name from Database.");
+			nameField.setEditable(false);
+			textPanel.add(nameField);
+
+			JLabel age = new JLabel("Age: ");
+			labPanel.add(age);
+			JTextField ageField = new JTextField(20);
+			ageField.setText("Select Age from Database.");
+			ageField.setEditable(false);
+			textPanel.add(ageField);
+
+			JLabel address = new JLabel("Address: ");
+			labPanel.add(address);
+			JTextField addressField = new JTextField(20);
+			addressField.setText("Select Address from Database.");
+			addressField.setEditable(false);
+			textPanel.add(addressField);
+
+			JLabel email = new JLabel("E-Mail: ");
+			labPanel.add(email);
+			JTextField emailField = new JTextField(20);
+			emailField.setText("Select E-Mail from Database.");
+			emailField.setEditable(false);
+			textPanel.add(emailField);
+
+			JLabel digits = new JLabel("Phone Number: ");
+			labPanel.add(digits);
+			JTextField digitsField = new JTextField(20);
+			digitsField.setText("Select Phone Number from Database.");
+			digitsField.setEditable(false);
+			textPanel.add(digitsField);
+
+			final JTextField[] fields = { nameField, ageField, addressField,
+					emailField, digitsField };
+
+			// Name Edit
+			final JButton edit = new JButton("edit");
+			final JButton save = new JButton("save changes");
+
+			final ActionListener saveListener = new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fields[0].setEditable(false);
+					fields[1].setEditable(false);
+					fields[2].setEditable(false);
+					fields[3].setEditable(false);
+					fields[4].setEditable(false);
+
+					editPanel.remove(save);
+					editPanel.add(edit);
+					edit.requestFocus();
+				}
+
+			};
+
+			ActionListener editListener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fields[0].setEditable(true);
+					fields[1].setEditable(true);
+					fields[2].setEditable(true);
+					fields[3].setEditable(true);
+					fields[4].setEditable(true);
+
+					editPanel.remove(edit);
+					editPanel.add(save);
+					save.requestFocus();
+					fields[0].requestFocus();
+
+				}
+
+			};
+
+			edit.setForeground(Color.BLUE);
+			edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			edit.addActionListener(editListener);
+			editPanel.add(edit);
+
+			save.setForeground(Color.BLUE);
+			save.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			save.addActionListener(saveListener);
+
+			p.setBorder(BorderFactory.createEmptyBorder(120, 10, 120, 50));
+			p.setOpaque(false);
+			p2.setOpaque(false);
+			labPanel.setOpaque(false);
+			textPanel.setOpaque(false);
+			editPanel.setOpaque(false);
+			return p2;
 		}
 
 		private void viewProfile() {
@@ -793,6 +996,14 @@ public class moa {
 	}
 
 	public static void main(String args[]) {
+		// String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+		// .getAvailableFontFamilyNames();
+		//
+		// for (int i = 0; i < fonts.length; i++) {
+		// System.out.println(fonts[i]);
+		// }
+		// }
+
 		moa m = new moa();
 	}
 }
