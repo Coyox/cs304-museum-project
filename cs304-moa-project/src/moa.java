@@ -95,14 +95,14 @@ public class moa {
 				System.out.print("4.  Browse Artists\n");
 				System.out.print("5.  Quit\n");
 				System.out.print("6.  Insert Member\n");
-				System.out.print("7.  Query\n>>");
+				System.out.print("7.  Query\n");
+				System.out.print("8.  Delete Member\n>>");
 
 				try {
 					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
 			        choice = 0;
 			    }
-				
 				System.out.println(" ");
 
 				switch (choice) {
@@ -126,6 +126,9 @@ public class moa {
 					break;
 				case 7:
 					enterQuery();
+					break;
+				case 8:
+					deleteMember();
 					break;
 				default:
 					System.out.println("Please enter a valid choice.");
@@ -192,8 +195,11 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 		}
 		// wait for RETURN before displaying menu again
-		String wait = in.readLine();
-		
+		try {
+			String wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void browseExhibits() {
@@ -214,7 +220,7 @@ public class moa {
 	}
 
 	private void updateMember() {
-		// TODO Auto-generated method stub
+		
 		System.out.println("This method will update member ");
 
 	}
@@ -226,22 +232,23 @@ public class moa {
 
 	private void deleteMember() {
 		String mname;
-		int phoneNumber;
+		String phoneNumber;
 		PreparedStatement ps;
+		int count = 0;
 
 		try {
 			// cant be just member? either member_1, member_2, member_3?
-			ps = con.prepareStatement("DELETE FROM member WHERE mname='?' AND phoneNumber='?''");
+			ps = con.prepareStatement("DELETE FROM member_1 WHERE mname=? AND phone=?");
 
 			System.out.print("\nMember Name: ");
 			mname = in.readLine();
 			ps.setString(1, mname);
 
 			System.out.print("\nMember Phone Number: ");
-			phoneNumber = Integer.parseInt(in.readLine());
-			ps.setInt(2, phoneNumber);
+			phoneNumber = in.readLine();
+			ps.setString(2, phoneNumber);
 
-			ps.executeUpdate();
+			count = ps.executeUpdate();
 			con.commit();
 			ps.close();
 		} catch (IOException e) {
@@ -256,6 +263,7 @@ public class moa {
 				System.exit(-1);
 			}
 		}
+		System.out.println("Deleted "+ count +" rows.");
 		// wait for RETURN before displaying menu again
 		try {
 			String wait = in.readLine();
