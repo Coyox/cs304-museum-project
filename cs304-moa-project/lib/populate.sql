@@ -139,7 +139,7 @@ INSERT INTO artist values
 
 -- members
 INSERT INTO member_1 values
-('Suzie', 17, 'Wreak Beach', NULL, '7781122334');
+('Suzie', 17, 'Wreak Beach', NULL, '7781122334', NULL);
 INSERT INTO member_2 values
 (17, 45);
 
