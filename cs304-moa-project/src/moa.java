@@ -167,7 +167,7 @@ public class moa {
 		Statement stmt;
 		String artistName;
 		ResultSet rs;
-		;
+		
 		try {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery("SELECT aname FROM artist");
