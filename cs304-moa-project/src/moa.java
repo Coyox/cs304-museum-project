@@ -46,7 +46,7 @@ public class moa {
 			// resetDB();
 
 			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
-			gui = new moaGUI();
+			// gui = new moaGUI();
 			showMenu();
 		}
 	}
@@ -96,7 +96,7 @@ public class moa {
 				System.out.print("5.  Quit\n");
 				System.out.print("6.  Insert Member\n");
 				System.out.print("7.  Query\n>>");
-				
+
 				String cmd = in.readLine();
 				try {
 					choice = Integer.parseInt(cmd);
@@ -104,7 +104,7 @@ public class moa {
 					System.out.println("Please enter a valid choice.");
 					choice = 0;
 				}
-				//choice = Integer.parseInt(in.readLine());
+				// choice = Integer.parseInt(in.readLine());
 
 				System.out.println(" ");
 
@@ -418,8 +418,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			start();
-			// signIn();
+			// start();
+			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -432,10 +432,7 @@ public class moa {
 
 		private void signIn() {
 			// Frame Stuff
-			mainFrame = new JFrame("Login");
-			mainFrame.setSize(300, 150);
-			mainFrame.setLocationRelativeTo(null);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setUpFrame("Login", 300, 150);
 
 			// Login Panels
 			JPanel labelPanel = new JPanel(new GridLayout(2, 1));
@@ -504,7 +501,6 @@ public class moa {
 
 			// visibility
 			mainFrame.pack();
-			mainFrame.setResizable(false);
 			mainFrame.setVisible(true);
 		}
 
@@ -543,10 +539,8 @@ public class moa {
 		// insert new member into member table
 		private void signUp() {
 			mainFrame.dispose();
-			mainFrame = new JFrame("Sign Up");
-			mainFrame.setSize(400, 500);
-			mainFrame.setLocationRelativeTo(null);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+			setUpFrame("Sign Up", 400, 500);
 
 			final JPanel panel = new JPanel();
 			String[] labels = { "First Name: ", "Last Name: ", "Age: ",
@@ -642,42 +636,62 @@ public class moa {
 			mainFrame.add(footer, BorderLayout.SOUTH);
 			// visibility
 			mainFrame.pack();
-			mainFrame.setResizable(false);
 			mainFrame.setVisible(true);
 		}
 
 		private void start() {
-			// showMenu();
-			mainFrame = new JFrame("Welcome");
-			mainFrame.setSize(500, 500);
-			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			mainFrame.setLocationRelativeTo(null);
+			setUpFrame("Welcome", 500, 500);
 
 			JPanel tabbedPanel = new JPanel(new GridLayout());
 			JTabbedPane tabs = new JTabbedPane();
-			
-			//probably make this a method of its own
+
+			// probably make this a method of its own
 			JPanel p = createTab("Profile");
-			JPanel p1 = createTab("Home");
-			JPanel p2 = createTab("RSVPs");
-			JPanel p3 = createTab("Exhibits");
-			
+			JPanel p1 = createTab("Browse exhibits and artifacts");
+			JPanel p2 = createTab("RSVP to an event");
+			JPanel p3 = createTab("Search");
+
 			tabs.addTab("Profile", p);
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
-			tabs.addTab("Home", p1);
+			tabs.addTab("Exhibits", p1);
 			tabs.setMnemonicAt(1, KeyEvent.VK_2);
-			tabs.addTab("RSVPs", p2);
+			tabs.addTab("Events", p2);
 			tabs.setMnemonicAt(2, KeyEvent.VK_3);
-			tabs.addTab("Exhibits", p3);
+			tabs.addTab("Search", p3);
 			tabs.setMnemonicAt(3, KeyEvent.VK_4);
 
 			tabbedPanel.add(tabs);
+
+			Container pane = mainFrame.getContentPane();
+			pane.setLayout(new BorderLayout());
+
+			JLabel adminLabel = new JLabel("signed in as admin");
+			adminLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
+			Font font = new Font("Helvetica", Font.ITALIC, 12);
+			adminLabel.setFont(font);
+			if (isAdmin) {
+				pane.add(adminLabel, BorderLayout.NORTH);
+			}
+
 			mainFrame.add(tabbedPanel);
 			mainFrame.setVisible(true);
 		}
 
 		/**
-		 * @param title 
+		 * @param y
+		 * @param x
+		 * 
+		 */
+		private void setUpFrame(String title, int width, int height) {
+			mainFrame = new JFrame(title);
+			mainFrame.setSize(width, height);
+			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			mainFrame.setResizable(false);
+			mainFrame.setLocationRelativeTo(null);
+		}
+
+		/**
+		 * @param title
 		 * @return
 		 */
 		private JPanel createTab(String title) {
@@ -706,6 +720,14 @@ public class moa {
 	}
 
 	public static void main(String args[]) {
+		// String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
+		// .getAvailableFontFamilyNames();
+		//
+		// for (int i = 0; i < fonts.length; i++) {
+		// System.out.println(fonts[i]);
+		// }
+		// }
+
 		moa m = new moa();
 	}
 }
