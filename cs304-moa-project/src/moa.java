@@ -28,6 +28,9 @@ public class moa {
 	private Connection con;
 	private Boolean isAdmin = false;
 	private moaGUI gui;
+	
+	@SuppressWarnings("unused")
+	String wait;
 
 	/*
 	 * constructs login window and loads JDBC driver
@@ -40,7 +43,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_b6m8", "a52417128")) {
+		if (connect("ora_k8w8", "a20713137")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
@@ -95,17 +98,14 @@ public class moa {
 				System.out.print("4.  Browse Artists\n");
 				System.out.print("5.  Quit\n");
 				System.out.print("6.  Insert Member\n");
-				System.out.print("7.  Query\n>>");
-
-				String cmd = in.readLine();
+				System.out.print("7.  Query\n");
+				System.out.print("8.  Delete Member\n");
+				System.out.print("9.  Update Member\n>>");
 				try {
-					choice = Integer.parseInt(cmd);
+					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
-					System.out.println("Please enter a valid choice.");
-					choice = 0;
-				}
-				// choice = Integer.parseInt(in.readLine());
-
+			        choice = 0;
+			    }
 				System.out.println(" ");
 
 				switch (choice) {
@@ -130,8 +130,17 @@ public class moa {
 				case 7:
 					enterQuery();
 					break;
+				case 8:
+					deleteMember();
+					break;
+				case 9:
+					updateMember();
+					break;
 				default:
 					System.out.println("Please enter a valid choice.");
+					// wait for RETURN before displaying menu again
+					wait = in.readLine();
+					
 				}
 			}
 
@@ -193,7 +202,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -207,6 +216,7 @@ public class moa {
 
 	private void browseEvents() {
 		// TODO Auto-generated method stub
+		// select to_char(startTime, 'dd/mm/yyyy hh24:mi:ss') as startTime from events
 		System.out.println("This method will list events.");
 
 	}
@@ -217,9 +227,83 @@ public class moa {
 	}
 
 	private void updateMember() {
-		// TODO Auto-generated method stub
-		System.out.println("This method will update member ");
+		String mname;
+		String phoneNumber;
+		String new_entry;
+		String column = null;
+		PreparedStatement ps;
+		int count = 0;
+		int choice;
+		boolean pass = false;
 
+		try {
+			System.out.print("\nMember Name: ");
+			mname = in.readLine();
+			
+			System.out.print("\nMember Phone Number: ");
+			phoneNumber = in.readLine();
+			
+			String temp_statement = "UPDATE member_1 "
+					  + "SET $column =? " 
+					  + "WHERE mname=? AND phone=?";
+
+			while (!pass) {
+				System.out.print("Update: \n");
+				System.out.print("1.  Address\n");
+				System.out.print("2.  Email\n>>");
+				
+				try {
+					choice = Integer.parseInt(in.readLine());
+				} catch (Exception e) {
+			        choice = 0;
+			    }
+	
+				switch (choice) {
+				case 1:
+					column = "addr";
+					pass = true;
+					break;
+				case 2:
+					column = "email";
+					pass = true;
+					break;
+				default:
+					System.out.println("Please choose either Address or Email\n");
+					break;
+				}
+			}
+			
+			String statement = temp_statement.replace("$column", column);
+			ps = con.prepareStatement(statement);
+			
+			ps.setString(2, mname);
+			ps.setString(3, phoneNumber);
+			
+			System.out.print("New entry: ");
+			new_entry = in.readLine();
+			ps.setString(1, new_entry);
+			
+			count = ps.executeUpdate();
+			con.commit();
+			ps.close();
+		} catch (IOException e) {
+			System.out.println("IOException!");
+		} catch (SQLException ex) {
+			System.out.println("Message1: " + ex.getMessage());
+			try {
+				con.rollback();
+			} catch (SQLException ex2) {
+				System.out.println("Message2: " + ex2.getMessage());
+				System.exit(-1);
+			}
+		}
+		System.out.println("Changed "+ count +" row(s).");
+		// wait for RETURN before displaying menu again
+		try {
+			wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void showMember() {
@@ -229,22 +313,23 @@ public class moa {
 
 	private void deleteMember() {
 		String mname;
-		int phoneNumber;
+		String phoneNumber;
 		PreparedStatement ps;
+		int count = 0;
 
 		try {
 			// cant be just member? either member_1, member_2, member_3?
-			ps = con.prepareStatement("DELETE FROM member WHERE mname='?' AND phoneNumber='?''");
+			ps = con.prepareStatement("DELETE FROM member_1 WHERE mname=? AND phone=?");
 
 			System.out.print("\nMember Name: ");
 			mname = in.readLine();
 			ps.setString(1, mname);
 
 			System.out.print("\nMember Phone Number: ");
-			phoneNumber = Integer.parseInt(in.readLine());
-			ps.setInt(2, phoneNumber);
+			phoneNumber = in.readLine();
+			ps.setString(2, phoneNumber);
 
-			ps.executeUpdate();
+			count = ps.executeUpdate();
 			con.commit();
 			ps.close();
 		} catch (IOException e) {
@@ -259,9 +344,10 @@ public class moa {
 				System.exit(-1);
 			}
 		}
+		System.out.println("Deleted "+ count +" row(s).");
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -388,7 +474,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -448,7 +534,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

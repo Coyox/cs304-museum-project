@@ -6,6 +6,8 @@ import java.sql.Statement;
 
 public class createTables {
 
+	// NOT UPDATED FOR COMBINATION OF MEMBER_1 AND MEMBER_3
+	// NOT UPDATED FOR REMOVAL OF TimePeriod
 	String timePeriod = "CREATE TABLE TimePeriod(startDate DATE NOT NULL, endDate DATE NOT NULL, "
 			+ "startTime DATE NOT NULL, endTime DATE NOT NULL, "
 			+ "PRIMARY KEY (startDate, endDate, startTime, endTime))";
