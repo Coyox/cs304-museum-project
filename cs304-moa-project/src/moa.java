@@ -649,7 +649,7 @@ public class moa {
 			PreparedStatement ps;
 			ResultSet rs;
 			try {
-				ps = con.prepareStatement("SELECT * FROM login WHERE email=? AND password=?");
+				ps = con.prepareStatement("SELECT * FROM member_1 WHERE mname=? AND phone=?");
 
 				ps.setString(1, username);
 				ps.setString(2, password);
