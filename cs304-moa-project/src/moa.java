@@ -46,8 +46,8 @@ public class moa {
 			// resetDB();
 
 			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
-			// gui = new moaGUI();
-			showMenu();
+			gui = new moaGUI();
+			// showMenu();
 		}
 	}
 
@@ -418,8 +418,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			// start();
-			signIn();
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -646,10 +646,19 @@ public class moa {
 			JTabbedPane tabs = new JTabbedPane();
 
 			// probably make this a method of its own
-			JPanel p = createTab("Profile");
+			JPanel p = createProfileTab();
 			JPanel p1 = createTab("Browse exhibits and artifacts");
 			JPanel p2 = createTab("RSVP to an event");
 			JPanel p3 = createTab("Search");
+
+			JPanel editPanel = new JPanel(new BorderLayout());
+
+			JTextField searchField = new JTextField(20);
+			// searchField.setBorder(BorderFactory.createEmptyBorder(100, 10,
+			// 100, 10));
+			// searchField.setBounds(10,10,100,30);
+			searchField.requestFocus();
+			p3.add(searchField);
 
 			tabs.addTab("Profile", p);
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
@@ -674,6 +683,7 @@ public class moa {
 			}
 
 			mainFrame.add(tabbedPanel);
+
 			mainFrame.setVisible(true);
 		}
 
@@ -698,9 +708,92 @@ public class moa {
 			JPanel p = new JPanel(false);
 			JLabel filler = new JLabel(title);
 			filler.setHorizontalAlignment(JLabel.CENTER);
-			p.setLayout(new GridLayout(1, 1));
+			// p.setLayout(new GridLayout(2, 1));
 			p.add(filler);
 			return p;
+		}
+
+		private JPanel createProfileTab() {
+			JPanel p = new JPanel(new BorderLayout());
+			JPanel p2 = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(5, 1));
+			JPanel textPanel = new JPanel(new GridLayout(5, 1));
+			JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel header = new JPanel(new BorderLayout());
+			
+			p.add(labPanel, BorderLayout.WEST);
+			p.add(textPanel, BorderLayout.CENTER);
+			header.add(editPanel, BorderLayout.CENTER);
+			header.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			header.setOpaque(false);
+			p2.add(p, BorderLayout.CENTER);
+			p2.add(header, BorderLayout.SOUTH);
+
+			JLabel mname = new JLabel("Full Name: ");
+			labPanel.add(mname);
+			JTextField nameField = new JTextField(20);
+			nameField.setText("Select Name from Database.");
+			nameField.setEditable(false);
+			textPanel.add(nameField);
+
+			JLabel age = new JLabel("Age: ");
+			labPanel.add(age);
+			JTextField ageField = new JTextField(20);
+			ageField.setText("Select Age from Database.");
+			ageField.setEditable(false);
+			textPanel.add(ageField);
+
+			JLabel address = new JLabel("Address: ");
+			labPanel.add(address);
+			JTextField addressField = new JTextField(20);
+			addressField.setText("Select Address from Database.");
+			addressField.setEditable(false);
+			textPanel.add(addressField);
+
+			JLabel email = new JLabel("E-Mail: ");
+			labPanel.add(email);
+			JTextField emailField = new JTextField(20);
+			emailField.setText("Select E-Mail from Database.");
+			emailField.setEditable(false);
+			textPanel.add(emailField);
+
+			JLabel digits = new JLabel("Phone Number: ");
+			labPanel.add(digits);
+			JTextField digitsField = new JTextField(20);
+			digitsField.setText("Select Phone Number from Database.");
+			digitsField.setEditable(false);
+			textPanel.add(digitsField);
+
+			final JTextField[] fields = { nameField, ageField, addressField,
+					emailField, digitsField };
+
+			// Name Edit
+			JButton nameButton = new JButton("edit");
+			//nameButton.setBorder(null);
+			nameButton.setForeground(Color.BLUE);
+			nameButton.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			nameButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fields[0].setEditable(true);
+					fields[1].setEditable(true);
+					fields[2].setEditable(true);
+					fields[3].setEditable(true);
+					fields[4].setEditable(true);
+					
+					fields[0].requestFocus();
+				}
+
+			});
+			editPanel.add(nameButton);
+
+			p.setBorder(BorderFactory.createEmptyBorder(120, 10, 120, 50));
+			p.setOpaque(false);
+			p2.setOpaque(false);
+			labPanel.setOpaque(false);
+			textPanel.setOpaque(false);
+			editPanel.setOpaque(false);
+			return p2;
 		}
 
 		private void viewProfile() {
