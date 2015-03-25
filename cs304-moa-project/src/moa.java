@@ -28,6 +28,9 @@ public class moa {
 	private Connection con;
 	private Boolean isAdmin = false;
 	private moaGUI gui;
+	
+	@SuppressWarnings("unused")
+	String wait;
 
 	/*
 	 * constructs login window and loads JDBC driver
@@ -133,7 +136,7 @@ public class moa {
 				default:
 					System.out.println("Please enter a valid choice.");
 					// wait for RETURN before displaying menu again
-					String wait = in.readLine();
+					wait = in.readLine();
 					
 				}
 			}
@@ -196,7 +199,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -263,10 +266,10 @@ public class moa {
 				System.exit(-1);
 			}
 		}
-		System.out.println("Deleted "+ count +" rows.");
+		System.out.println("Deleted "+ count +" row(s).");
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -345,7 +348,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -405,7 +408,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
