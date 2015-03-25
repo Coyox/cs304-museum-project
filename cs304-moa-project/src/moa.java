@@ -418,8 +418,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			start();
-			// signIn();
+			//start();
+			 signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -648,19 +648,45 @@ public class moa {
 			// probably make this a method of its own
 			JPanel p = createProfileTab();
 			JPanel p1 = createTab("Browse exhibits and artifacts");
+			p1.setOpaque(false);
 			JPanel p2 = createTab("RSVP to an event");
-			JPanel p3 = createTab("Search");
+			p2.setOpaque(false);
+			JPanel p3 = createTab("Search for Artist");
+			p3.setOpaque(false);
+			JPanel p4 = createTab("Search for Member");
+			p4.setOpaque(false);
 
-			JPanel editPanel = new JPanel(new BorderLayout());
 
-			JTextField searchField = new JTextField(20);
-			// searchField.setBorder(BorderFactory.createEmptyBorder(100, 10,
-			// 100, 10));
-			// searchField.setBounds(10,10,100,30);
+			final JTextField searchField = new JTextField(20);
+			searchField.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Search Data Base for " + searchField.getText());
+				}
+
+			});
 			searchField.requestFocus();
 			p3.add(searchField);
+			
+			final JTextField membSearchField = new JTextField(20);
+			membSearchField.addActionListener(new ActionListener() {
 
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Search Data Base for " + membSearchField.getText());
+				}
+
+			});
+			membSearchField.requestFocus();
+			p4.add(membSearchField);
+
+			if(isAdmin){
+				tabs.addTab("Members", p4);
+
+			} else {
 			tabs.addTab("Profile", p);
+			}
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
 			tabs.addTab("Exhibits", p1);
 			tabs.setMnemonicAt(1, KeyEvent.VK_2);
@@ -720,7 +746,7 @@ public class moa {
 			JPanel textPanel = new JPanel(new GridLayout(5, 1));
 			final JPanel editPanel = new JPanel(new BorderLayout());
 			JPanel footer = new JPanel(new BorderLayout());
-			
+
 			p.add(labPanel, BorderLayout.WEST);
 			p.add(textPanel, BorderLayout.CENTER);
 			footer.add(editPanel, BorderLayout.CENTER);
@@ -766,12 +792,12 @@ public class moa {
 
 			final JTextField[] fields = { nameField, ageField, addressField,
 					emailField, digitsField };
-			
+
 			// Name Edit
 			final JButton edit = new JButton("edit");
 			final JButton save = new JButton("save changes");
-			
-			final ActionListener saveListener = new ActionListener(){
+
+			final ActionListener saveListener = new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -780,14 +806,14 @@ public class moa {
 					fields[2].setEditable(false);
 					fields[3].setEditable(false);
 					fields[4].setEditable(false);
-					
+
 					editPanel.remove(save);
 					editPanel.add(edit);
 					edit.requestFocus();
 				}
-				
+
 			};
-			
+
 			ActionListener editListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -796,7 +822,7 @@ public class moa {
 					fields[2].setEditable(true);
 					fields[3].setEditable(true);
 					fields[4].setEditable(true);
-					
+
 					editPanel.remove(edit);
 					editPanel.add(save);
 					save.requestFocus();
@@ -805,12 +831,12 @@ public class moa {
 				}
 
 			};
-			
+
 			edit.setForeground(Color.BLUE);
 			edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
 			edit.addActionListener(editListener);
 			editPanel.add(edit);
-			
+
 			save.setForeground(Color.BLUE);
 			save.setFont(new Font("Helvetica", Font.PLAIN, 14));
 			save.addActionListener(saveListener);
