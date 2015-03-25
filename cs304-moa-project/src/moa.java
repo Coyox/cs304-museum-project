@@ -1,8 +1,8 @@
-
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 // for reading from the command line
 import java.io.*;
 
@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 
 import javax.swing.SpringLayout;
 
@@ -42,10 +43,11 @@ public class moa {
 		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
-			//resetDB();
-			showMenu();
+			// resetDB();
+
+			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
 			gui = new moaGUI();
-			// showMenu();
+			showMenu();
 		}
 	}
 
@@ -100,6 +102,7 @@ public class moa {
 				} catch (Exception e) {
 			        choice = 0;
 			    }
+				
 				System.out.println(" ");
 
 				switch (choice) {
@@ -189,11 +192,8 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 		}
 		// wait for RETURN before displaying menu again
-		try {
-			String wait = in.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String wait = in.readLine();
+		
 	}
 
 	private void browseExhibits() {
@@ -342,7 +342,7 @@ public class moa {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void enterQuery() {
 		Statement stmt;
 		String query = "";
@@ -350,7 +350,7 @@ public class moa {
 		int[] colType;
 		String result;
 		ResultSet rs;
-		
+
 		try {
 			System.out.print("\nEnter Query: ");
 			try {
@@ -358,7 +358,7 @@ public class moa {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query);
 
@@ -373,14 +373,15 @@ public class moa {
 			// display column names;
 			for (int i = 0; i < numCols; i++) {
 				// get column name and print it
-				colNames[i] = rsmd.getColumnName(i+1);
-				colType[i] = rsmd.getColumnType(i+1);
+
+				colNames[i] = rsmd.getColumnName(i + 1);
+				colType[i] = rsmd.getColumnType(i + 1);
 				System.out.printf("%-25s", colNames[i]);
 			}
 			System.out.println(" ");
 
 			while (rs.next()) {
-				for (int i = 0; i <numCols; i++) {
+				for (int i = 0; i < numCols; i++) {
 					if (colType[i] == 91) {
 						System.out.print(rs.getDate(colNames[i]) + "        ");
 					} else {
@@ -414,7 +415,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			signIn();
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -491,11 +493,11 @@ public class moa {
 			mainFrame.add(footer, BorderLayout.SOUTH);
 
 			// anonymous inner class for closing the window
-//			mainFrame.addWindowListener(new WindowAdapter() {
-//				public void windowClosing(WindowEvent e) {
-//					System.exit(0);
-//				}
-//			});
+			// mainFrame.addWindowListener(new WindowAdapter() {
+			// public void windowClosing(WindowEvent e) {
+			// System.exit(0);
+			// }
+			// });
 
 			// visibility
 			mainFrame.pack();
@@ -641,8 +643,61 @@ public class moa {
 			mainFrame.setVisible(true);
 		}
 
-		public void start() {
-			showMenu();
+		private void start() {
+			// showMenu();
+			mainFrame = new JFrame("Welcome");
+			mainFrame.setSize(500, 500);
+			mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			mainFrame.setLocationRelativeTo(null);
+
+			JPanel tabbedPanel = new JPanel(new GridLayout());
+			JTabbedPane tabs = new JTabbedPane();
+			
+			//probably make this a method of its own
+			JPanel p = createTab("Profile");
+			JPanel p1 = createTab("Home");
+			JPanel p2 = createTab("RSVPs");
+			JPanel p3 = createTab("Exhibits");
+			
+			tabs.addTab("Profile", p);
+			tabs.setMnemonicAt(0, KeyEvent.VK_1);
+			tabs.addTab("Home", p1);
+			tabs.setMnemonicAt(1, KeyEvent.VK_2);
+			tabs.addTab("RSVPs", p2);
+			tabs.setMnemonicAt(2, KeyEvent.VK_3);
+			tabs.addTab("Exhibits", p3);
+			tabs.setMnemonicAt(3, KeyEvent.VK_4);
+
+			tabbedPanel.add(tabs);
+			mainFrame.add(tabbedPanel);
+			mainFrame.setVisible(true);
+		}
+
+		/**
+		 * @param title 
+		 * @return
+		 */
+		private JPanel createTab(String title) {
+			JPanel p = new JPanel(false);
+			JLabel filler = new JLabel(title);
+			filler.setHorizontalAlignment(JLabel.CENTER);
+			p.setLayout(new GridLayout(1, 1));
+			p.add(filler);
+			return p;
+		}
+
+		private void viewProfile() {
+			JPanel profilePanel = new JPanel();
+			profilePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,
+					20));
+
+			JTextArea text = new JTextArea();
+			text.setText("select member and display info");
+			profilePanel.add(text);
+
+			mainFrame.add(profilePanel);
+			mainFrame.validate();
+			mainFrame.repaint();
 		}
 
 	}
