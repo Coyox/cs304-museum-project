@@ -47,7 +47,7 @@ public class moa {
 
 			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
 			gui = new moaGUI();
-			// showMenu();
+			showMenu();
 		}
 	}
 
@@ -267,6 +267,54 @@ public class moa {
 		}
 	}
 
+	private void insert(String mname, int age, String addr, String email,
+			String phoneNumber) throws SQLException {
+		int memberFee;
+		Date signUpDate;
+
+		PreparedStatement ps;
+		PreparedStatement ps2;
+		PreparedStatement ps3;
+
+		try {
+			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
+			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
+			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
+
+			ps.setString(1, mname);
+			ps.setInt(2, age);
+			if (addr.length() == 0) {
+				ps.setString(3, null);
+			} else {
+				ps.setString(3, addr);
+			}
+			ps.setString(4, email);
+			ps.setString(5, phoneNumber);
+
+			memberFee = calculateFee(age);
+			ps2.setInt(2, memberFee);
+			ps2.setInt(1, age);
+
+			signUpDate = Calendar.getInstance().getTime();
+			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
+			ps3.setString(1, email);
+			ps3.setDate(2, sqlDate);
+
+			ps.executeUpdate();
+			ps2.executeUpdate();
+			ps3.executeUpdate();
+
+			// commit work
+			con.commit();
+			ps.close();
+			ps2.close();
+			ps3.close();
+		} catch (SQLException ex) {
+			System.out.println("Message: " + ex.getMessage());
+			throw ex;
+		}
+	}
+
 	private void insertMember() {
 		String mname;
 		int age;
@@ -367,33 +415,33 @@ public class moa {
 
 			// get info on ResultSet
 			ResultSetMetaData rsmd = rs.getMetaData();
-
-			// get number of columns
-			int numCols = rsmd.getColumnCount();
-			colNames = new String[numCols];
-			colType = new int[numCols];
-			System.out.println(" ");
-			// display column names;
-			for (int i = 0; i < numCols; i++) {
-				// get column name and print it
-
-				colNames[i] = rsmd.getColumnName(i + 1);
-				colType[i] = rsmd.getColumnType(i + 1);
-				System.out.printf("%-25s", colNames[i]);
-			}
-			System.out.println(" ");
-
-			while (rs.next()) {
+				// get number of columns
+				int numCols = rsmd.getColumnCount();
+				colNames = new String[numCols];
+				colType = new int[numCols];
+				System.out.println(" ");
+				// display column names;
 				for (int i = 0; i < numCols; i++) {
-					if (colType[i] == 91) {
-						System.out.print(rs.getDate(colNames[i]) + "        ");
-					} else {
-						result = rs.getString(colNames[i]);
-						System.out.printf("%-25s", result);
-					}
+					// get column name and print it
+
+					colNames[i] = rsmd.getColumnName(i + 1);
+					colType[i] = rsmd.getColumnType(i + 1);
+					System.out.printf("%-25s", colNames[i]);
 				}
 				System.out.println(" ");
-			}
+
+				while (rs.next()) {
+					for (int i = 0; i < numCols; i++) {
+						if (colType[i] == 91) {
+							System.out.print(rs.getDate(colNames[i])
+									+ "        ");
+						} else {
+							result = rs.getString(colNames[i]);
+							System.out.printf("%-25s", result);
+						}
+					}
+					System.out.println(" ");
+				}
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
@@ -418,8 +466,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			//start();
-			 signIn();
+			// start();
+			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -432,6 +480,9 @@ public class moa {
 
 		private void signIn() {
 			// Frame Stuff
+			if (mainFrame != null) {
+				mainFrame.dispose();
+			}
 			setUpFrame("Login", 300, 150);
 
 			// Login Panels
@@ -519,6 +570,7 @@ public class moa {
 				if (rs.next()) {
 					con.commit();
 					ps.close();
+
 					return true;
 				} else {
 					System.out.println("user does not exist");
@@ -539,7 +591,6 @@ public class moa {
 		// insert new member into member table
 		private void signUp() {
 			mainFrame.dispose();
-
 			setUpFrame("Sign Up", 400, 500);
 
 			final JPanel panel = new JPanel();
@@ -574,7 +625,6 @@ public class moa {
 
 			signupButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					PreparedStatement ps;
 					Boolean incomplete = false;
 					for (int i = 0; i < fields.length; i++) {
 						if (fields[i].getText().isEmpty()) {
@@ -586,37 +636,29 @@ public class moa {
 						JOptionPane.showMessageDialog(mainFrame,
 								"Please fill in all fields");
 					} else {
+
+						String mname = fields[0].getText() + " "
+								+ fields[1].getText();
+						int age = Integer.parseInt(fields[2].getText());
+						String addr = fields[3].getText();
+						String email = fields[4].getText();
+						String phone = fields[5].getText();
 						try {
-							ps = con.prepareStatement("INSERT INTO member_1 VALUES (?, ?, ?, ?, ?)");
-
-							ps.setString(1, fields[0].getText() + " "
-									+ fields[1].getText());
-
-							ps.setInt(2, Integer.parseInt(fields[2].getText()));
-
-							ps.setString(3, fields[3].getText());
-
-							ps.setString(4, fields[4].getText());
-
-							ps.setInt(5, Integer.parseInt(fields[5].getText()));
-
-							ps.executeQuery();
-							con.commit();
-							ps.close();
-
-						} catch (SQLException ex) {
-							System.out.println("Message: " + ex.getMessage());
+							insert(mname, age, addr, email, phone);
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(mainFrame,
+									e1.getMessage());
 							try {
 								// undo the insert
 								con.rollback();
 							} catch (SQLException ex2) {
-								System.out.println("Message: "
+								System.out.println("Message2: "
 										+ ex2.getMessage());
 								System.exit(-1);
 							}
 						}
 						JOptionPane.showMessageDialog(mainFrame, "Success");
-						mainFrame.dispose();
+						signIn();
 					}
 				}
 			});
@@ -656,36 +698,37 @@ public class moa {
 			JPanel p4 = createTab("Search for Member");
 			p4.setOpaque(false);
 
-
 			final JTextField searchField = new JTextField(20);
 			searchField.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("Search Data Base for " + searchField.getText());
+					System.out.println("Search Data Base for "
+							+ searchField.getText());
 				}
 
 			});
 			searchField.requestFocus();
 			p3.add(searchField);
-			
+
 			final JTextField membSearchField = new JTextField(20);
 			membSearchField.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("Search Data Base for " + membSearchField.getText());
+					System.out.println("Search Data Base for "
+							+ membSearchField.getText());
 				}
 
 			});
 			membSearchField.requestFocus();
 			p4.add(membSearchField);
 
-			if(isAdmin){
+			if (isAdmin) {
 				tabs.addTab("Members", p4);
 
 			} else {
-			tabs.addTab("Profile", p);
+				tabs.addTab("Profile", p);
 			}
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
 			tabs.addTab("Exhibits", p1);
