@@ -43,7 +43,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_k8w8", "a20713137")) {
+		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
