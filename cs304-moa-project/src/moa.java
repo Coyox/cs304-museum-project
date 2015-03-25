@@ -217,6 +217,7 @@ public class moa {
 
 	private void browseEvents() {
 		// TODO Auto-generated method stub
+		// select to_char(startTime, 'dd/mm/yyyy hh24:mi:ss') as startTime from events
 		System.out.println("This method will list events.");
 
 	}
