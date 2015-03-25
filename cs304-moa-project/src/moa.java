@@ -29,8 +29,11 @@ public class moa {
 	private Boolean isAdmin = false;
 	private moaGUI gui;
 	
+	private String login_name;
+	private String login_phone;
+	
 	@SuppressWarnings("unused")
-	String wait;
+	private String wait;
 
 	/*
 	 * constructs login window and loads JDBC driver
@@ -552,8 +555,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			// start();
-			signIn();
+			start();
+			//signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
