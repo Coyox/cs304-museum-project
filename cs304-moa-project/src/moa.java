@@ -43,6 +43,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
+		// change this if you want to connect to a separate server (if the current one is busy for ex)
 		if (connect("ora_k8w8", "a20713137")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
@@ -186,6 +187,12 @@ public class moa {
 
 				System.out.printf("%-15s", rsmd.getColumnName(i + 1));
 			}
+			System.out.println(" ");
+			for (int i = 0; i < numCols; i++) {
+				// get column name and print it
+
+				System.out.printf("-");
+			}
 
 			System.out.println(" ");
 
@@ -227,7 +234,7 @@ public class moa {
 		System.out.println("This method will list artifacts.");
 	}
 
-	private void updateMember() {
+	private void updateMember(String name) {
 		String mname;
 		String phoneNumber;
 		String new_entry;
@@ -239,7 +246,7 @@ public class moa {
 
 		try {
 			System.out.print("\nMember Name: ");
-			mname = in.readLine();
+			mname = name;
 			
 			System.out.print("\nMember Phone Number: ");
 			phoneNumber = in.readLine();
@@ -358,18 +365,17 @@ public class moa {
 		String mname;
 		int age;
 		int memberFee;
-		Date signUpDate;
+		Timestamp signUpDate;
 		String addr;
 		String email;
 		String phoneNumber;
+		int count = 0;
 		PreparedStatement ps;
 		PreparedStatement ps2;
-		PreparedStatement ps3;
 
 		try {
-			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?,?)");
 			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
-			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
 
 			System.out.print("\nMember Name: ");
 			mname = in.readLine();
@@ -396,18 +402,17 @@ public class moa {
 			phoneNumber = in.readLine();
 			ps.setString(5, phoneNumber);
 
+			java.util.Date date= new java.util.Date();
+			signUpDate = new Timestamp(date.getTime());
+			java.sql.Timestamp sqlDate = signUpDate;
+			ps.setTimestamp(6, sqlDate);
+			
 			memberFee = calculateFee(age);
 			ps2.setInt(2, memberFee);
 			ps2.setInt(1, age);
 
-			signUpDate = Calendar.getInstance().getTime();
-			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
-			ps3.setString(1, email);
-			ps3.setDate(2, sqlDate);
-
-			ps.executeUpdate();
-			ps2.executeUpdate();
-			ps3.executeUpdate();
+			count = ps.executeUpdate();
+			count += ps2.executeUpdate();
 
 			// commit work
 			con.commit();
@@ -425,6 +430,7 @@ public class moa {
 				System.exit(-1);
 			}
 		}
+		System.out.println("Inserted "+ count +" row(s).");
 		// wait for RETURN before displaying menu again
 		try {
 			wait = in.readLine();

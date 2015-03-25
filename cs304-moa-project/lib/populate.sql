@@ -1,4 +1,4 @@
-alter session set nls_date_format = 'yyyy-mm-dd';
+alter session set nls_timestamp_format = 'yyyy-mm-dd hh24:mi:ss';
 
 -- drop tables in order of reference
 -- no references
@@ -21,15 +21,15 @@ drop table member_1;
 -- recreate all tables
 CREATE TABLE event_hold_for
 (title VARCHAR(100),
-startDate DATE NOT NULL,
-endDate DATE NOT NULL,
+startDate TIMESTAMP NOT NULL,
+endDate TIMESTAMP NOT NULL,
 fee INTEGER,
 PRIMARY KEY (title));
 
 CREATE TABLE exhibit
 (ename VARCHAR(100),
-startDate DATE NOT NULL,
-endDate DATE NOT NULL,
+startDate TIMESTAMP NOT NULL,
+endDate TIMESTAMP NOT NULL,
 specialist VARCHAR(50),
 PRIMARY KEY (ename));
 
@@ -39,8 +39,9 @@ age INTEGER NOT NULL,
 addr VARCHAR(50),
 email VARCHAR(50),
 phone VARCHAR(12) NOT NULL,
-signUpDate DATE,
-PRIMARY KEY (mname, phone));
+signUpDate TIMESTAMP,
+PRIMARY KEY (mname, phone)
+UNIQUE (mname, email));
 
 CREATE TABLE member_2
 (age INTEGER NOT NULL,
@@ -100,7 +101,7 @@ FOREIGN KEY (mname, phone) REFERENCES member_1);
 
 -- artist
 INSERT INTO artist values
-('Pablo', '1999-04-30', 'Spanish');
+('Pablo', '1999-04-30 13:24:59', 'Spanish');
 
 INSERT INTO artist values
 ('Frida', '1999-04-15', 'Mexican');
@@ -126,7 +127,7 @@ INSERT INTO member_2 values
 (50, 50);
 
 INSERT INTO member_1 values
-('Darla the Snowoman', 101, NULL, 'marlborough@school.ca', '5703040404', '2007-12-13');
+('Darla the Snowman', 101, NULL, 'marlborough@school.ca', '5703040404', '2007-12-13');
 INSERT INTO member_2 values
 (101, 45);
 
