@@ -718,16 +718,16 @@ public class moa {
 			JPanel p2 = new JPanel(new BorderLayout());
 			JPanel labPanel = new JPanel(new GridLayout(5, 1));
 			JPanel textPanel = new JPanel(new GridLayout(5, 1));
-			JPanel editPanel = new JPanel(new BorderLayout());
-			JPanel header = new JPanel(new BorderLayout());
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
 			
 			p.add(labPanel, BorderLayout.WEST);
 			p.add(textPanel, BorderLayout.CENTER);
-			header.add(editPanel, BorderLayout.CENTER);
-			header.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
-			header.setOpaque(false);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
 			p2.add(p, BorderLayout.CENTER);
-			p2.add(header, BorderLayout.SOUTH);
+			p2.add(footer, BorderLayout.SOUTH);
 
 			JLabel mname = new JLabel("Full Name: ");
 			labPanel.add(mname);
@@ -766,13 +766,29 @@ public class moa {
 
 			final JTextField[] fields = { nameField, ageField, addressField,
 					emailField, digitsField };
-
+			
 			// Name Edit
-			JButton nameButton = new JButton("edit");
-			//nameButton.setBorder(null);
-			nameButton.setForeground(Color.BLUE);
-			nameButton.setFont(new Font("Helvetica", Font.PLAIN, 14));
-			nameButton.addActionListener(new ActionListener() {
+			final JButton edit = new JButton("edit");
+			final JButton save = new JButton("save changes");
+			
+			final ActionListener saveListener = new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fields[0].setEditable(false);
+					fields[1].setEditable(false);
+					fields[2].setEditable(false);
+					fields[3].setEditable(false);
+					fields[4].setEditable(false);
+					
+					editPanel.remove(save);
+					editPanel.add(edit);
+					edit.requestFocus();
+				}
+				
+			};
+			
+			ActionListener editListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					fields[0].setEditable(true);
@@ -781,11 +797,23 @@ public class moa {
 					fields[3].setEditable(true);
 					fields[4].setEditable(true);
 					
+					editPanel.remove(edit);
+					editPanel.add(save);
+					save.requestFocus();
 					fields[0].requestFocus();
+
 				}
 
-			});
-			editPanel.add(nameButton);
+			};
+			
+			edit.setForeground(Color.BLUE);
+			edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			edit.addActionListener(editListener);
+			editPanel.add(edit);
+			
+			save.setForeground(Color.BLUE);
+			save.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			save.addActionListener(saveListener);
 
 			p.setBorder(BorderFactory.createEmptyBorder(120, 10, 120, 50));
 			p.setOpaque(false);
