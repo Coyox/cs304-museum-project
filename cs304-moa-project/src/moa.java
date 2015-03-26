@@ -28,6 +28,12 @@ public class moa {
 	private Connection con;
 	private Boolean isAdmin = false;
 	private moaGUI gui;
+	
+	private String login_name;
+	private String login_phone;
+	
+	@SuppressWarnings("unused")
+	private String wait;
 
 	/*
 	 * constructs login window and loads JDBC driver
@@ -95,17 +101,14 @@ public class moa {
 				System.out.print("4.  Browse Artists\n");
 				System.out.print("5.  Quit\n");
 				System.out.print("6.  Insert Member\n");
-				System.out.print("7.  Query\n>>");
-
-				String cmd = in.readLine();
+				System.out.print("7.  Query\n");
+				System.out.print("8.  Delete Member\n");
+				System.out.print("9.  Update Member\n>>");
 				try {
-					choice = Integer.parseInt(cmd);
+					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
-					System.out.println("Please enter a valid choice.");
-					choice = 0;
-				}
-				// choice = Integer.parseInt(in.readLine());
-
+			        choice = 0;
+			    }
 				System.out.println(" ");
 
 				switch (choice) {
@@ -130,8 +133,17 @@ public class moa {
 				case 7:
 					enterQuery();
 					break;
+				case 8:
+					deleteMember();
+					break;
+				case 9:
+					updateMember();
+					break;
 				default:
 					System.out.println("Please enter a valid choice.");
+					// wait for RETURN before displaying menu again
+					wait = in.readLine();
+					
 				}
 			}
 
@@ -157,7 +169,7 @@ public class moa {
 		Statement stmt;
 		String artistName;
 		ResultSet rs;
-		;
+		
 		try {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery("SELECT aname FROM artist");
@@ -193,7 +205,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -207,6 +219,7 @@ public class moa {
 
 	private void browseEvents() {
 		// TODO Auto-generated method stub
+		// select to_char(startTime, 'dd/mm/yyyy hh24:mi:ss') as startTime from events
 		System.out.println("This method will list events.");
 
 	}
@@ -217,9 +230,83 @@ public class moa {
 	}
 
 	private void updateMember() {
-		// TODO Auto-generated method stub
-		System.out.println("This method will update member ");
+		String mname;
+		String phoneNumber;
+		String new_entry;
+		String column = null;
+		PreparedStatement ps;
+		int count = 0;
+		int choice;
+		boolean pass = false;
 
+		try {
+			System.out.print("\nMember Name: ");
+			mname = in.readLine();
+			
+			System.out.print("\nMember Phone Number: ");
+			phoneNumber = in.readLine();
+			
+			String temp_statement = "UPDATE member_1 "
+					  + "SET $column =? " 
+					  + "WHERE mname=? AND phone=?";
+
+			while (!pass) {
+				System.out.print("Update: \n");
+				System.out.print("1.  Address\n");
+				System.out.print("2.  Email\n>>");
+				
+				try {
+					choice = Integer.parseInt(in.readLine());
+				} catch (Exception e) {
+			        choice = 0;
+			    }
+	
+				switch (choice) {
+				case 1:
+					column = "addr";
+					pass = true;
+					break;
+				case 2:
+					column = "email";
+					pass = true;
+					break;
+				default:
+					System.out.println("Please choose either Address or Email\n");
+					break;
+				}
+			}
+			
+			String statement = temp_statement.replace("$column", column);
+			ps = con.prepareStatement(statement);
+			
+			ps.setString(2, mname);
+			ps.setString(3, phoneNumber);
+			
+			System.out.print("New entry: ");
+			new_entry = in.readLine();
+			ps.setString(1, new_entry);
+			
+			count = ps.executeUpdate();
+			con.commit();
+			ps.close();
+		} catch (IOException e) {
+			System.out.println("IOException!");
+		} catch (SQLException ex) {
+			System.out.println("Message1: " + ex.getMessage());
+			try {
+				con.rollback();
+			} catch (SQLException ex2) {
+				System.out.println("Message2: " + ex2.getMessage());
+				System.exit(-1);
+			}
+		}
+		System.out.println("Changed "+ count +" row(s).");
+		// wait for RETURN before displaying menu again
+		try {
+			wait = in.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void showMember() {
@@ -229,22 +316,23 @@ public class moa {
 
 	private void deleteMember() {
 		String mname;
-		int phoneNumber;
+		String phoneNumber;
 		PreparedStatement ps;
+		int count = 0;
 
 		try {
 			// cant be just member? either member_1, member_2, member_3?
-			ps = con.prepareStatement("DELETE FROM member WHERE mname='?' AND phoneNumber='?''");
+			ps = con.prepareStatement("DELETE FROM member_1 WHERE mname=? AND phone=?");
 
 			System.out.print("\nMember Name: ");
 			mname = in.readLine();
 			ps.setString(1, mname);
 
 			System.out.print("\nMember Phone Number: ");
-			phoneNumber = Integer.parseInt(in.readLine());
-			ps.setInt(2, phoneNumber);
+			phoneNumber = in.readLine();
+			ps.setString(2, phoneNumber);
 
-			ps.executeUpdate();
+			count = ps.executeUpdate();
 			con.commit();
 			ps.close();
 		} catch (IOException e) {
@@ -259,11 +347,60 @@ public class moa {
 				System.exit(-1);
 			}
 		}
+		System.out.println("Deleted "+ count +" row(s).");
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void insert(String mname, int age, String addr, String email,
+			String phoneNumber) throws SQLException {
+		int memberFee;
+		Date signUpDate;
+
+		PreparedStatement ps;
+		PreparedStatement ps2;
+		PreparedStatement ps3;
+
+		try {
+			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
+			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
+			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
+
+			ps.setString(1, mname);
+			ps.setInt(2, age);
+			if (addr.length() == 0) {
+				ps.setString(3, null);
+			} else {
+				ps.setString(3, addr);
+			}
+			ps.setString(4, email);
+			ps.setString(5, phoneNumber);
+
+			memberFee = calculateFee(age);
+			ps2.setInt(2, memberFee);
+			ps2.setInt(1, age);
+
+			signUpDate = Calendar.getInstance().getTime();
+			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
+			ps3.setString(1, email);
+			ps3.setDate(2, sqlDate);
+
+			ps.executeUpdate();
+			ps2.executeUpdate();
+			ps3.executeUpdate();
+
+			// commit work
+			con.commit();
+			ps.close();
+			ps2.close();
+			ps3.close();
+		} catch (SQLException ex) {
+			System.out.println("Message: " + ex.getMessage());
+			throw ex;
 		}
 	}
 
@@ -340,7 +477,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -367,7 +504,6 @@ public class moa {
 
 			// get info on ResultSet
 			ResultSetMetaData rsmd = rs.getMetaData();
-
 			// get number of columns
 			int numCols = rsmd.getColumnCount();
 			colNames = new String[numCols];
@@ -386,7 +522,8 @@ public class moa {
 			while (rs.next()) {
 				for (int i = 0; i < numCols; i++) {
 					if (colType[i] == 91) {
-						System.out.print(rs.getDate(colNames[i]) + "        ");
+						System.out.print(rs.getDate(colNames[i])
+								+ "        ");
 					} else {
 						result = rs.getString(colNames[i]);
 						System.out.printf("%-25s", result);
@@ -400,7 +537,7 @@ public class moa {
 		}
 		// wait for RETURN before displaying menu again
 		try {
-			String wait = in.readLine();
+			wait = in.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -418,7 +555,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			// start();
+
+			//start();
 			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
@@ -432,6 +570,9 @@ public class moa {
 
 		private void signIn() {
 			// Frame Stuff
+			if (mainFrame != null) {
+				mainFrame.dispose();
+			}
 			setUpFrame("Login", 300, 150);
 
 			// Login Panels
@@ -452,6 +593,7 @@ public class moa {
 			final JCheckBox admin = new JCheckBox("Admin");
 			JButton login = new JButton("Login");
 			mainFrame.getRootPane().setDefaultButton(login);
+			
 			login.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (memberExists(usernameField.getText(),
@@ -460,6 +602,8 @@ public class moa {
 							isAdmin = true;
 						}
 						mainFrame.dispose();
+						login_name = usernameField.getText();
+						login_phone = String.valueOf(passwordField.getPassword());
 						start();
 					} else {
 						passwordField.setText("");
@@ -504,7 +648,7 @@ public class moa {
 			mainFrame.setVisible(true);
 		}
 
-		// Check login table
+		// Check if member exists table
 		private boolean memberExists(String username, String password) {
 			PreparedStatement ps;
 			ResultSet rs;
@@ -519,6 +663,7 @@ public class moa {
 				if (rs.next()) {
 					con.commit();
 					ps.close();
+
 					return true;
 				} else {
 					System.out.println("user does not exist");
@@ -539,7 +684,6 @@ public class moa {
 		// insert new member into member table
 		private void signUp() {
 			mainFrame.dispose();
-
 			setUpFrame("Sign Up", 400, 500);
 
 			final JPanel panel = new JPanel();
@@ -574,7 +718,6 @@ public class moa {
 
 			signupButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					PreparedStatement ps;
 					Boolean incomplete = false;
 					for (int i = 0; i < fields.length; i++) {
 						if (fields[i].getText().isEmpty()) {
@@ -586,37 +729,29 @@ public class moa {
 						JOptionPane.showMessageDialog(mainFrame,
 								"Please fill in all fields");
 					} else {
+
+						String mname = fields[0].getText() + " "
+								+ fields[1].getText();
+						int age = Integer.parseInt(fields[2].getText());
+						String addr = fields[3].getText();
+						String email = fields[4].getText();
+						String phone = fields[5].getText();
 						try {
-							ps = con.prepareStatement("INSERT INTO member_1 VALUES (?, ?, ?, ?, ?)");
-
-							ps.setString(1, fields[0].getText() + " "
-									+ fields[1].getText());
-
-							ps.setInt(2, Integer.parseInt(fields[2].getText()));
-
-							ps.setString(3, fields[3].getText());
-
-							ps.setString(4, fields[4].getText());
-
-							ps.setInt(5, Integer.parseInt(fields[5].getText()));
-
-							ps.executeQuery();
-							con.commit();
-							ps.close();
-
-						} catch (SQLException ex) {
-							System.out.println("Message: " + ex.getMessage());
+							insert(mname, age, addr, email, phone);
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(mainFrame,
+									e1.getMessage());
 							try {
 								// undo the insert
 								con.rollback();
 							} catch (SQLException ex2) {
-								System.out.println("Message: "
+								System.out.println("Message2: "
 										+ ex2.getMessage());
 								System.exit(-1);
 							}
 						}
 						JOptionPane.showMessageDialog(mainFrame, "Success");
-						mainFrame.dispose();
+						signIn();
 					}
 				}
 			});
@@ -646,12 +781,54 @@ public class moa {
 			JTabbedPane tabs = new JTabbedPane();
 
 			// probably make this a method of its own
-			JPanel p = createTab("Profile");
+			JPanel p = createProfileTab();
 			JPanel p1 = createTab("Browse exhibits and artifacts");
+			p1.setOpaque(false);
 			JPanel p2 = createTab("RSVP to an event");
-			JPanel p3 = createTab("Search");
+			p2.setOpaque(false);
+			//JPanel p3 = createTab("Search for Artist");
+			JPanel p3 = new JPanel(new BorderLayout());
+			p3.setOpaque(false);
+			JPanel p4 = createTab("Search for Member");
+			p4.setOpaque(false);
+			
+			JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+			JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+			
+			JLabel aNameLabel = new JLabel("Search by artist name: ", JLabel.RIGHT);
+			JLabel aNatLabel = new JLabel("Search by artist nationality: ", JLabel.RIGHT);
+			
+			final JTextField artistName = new JTextField(20);
+			final JTextField artistNat = new JTextField(20);
+			
+			aLabelPanel.add(aNameLabel);
+			aFieldPanel.add(artistName);
+			aLabelPanel.add(aNatLabel);
+			aFieldPanel.add(artistNat);
+			
+			artistName.addActionListener(new ActionListener() {
 
-			tabs.addTab("Profile", p);
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Search Data Base for "
+							+ artistName.getText());
+				}
+
+			});
+			
+			artistName.requestFocus();
+			p3.add(aLabelPanel, BorderLayout.WEST);
+			p3.add(aFieldPanel, BorderLayout.CENTER);
+			p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
+			
+			searchPanel(p4);
+
+			if (isAdmin) {
+				tabs.addTab("Members", p4);
+
+			} else {
+				tabs.addTab("Profile", p);
+			}
 			tabs.setMnemonicAt(0, KeyEvent.VK_1);
 			tabs.addTab("Exhibits", p1);
 			tabs.setMnemonicAt(1, KeyEvent.VK_2);
@@ -674,7 +851,59 @@ public class moa {
 			}
 
 			mainFrame.add(tabbedPanel);
+
 			mainFrame.setVisible(true);
+		}
+
+		/**
+		 * @param p4
+		 */
+		private void searchPanel(JPanel p4) {
+			JPanel membPanel = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(2, 1));
+			JPanel textPanel = new JPanel(new GridLayout(2, 1));
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
+
+			membPanel.add(labPanel, BorderLayout.WEST);
+			membPanel.add(textPanel, BorderLayout.CENTER);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
+			p4.add(membPanel, BorderLayout.CENTER);
+			p4.add(footer, BorderLayout.SOUTH);
+
+			JLabel name = new JLabel("Member Name: ");
+			labPanel.add(name);
+			JTextField nameField = new JTextField(20);
+			nameField.requestFocus();
+			textPanel.add(nameField);
+
+			JLabel phone = new JLabel("Phone Number: ");
+			labPanel.add(phone);
+			JTextField phoneField = new JTextField(20);
+			textPanel.add(phoneField);
+
+			final JButton search = new JButton("search");
+
+			search.setForeground(Color.BLUE);
+			search.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			search.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					//will display profile for searched member createProfileTabe blablabla
+				}
+				
+			});
+			editPanel.add(search);
+
+			p4.setOpaque(false);
+			membPanel.setOpaque(false);
+			labPanel.setOpaque(false);
+			textPanel.setOpaque(false);
+			editPanel.setOpaque(false);
 		}
 
 		/**
@@ -698,9 +927,159 @@ public class moa {
 			JPanel p = new JPanel(false);
 			JLabel filler = new JLabel(title);
 			filler.setHorizontalAlignment(JLabel.CENTER);
-			p.setLayout(new GridLayout(1, 1));
+			// p.setLayout(new GridLayout(2, 1));
 			p.add(filler);
 			return p;
+		}
+
+		private JPanel createProfileTab() {
+			
+			Query q = new Query();
+			final Member m = new Member();
+			
+			// SELECT * FROM member_1 WHERE mname = login_name AND phone = login_phone
+			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '" + login_name 
+					+ "' AND phone ='"+login_phone+"'");
+
+			String db_name = null;
+			int db_age = -1;
+			String db_addr = null;
+			String db_email = null;
+			String db_phone = null;
+			//String db_sign = null;
+			
+			
+			try {
+				rs.next();
+				
+				db_name = rs.getString("mname");
+				db_age = rs.getInt("age");
+				db_addr = rs.getString("addr");
+				db_email = rs.getString("email");
+				db_phone = rs.getString("phone");
+				//db_sign = rs.getString("signUpDate");
+			} catch (SQLException ex) {
+				System.out.println("createProfile Message: " + ex.getMessage());
+			}
+			
+			JPanel p = new JPanel(new BorderLayout());
+			JPanel p2 = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(5, 1));
+			JPanel textPanel = new JPanel(new GridLayout(5, 1));
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
+
+			p.add(labPanel, BorderLayout.WEST);
+			p.add(textPanel, BorderLayout.CENTER);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
+			p2.add(p, BorderLayout.CENTER);
+			p2.add(footer, BorderLayout.SOUTH);
+
+			JLabel mname = new JLabel("Full Name: ");
+			labPanel.add(mname);
+			JTextField nameField = new JTextField(20);
+			nameField.setText(db_name);
+			nameField.setEditable(false);
+			textPanel.add(nameField);
+
+			JLabel age = new JLabel("Age: ");
+			labPanel.add(age);
+			JTextField ageField = new JTextField(20);
+			ageField.setText(Integer.toString(db_age));
+			ageField.setEditable(false);
+			textPanel.add(ageField);
+
+			JLabel address = new JLabel("Address: ");
+			labPanel.add(address);
+			JTextField addressField = new JTextField(20);
+			addressField.setText(db_addr);
+			addressField.setEditable(false);
+			textPanel.add(addressField);
+
+			JLabel email = new JLabel("E-Mail: ");
+			labPanel.add(email);
+			JTextField emailField = new JTextField(20);
+			emailField.setText(db_email);
+			emailField.setEditable(false);
+			textPanel.add(emailField);
+
+			JLabel digits = new JLabel("Phone Number: ");
+			labPanel.add(digits);
+			JTextField digitsField = new JTextField(20);
+			digitsField.setText(db_phone);
+			digitsField.setEditable(false);
+			textPanel.add(digitsField);
+
+			final JTextField[] fields = { nameField, ageField, addressField,
+					emailField, digitsField };
+
+			// Name Edit
+			final JButton edit = new JButton("Edit");
+			final JButton save = new JButton("Save Changes");
+
+			final ActionListener saveListener = new ActionListener() {
+
+								
+				@Override
+				public void actionPerformed(ActionEvent e) {					
+					String mname_new = fields[0].getText();
+					fields[0].setEditable(false);
+					int age_new = Integer.parseInt(fields[1].getText());
+					fields[1].setEditable(false);
+					String addr_new = fields[2].getText();
+					fields[2].setEditable(false);
+					String email_new = fields[3].getText();
+					fields[3].setEditable(false);
+					String phone_new = fields[4].getText();
+					fields[4].setEditable(false);
+
+					int err = m.updateMember(con, login_name, login_phone, mname_new, phone_new, addr_new, age_new, email_new);
+					if (err < 1) {
+						System.out.println("Error updating member");
+					}
+					editPanel.remove(save);
+					editPanel.add(edit);
+					edit.requestFocus();
+				}
+
+			};
+
+			ActionListener editListener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					fields[0].setEditable(true);
+					fields[1].setEditable(true);
+					fields[2].setEditable(true);
+					fields[3].setEditable(true);
+					fields[4].setEditable(true);
+
+					editPanel.remove(edit);
+					editPanel.add(save);
+					save.requestFocus();
+					fields[0].requestFocus();
+
+				}
+
+			};
+
+			edit.setForeground(Color.BLUE);
+			edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			edit.addActionListener(editListener);
+			editPanel.add(edit);
+
+			save.setForeground(Color.BLUE);
+			save.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			save.addActionListener(saveListener);
+
+			p.setBorder(BorderFactory.createEmptyBorder(120, 10, 120, 50));
+			p.setOpaque(false);
+			p2.setOpaque(false);
+			labPanel.setOpaque(false);
+			textPanel.setOpaque(false);
+			editPanel.setOpaque(false);
+			return p2;
 		}
 
 		private void viewProfile() {
