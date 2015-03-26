@@ -918,17 +918,18 @@ public class moa {
 		private JPanel createProfileTab() {
 			
 			Query q = new Query();
+			final Member m = new Member();
 			
 			// SELECT * FROM member_1 WHERE mname = login_name AND phone = login_phone
 			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '" + login_name 
 					+ "' AND phone ='"+login_phone+"'");
 
-			String db_name;
-			int db_age;
-			String db_addr;
-			String db_email;
-			String db_phone;
-			String db_sign;
+			String db_name = null;
+			int db_age = -1;
+			String db_addr = null;
+			String db_email = null;
+			String db_phone = null;
+			//String db_sign = null;
 			
 			
 			try {
@@ -939,9 +940,9 @@ public class moa {
 				db_addr = rs.getString("addr");
 				db_email = rs.getString("email");
 				db_phone = rs.getString("phone");
-				db_sign = rs.getString("signUpDate");
+				//db_sign = rs.getString("signUpDate");
 			} catch (SQLException ex) {
-				System.out.println("queryWhere Message: " + ex.getMessage());
+				System.out.println("createProfile Message: " + ex.getMessage());
 			}
 			
 			JPanel p = new JPanel(new BorderLayout());
@@ -962,35 +963,35 @@ public class moa {
 			JLabel mname = new JLabel("Full Name: ");
 			labPanel.add(mname);
 			JTextField nameField = new JTextField(20);
-			nameField.setText(login_name);
+			nameField.setText(db_name);
 			nameField.setEditable(false);
 			textPanel.add(nameField);
 
 			JLabel age = new JLabel("Age: ");
 			labPanel.add(age);
 			JTextField ageField = new JTextField(20);
-			ageField.setText("Select Age from Database.");
+			ageField.setText(Integer.toString(db_age));
 			ageField.setEditable(false);
 			textPanel.add(ageField);
 
 			JLabel address = new JLabel("Address: ");
 			labPanel.add(address);
 			JTextField addressField = new JTextField(20);
-			addressField.setText("Select Address from Database.");
+			addressField.setText(db_addr);
 			addressField.setEditable(false);
 			textPanel.add(addressField);
 
 			JLabel email = new JLabel("E-Mail: ");
 			labPanel.add(email);
 			JTextField emailField = new JTextField(20);
-			emailField.setText("Select E-Mail from Database.");
+			emailField.setText(db_email);
 			emailField.setEditable(false);
 			textPanel.add(emailField);
 
 			JLabel digits = new JLabel("Phone Number: ");
 			labPanel.add(digits);
 			JTextField digitsField = new JTextField(20);
-			digitsField.setText(login_phone);
+			digitsField.setText(db_phone);
 			digitsField.setEditable(false);
 			textPanel.add(digitsField);
 
@@ -998,19 +999,29 @@ public class moa {
 					emailField, digitsField };
 
 			// Name Edit
-			final JButton edit = new JButton("edit");
-			final JButton save = new JButton("save changes");
+			final JButton edit = new JButton("Edit");
+			final JButton save = new JButton("Save Changes");
 
 			final ActionListener saveListener = new ActionListener() {
 
+								
 				@Override
-				public void actionPerformed(ActionEvent e) {
+				public void actionPerformed(ActionEvent e) {					
+					String mname_new = fields[0].getText();
 					fields[0].setEditable(false);
+					int age_new = Integer.parseInt(fields[1].getText());
 					fields[1].setEditable(false);
+					String addr_new = fields[2].getText();
 					fields[2].setEditable(false);
+					String email_new = fields[3].getText();
 					fields[3].setEditable(false);
+					String phone_new = fields[4].getText();
 					fields[4].setEditable(false);
 
+					int err = m.updateMember(con, login_name, login_phone, mname_new, phone_new, addr_new, age_new, email_new);
+					if (err < 1) {
+						System.out.println("Error updating member");
+					}
 					editPanel.remove(save);
 					editPanel.add(edit);
 					edit.requestFocus();

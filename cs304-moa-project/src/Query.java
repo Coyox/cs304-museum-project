@@ -15,7 +15,7 @@ public class Query {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(statement);
 			
-			stmt.close();
+			//stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("queryWhere Message: " + ex.getMessage());
 		}
