@@ -40,13 +40,13 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_b6m8", "a52417128")) {
+		if (connect("ora_k8w8", "a20713137")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
 
 			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
-			// gui = new moaGUI();
+			gui = new moaGUI();
 			showMenu();
 		}
 	}
@@ -509,7 +509,7 @@ public class moa {
 			PreparedStatement ps;
 			ResultSet rs;
 			try {
-				ps = con.prepareStatement("SELECT * FROM login WHERE email=? AND password=?");
+				ps = con.prepareStatement("SELECT * FROM member_1 WHERE mname=? AND phone=?");
 
 				ps.setString(1, username);
 				ps.setString(2, password);
