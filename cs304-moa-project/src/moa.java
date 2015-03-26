@@ -786,24 +786,41 @@ public class moa {
 			p1.setOpaque(false);
 			JPanel p2 = createTab("RSVP to an event");
 			p2.setOpaque(false);
-			JPanel p3 = createTab("Search for Artist");
+			//JPanel p3 = createTab("Search for Artist");
+			JPanel p3 = new JPanel(new BorderLayout());
 			p3.setOpaque(false);
 			JPanel p4 = createTab("Search for Member");
 			p4.setOpaque(false);
-
-			final JTextField searchField = new JTextField(20);
-			searchField.addActionListener(new ActionListener() {
+			
+			JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+			JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+			
+			JLabel aNameLabel = new JLabel("Search by artist name: ", JLabel.RIGHT);
+			JLabel aNatLabel = new JLabel("Search by artist nationality: ", JLabel.RIGHT);
+			
+			final JTextField artistName = new JTextField(20);
+			final JTextField artistNat = new JTextField(20);
+			
+			aLabelPanel.add(aNameLabel);
+			aFieldPanel.add(artistName);
+			aLabelPanel.add(aNatLabel);
+			aFieldPanel.add(artistNat);
+			
+			artistName.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					System.out.println("Search Data Base for "
-							+ searchField.getText());
+							+ artistName.getText());
 				}
 
 			});
-			searchField.requestFocus();
-			p3.add(searchField);
-
+			
+			artistName.requestFocus();
+			p3.add(aLabelPanel, BorderLayout.WEST);
+			p3.add(aFieldPanel, BorderLayout.CENTER);
+			p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
+			
 			searchPanel(p4);
 
 			if (isAdmin) {
