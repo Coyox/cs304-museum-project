@@ -557,9 +557,9 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			isAdmin = true;
-			start();
-			// signIn();
+			// isAdmin = true;
+			// start();
+			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -933,8 +933,8 @@ public class moa {
 						}
 
 						// data of the table
-					    Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-					    while (rs.next()) {
+						Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+						while (rs.next()) {
 							Vector<Object> vector = new Vector<Object>();
 							for (int j = 1; j <= columnCount; j++) {
 								vector.add(rs.getObject(j));
