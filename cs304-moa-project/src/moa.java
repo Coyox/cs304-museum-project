@@ -552,8 +552,10 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			// start();
-			signIn();
+			isAdmin = true;
+			start();
+
+			//signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -641,7 +643,7 @@ public class moa {
 			mainFrame.setVisible(true);
 		}
 
-		// Check login table
+		// Check if member exists table
 		private boolean memberExists(String username, String password) {
 			PreparedStatement ps;
 			ResultSet rs;
@@ -797,18 +799,7 @@ public class moa {
 			searchField.requestFocus();
 			p3.add(searchField);
 
-			final JTextField membSearchField = new JTextField(20);
-			membSearchField.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Search Data Base for "
-							+ membSearchField.getText());
-				}
-
-			});
-			membSearchField.requestFocus();
-			p4.add(membSearchField);
+			searchPanel(p4);
 
 			if (isAdmin) {
 				tabs.addTab("Members", p4);
@@ -840,6 +831,57 @@ public class moa {
 			mainFrame.add(tabbedPanel);
 
 			mainFrame.setVisible(true);
+		}
+
+		/**
+		 * @param p4
+		 */
+		private void searchPanel(JPanel p4) {
+			JPanel membPanel = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(2, 1));
+			JPanel textPanel = new JPanel(new GridLayout(2, 1));
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
+
+			membPanel.add(labPanel, BorderLayout.WEST);
+			membPanel.add(textPanel, BorderLayout.CENTER);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
+			p4.add(membPanel, BorderLayout.CENTER);
+			p4.add(footer, BorderLayout.SOUTH);
+
+			JLabel name = new JLabel("Member Name: ");
+			labPanel.add(name);
+			JTextField nameField = new JTextField(20);
+			nameField.requestFocus();
+			textPanel.add(nameField);
+
+			JLabel phone = new JLabel("Phone Number: ");
+			labPanel.add(phone);
+			JTextField phoneField = new JTextField(20);
+			textPanel.add(phoneField);
+
+			final JButton search = new JButton("search");
+
+			search.setForeground(Color.BLUE);
+			search.setFont(new Font("Helvetica", Font.PLAIN, 14));
+			search.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					//will display profile for searched member createProfileTabe blablabla
+				}
+				
+			});
+			editPanel.add(search);
+
+			p4.setOpaque(false);
+			membPanel.setOpaque(false);
+			labPanel.setOpaque(false);
+			textPanel.setOpaque(false);
+			editPanel.setOpaque(false);
 		}
 
 		/**
