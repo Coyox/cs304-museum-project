@@ -100,7 +100,7 @@ FOREIGN KEY (mname, phone) REFERENCES member_1);
 
 -- event
 INSERT INTO event values
-('Jones’ Wedding', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 0);
+('Jones'' Wedding', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 0);
 
 INSERT INTO event values
 ('Legacy Awards Dinner','2015-04-30 10:00:00', '2015-05-09 16:00:00', 50);
@@ -119,7 +119,7 @@ INSERT INTO exhibit values
 ('Claiming Space: Voices of Urban Aboriginal Youth', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 'Pam Brown');
 
 INSERT INTO exhibit values
-('Don’t Give Up!','2015-04-30 10:00:00', '2015-05-09 16:00:00', NULL);
+('Don''t Give Up!','2015-04-30 10:00:00', '2015-05-09 16:00:00', NULL);
 
 INSERT INTO exhibit values
 ('Safar/Voyage','2015-10-30 10:00:00', '2014-11-09 16:00:00', 'Dr. Fereshteh Daftari');
@@ -185,7 +185,7 @@ INSERT INTO object_has_1 values
 INSERT INTO object_has_2 values
 ('France', '1945-12-06', 'Romanticism');
 INSERT INTO object_has_3 values
-('F1R20', 'Don’t Give Up!');
+('F1R20', 'Don''t Give Up!');
 
 INSERT INTO object_has_1 values
 (7, 'Sculpture', 'F2R06', 'England', '1815-02-06');
@@ -226,13 +226,13 @@ INSERT INTO creates values
 
 -- exhibits
 INSERT INTO exhibits values
-('Jones’ Wedding', 4);
+('Jones'' Wedding', 4);
 
 INSERT INTO exhibits values
-('Jones’ Wedding', 5);
+('Jones'' Wedding', 5);
 
 INSERT INTO exhibits values
-('Jones’ Wedding', 10);
+('Jones'' Wedding', 10);
 
 INSERT INTO exhibits values
 ('Legacy Awards Dinner',5);
@@ -251,13 +251,19 @@ INSERT INTO exhibits values
 
 -- RSVPs
 INSERT INTO RSVPs values
-('Jones’ Wedding', 'Suzie', '7781122334');
+('Jones'' Wedding', 'Suzie', '7781122334');
 
 INSERT INTO RSVPs values
-('Jones’ Wedding', 'Lady', '6048756681');
+('Jones'' Wedding', 'Lady', '6048756681');
 
 INSERT INTO RSVPs values
-('Jones’ Wedding', 'Farshid', '0314897556');
+('Jones'' Wedding', 'Farshid', '0314897556');
+
+INSERT INTO RSVPs values
+('Jones'' Wedding', 'Kimmy', '0000000000');
+
+INSERT INTO RSVPs values
+('Jones'' Wedding', 'Darla the Snowoman', '5703040404');
 
 INSERT INTO RSVPs values
 ('Legacy Awards Dinner','Farshid', '0314897556');
