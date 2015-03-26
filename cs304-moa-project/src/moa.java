@@ -3,6 +3,7 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.Vector;
 // for reading from the command line
 import java.io.*;
 
@@ -14,6 +15,7 @@ import java.awt.event.*;
 import java.awt.font.TextAttribute;
 
 import javax.swing.SpringLayout;
+import javax.swing.table.DefaultTableModel;
 
 public class moa {
 
@@ -555,9 +557,9 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			//isAdmin = true;
-			//start();
-			 signIn();
+			isAdmin = true;
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -827,7 +829,8 @@ public class moa {
 			searchPanel(p4);
 
 			if (isAdmin) {
-				// Trophy button //////////////////////////////////////////////////
+				// Trophy button
+				// //////////////////////////////////////////////////
 				JButton award = new JButton("Award Oldest Member!");
 				Image image = Toolkit.getDefaultToolkit().getImage(
 						"lib/trophy.png");
@@ -838,8 +841,9 @@ public class moa {
 				awardPanel.setOpaque(false);
 				awardPanel.add(award);
 				p4.add(awardPanel);
-				awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
-				////////////////////////////////////////////////////////////////////
+				awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
+						0));
+				// //////////////////////////////////////////////////////////////////
 				tabs.addTab("Members", p4);
 
 			} else {
@@ -891,13 +895,13 @@ public class moa {
 
 			JLabel name = new JLabel("Member Name: ");
 			labPanel.add(name);
-			JTextField nameField = new JTextField(20);
+			final JTextField nameField = new JTextField(20);
 			nameField.requestFocus();
 			textPanel.add(nameField);
 
 			JLabel phone = new JLabel("Phone Number: ");
 			labPanel.add(phone);
-			JTextField phoneField = new JTextField(20);
+			final JTextField phoneField = new JTextField(20);
 			textPanel.add(phoneField);
 
 			final JButton search = new JButton("search");
@@ -905,14 +909,51 @@ public class moa {
 			search.setForeground(Color.BLUE);
 			search.setFont(new Font("Helvetica", Font.PLAIN, 14));
 			search.addActionListener(new ActionListener() {
+				Query q = new Query();
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
 					// will display profile for searched member
 					// createProfileTabe blablabla
-				}
+					ResultSet rs = q.queryWhere(con, "*", "member_1",
+							"(mname='" + nameField.getText() + "' and phone='"
+									+ phoneField.getText() + "')");
 
+					// names of columns
+
+					ResultSetMetaData rsmd;
+					try {
+						rsmd = rs.getMetaData();
+
+						Vector<String> columnNames = new Vector<String>();
+						int columnCount = rsmd.getColumnCount();
+						for (int i = 1; i <= columnCount; i++) {
+							columnNames.add(rsmd.getColumnName(i));
+						}
+
+						// data of the table
+					    Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+					    while (rs.next()) {
+							Vector<Object> vector = new Vector<Object>();
+							for (int j = 1; j <= columnCount; j++) {
+								vector.add(rs.getObject(j));
+							}
+							data.add(vector);
+						}
+						ImageIcon icon = new ImageIcon("lib/blank-profile.png");
+						DefaultTableModel defTable = new DefaultTableModel(
+								data, columnNames);
+						JTable table = new JTable(defTable);
+						JOptionPane.showMessageDialog(mainFrame,
+								new JScrollPane(table),
+								"User: " + nameField.getText(), 0, icon);
+
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(mainFrame,
+								e1.getMessage());
+					}
+				}
 			});
 			editPanel.add(search);
 
