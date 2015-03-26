@@ -46,7 +46,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_b6m8", "a52417128")) {
+		if (connect("ora_k8w8", "a20713137")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
@@ -504,33 +504,33 @@ public class moa {
 
 			// get info on ResultSet
 			ResultSetMetaData rsmd = rs.getMetaData();
-				// get number of columns
-				int numCols = rsmd.getColumnCount();
-				colNames = new String[numCols];
-				colType = new int[numCols];
-				System.out.println(" ");
-				// display column names;
+			// get number of columns
+			int numCols = rsmd.getColumnCount();
+			colNames = new String[numCols];
+			colType = new int[numCols];
+			System.out.println(" ");
+			// display column names;
+			for (int i = 0; i < numCols; i++) {
+				// get column name and print it
+
+				colNames[i] = rsmd.getColumnName(i + 1);
+				colType[i] = rsmd.getColumnType(i + 1);
+				System.out.printf("%-25s", colNames[i]);
+			}
+			System.out.println(" ");
+
+			while (rs.next()) {
 				for (int i = 0; i < numCols; i++) {
-					// get column name and print it
-
-					colNames[i] = rsmd.getColumnName(i + 1);
-					colType[i] = rsmd.getColumnType(i + 1);
-					System.out.printf("%-25s", colNames[i]);
+					if (colType[i] == 91) {
+						System.out.print(rs.getDate(colNames[i])
+								+ "        ");
+					} else {
+						result = rs.getString(colNames[i]);
+						System.out.printf("%-25s", result);
+					}
 				}
 				System.out.println(" ");
-
-				while (rs.next()) {
-					for (int i = 0; i < numCols; i++) {
-						if (colType[i] == 91) {
-							System.out.print(rs.getDate(colNames[i])
-									+ "        ");
-						} else {
-							result = rs.getString(colNames[i]);
-							System.out.printf("%-25s", result);
-						}
-					}
-					System.out.println(" ");
-				}
+			}
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
@@ -555,8 +555,8 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			start();
-			//signIn();
+			//start();
+			signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -592,6 +592,7 @@ public class moa {
 			final JCheckBox admin = new JCheckBox("Admin");
 			JButton login = new JButton("Login");
 			mainFrame.getRootPane().setDefaultButton(login);
+			
 			login.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (memberExists(usernameField.getText(),
@@ -600,6 +601,8 @@ public class moa {
 							isAdmin = true;
 						}
 						mainFrame.dispose();
+						login_name = usernameField.getText();
+						login_phone = String.valueOf(passwordField.getPassword());
 						start();
 					} else {
 						passwordField.setText("");
@@ -872,56 +875,74 @@ public class moa {
 		}
 
 		private JPanel createProfileTab() {
-			JPanel p = new JPanel(new BorderLayout());
-			JPanel p2 = new JPanel(new BorderLayout());
-			JPanel labPanel = new JPanel(new GridLayout(5, 1));
-			JPanel textPanel = new JPanel(new GridLayout(5, 1));
-			final JPanel editPanel = new JPanel(new BorderLayout());
-			JPanel footer = new JPanel(new BorderLayout());
+			
+			Query q = new Query();
+			
+			// SELECT * FROM member_1 WHERE mname = login_name AND phone = login_phone
+			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '" + login_name 
+					+ "' AND phone ='"+login_phone+"'");
+			// get info on ResultSet
+			ResultSetMetaData rsmd;
+			try {
+				rsmd = rs.getMetaData();
 
-			p.add(labPanel, BorderLayout.WEST);
-			p.add(textPanel, BorderLayout.CENTER);
-			footer.add(editPanel, BorderLayout.CENTER);
-			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
-			footer.setOpaque(false);
-			p2.add(p, BorderLayout.CENTER);
-			p2.add(footer, BorderLayout.SOUTH);
 
-			JLabel mname = new JLabel("Full Name: ");
-			labPanel.add(mname);
-			JTextField nameField = new JTextField(20);
-			nameField.setText("Select Name from Database.");
-			nameField.setEditable(false);
-			textPanel.add(nameField);
+				rs.next();
+				
+				JPanel p = new JPanel(new BorderLayout());
+				JPanel p2 = new JPanel(new BorderLayout());
+				JPanel labPanel = new JPanel(new GridLayout(5, 1));
+				JPanel textPanel = new JPanel(new GridLayout(5, 1));
+				final JPanel editPanel = new JPanel(new BorderLayout());
+				JPanel footer = new JPanel(new BorderLayout());
+	
+				p.add(labPanel, BorderLayout.WEST);
+				p.add(textPanel, BorderLayout.CENTER);
+				footer.add(editPanel, BorderLayout.CENTER);
+				footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+				footer.setOpaque(false);
+				p2.add(p, BorderLayout.CENTER);
+				p2.add(footer, BorderLayout.SOUTH);
+	
+				JLabel mname = new JLabel("Full Name: ");
+				labPanel.add(mname);
+				JTextField nameField = new JTextField(20);
+				nameField.setText(login_name);
+				nameField.setEditable(false);
+				textPanel.add(nameField);
+	
+				JLabel age = new JLabel("Age: ");
+				labPanel.add(age);
+				JTextField ageField = new JTextField(20);
+				ageField.setText("Select Age from Database.");
+				ageField.setEditable(false);
+				textPanel.add(ageField);
+	
+				JLabel address = new JLabel("Address: ");
+				labPanel.add(address);
+				JTextField addressField = new JTextField(20);
+				addressField.setText("Select Address from Database.");
+				addressField.setEditable(false);
+				textPanel.add(addressField);
+	
+				JLabel email = new JLabel("E-Mail: ");
+				labPanel.add(email);
+				JTextField emailField = new JTextField(20);
+				emailField.setText("Select E-Mail from Database.");
+				emailField.setEditable(false);
+				textPanel.add(emailField);
+	
+				JLabel digits = new JLabel("Phone Number: ");
+				labPanel.add(digits);
+				JTextField digitsField = new JTextField(20);
+				digitsField.setText(login_phone);
+				digitsField.setEditable(false);
+				textPanel.add(digitsField);
 
-			JLabel age = new JLabel("Age: ");
-			labPanel.add(age);
-			JTextField ageField = new JTextField(20);
-			ageField.setText("Select Age from Database.");
-			ageField.setEditable(false);
-			textPanel.add(ageField);
-
-			JLabel address = new JLabel("Address: ");
-			labPanel.add(address);
-			JTextField addressField = new JTextField(20);
-			addressField.setText("Select Address from Database.");
-			addressField.setEditable(false);
-			textPanel.add(addressField);
-
-			JLabel email = new JLabel("E-Mail: ");
-			labPanel.add(email);
-			JTextField emailField = new JTextField(20);
-			emailField.setText("Select E-Mail from Database.");
-			emailField.setEditable(false);
-			textPanel.add(emailField);
-
-			JLabel digits = new JLabel("Phone Number: ");
-			labPanel.add(digits);
-			JTextField digitsField = new JTextField(20);
-			digitsField.setText("Select Phone Number from Database.");
-			digitsField.setEditable(false);
-			textPanel.add(digitsField);
-
+			} catch (SQLException ex) {
+				System.out.println("createProfile Message: " + ex.getMessage());
+			}
+			
 			final JTextField[] fields = { nameField, ageField, addressField,
 					emailField, digitsField };
 
