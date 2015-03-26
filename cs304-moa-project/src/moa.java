@@ -881,68 +881,78 @@ public class moa {
 			// SELECT * FROM member_1 WHERE mname = login_name AND phone = login_phone
 			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '" + login_name 
 					+ "' AND phone ='"+login_phone+"'");
-			// get info on ResultSet
-			ResultSetMetaData rsmd;
+
+			String db_name;
+			int db_age;
+			String db_addr;
+			String db_email;
+			String db_phone;
+			String db_sign;
+			
+			
 			try {
-				rsmd = rs.getMetaData();
-
-
 				rs.next();
 				
-				JPanel p = new JPanel(new BorderLayout());
-				JPanel p2 = new JPanel(new BorderLayout());
-				JPanel labPanel = new JPanel(new GridLayout(5, 1));
-				JPanel textPanel = new JPanel(new GridLayout(5, 1));
-				final JPanel editPanel = new JPanel(new BorderLayout());
-				JPanel footer = new JPanel(new BorderLayout());
-	
-				p.add(labPanel, BorderLayout.WEST);
-				p.add(textPanel, BorderLayout.CENTER);
-				footer.add(editPanel, BorderLayout.CENTER);
-				footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
-				footer.setOpaque(false);
-				p2.add(p, BorderLayout.CENTER);
-				p2.add(footer, BorderLayout.SOUTH);
-	
-				JLabel mname = new JLabel("Full Name: ");
-				labPanel.add(mname);
-				JTextField nameField = new JTextField(20);
-				nameField.setText(login_name);
-				nameField.setEditable(false);
-				textPanel.add(nameField);
-	
-				JLabel age = new JLabel("Age: ");
-				labPanel.add(age);
-				JTextField ageField = new JTextField(20);
-				ageField.setText("Select Age from Database.");
-				ageField.setEditable(false);
-				textPanel.add(ageField);
-	
-				JLabel address = new JLabel("Address: ");
-				labPanel.add(address);
-				JTextField addressField = new JTextField(20);
-				addressField.setText("Select Address from Database.");
-				addressField.setEditable(false);
-				textPanel.add(addressField);
-	
-				JLabel email = new JLabel("E-Mail: ");
-				labPanel.add(email);
-				JTextField emailField = new JTextField(20);
-				emailField.setText("Select E-Mail from Database.");
-				emailField.setEditable(false);
-				textPanel.add(emailField);
-	
-				JLabel digits = new JLabel("Phone Number: ");
-				labPanel.add(digits);
-				JTextField digitsField = new JTextField(20);
-				digitsField.setText(login_phone);
-				digitsField.setEditable(false);
-				textPanel.add(digitsField);
-
+				db_name = rs.getString("mname");
+				db_age = rs.getInt("age");
+				db_addr = rs.getString("addr");
+				db_email = rs.getString("email");
+				db_phone = rs.getString("phone");
+				db_sign = rs.getString("signUpDate");
 			} catch (SQLException ex) {
-				System.out.println("createProfile Message: " + ex.getMessage());
+				System.out.println("queryWhere Message: " + ex.getMessage());
 			}
 			
+			JPanel p = new JPanel(new BorderLayout());
+			JPanel p2 = new JPanel(new BorderLayout());
+			JPanel labPanel = new JPanel(new GridLayout(5, 1));
+			JPanel textPanel = new JPanel(new GridLayout(5, 1));
+			final JPanel editPanel = new JPanel(new BorderLayout());
+			JPanel footer = new JPanel(new BorderLayout());
+
+			p.add(labPanel, BorderLayout.WEST);
+			p.add(textPanel, BorderLayout.CENTER);
+			footer.add(editPanel, BorderLayout.CENTER);
+			footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+			footer.setOpaque(false);
+			p2.add(p, BorderLayout.CENTER);
+			p2.add(footer, BorderLayout.SOUTH);
+
+			JLabel mname = new JLabel("Full Name: ");
+			labPanel.add(mname);
+			JTextField nameField = new JTextField(20);
+			nameField.setText(login_name);
+			nameField.setEditable(false);
+			textPanel.add(nameField);
+
+			JLabel age = new JLabel("Age: ");
+			labPanel.add(age);
+			JTextField ageField = new JTextField(20);
+			ageField.setText("Select Age from Database.");
+			ageField.setEditable(false);
+			textPanel.add(ageField);
+
+			JLabel address = new JLabel("Address: ");
+			labPanel.add(address);
+			JTextField addressField = new JTextField(20);
+			addressField.setText("Select Address from Database.");
+			addressField.setEditable(false);
+			textPanel.add(addressField);
+
+			JLabel email = new JLabel("E-Mail: ");
+			labPanel.add(email);
+			JTextField emailField = new JTextField(20);
+			emailField.setText("Select E-Mail from Database.");
+			emailField.setEditable(false);
+			textPanel.add(emailField);
+
+			JLabel digits = new JLabel("Phone Number: ");
+			labPanel.add(digits);
+			JTextField digitsField = new JTextField(20);
+			digitsField.setText(login_phone);
+			digitsField.setEditable(false);
+			textPanel.add(digitsField);
+
 			final JTextField[] fields = { nameField, ageField, addressField,
 					emailField, digitsField };
 
