@@ -28,10 +28,10 @@ public class moa {
 	private Connection con;
 	private Boolean isAdmin = false;
 	private moaGUI gui;
-	
+
 	private String login_name;
 	private String login_phone;
-	
+
 	@SuppressWarnings("unused")
 	private String wait;
 
@@ -107,8 +107,8 @@ public class moa {
 				try {
 					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
-			        choice = 0;
-			    }
+					choice = 0;
+				}
 				System.out.println(" ");
 
 				switch (choice) {
@@ -143,7 +143,7 @@ public class moa {
 					System.out.println("Please enter a valid choice.");
 					// wait for RETURN before displaying menu again
 					wait = in.readLine();
-					
+
 				}
 			}
 
@@ -169,7 +169,7 @@ public class moa {
 		Statement stmt;
 		String artistName;
 		ResultSet rs;
-		
+
 		try {
 			stmt = con.createStatement();
 			rs = stmt.executeQuery("SELECT aname FROM artist");
@@ -219,7 +219,8 @@ public class moa {
 
 	private void browseEvents() {
 		// TODO Auto-generated method stub
-		// select to_char(startTime, 'dd/mm/yyyy hh24:mi:ss') as startTime from events
+		// select to_char(startTime, 'dd/mm/yyyy hh24:mi:ss') as startTime from
+		// events
 		System.out.println("This method will list events.");
 
 	}
@@ -242,25 +243,24 @@ public class moa {
 		try {
 			System.out.print("\nMember Name: ");
 			mname = in.readLine();
-			
+
 			System.out.print("\nMember Phone Number: ");
 			phoneNumber = in.readLine();
-			
-			String temp_statement = "UPDATE member_1 "
-					  + "SET $column =? " 
-					  + "WHERE mname=? AND phone=?";
+
+			String temp_statement = "UPDATE member_1 " + "SET $column =? "
+					+ "WHERE mname=? AND phone=?";
 
 			while (!pass) {
 				System.out.print("Update: \n");
 				System.out.print("1.  Address\n");
 				System.out.print("2.  Email\n>>");
-				
+
 				try {
 					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
-			        choice = 0;
-			    }
-	
+					choice = 0;
+				}
+
 				switch (choice) {
 				case 1:
 					column = "addr";
@@ -271,21 +271,22 @@ public class moa {
 					pass = true;
 					break;
 				default:
-					System.out.println("Please choose either Address or Email\n");
+					System.out
+							.println("Please choose either Address or Email\n");
 					break;
 				}
 			}
-			
+
 			String statement = temp_statement.replace("$column", column);
 			ps = con.prepareStatement(statement);
-			
+
 			ps.setString(2, mname);
 			ps.setString(3, phoneNumber);
-			
+
 			System.out.print("New entry: ");
 			new_entry = in.readLine();
 			ps.setString(1, new_entry);
-			
+
 			count = ps.executeUpdate();
 			con.commit();
 			ps.close();
@@ -300,7 +301,7 @@ public class moa {
 				System.exit(-1);
 			}
 		}
-		System.out.println("Changed "+ count +" row(s).");
+		System.out.println("Changed " + count + " row(s).");
 		// wait for RETURN before displaying menu again
 		try {
 			wait = in.readLine();
@@ -347,7 +348,7 @@ public class moa {
 				System.exit(-1);
 			}
 		}
-		System.out.println("Deleted "+ count +" row(s).");
+		System.out.println("Deleted " + count + " row(s).");
 		// wait for RETURN before displaying menu again
 		try {
 			wait = in.readLine();
@@ -522,8 +523,7 @@ public class moa {
 			while (rs.next()) {
 				for (int i = 0; i < numCols; i++) {
 					if (colType[i] == 91) {
-						System.out.print(rs.getDate(colNames[i])
-								+ "        ");
+						System.out.print(rs.getDate(colNames[i]) + "        ");
 					} else {
 						result = rs.getString(colNames[i]);
 						System.out.printf("%-25s", result);
@@ -555,9 +555,9 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-
-			//start();
-			signIn();
+			isAdmin = true;
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -593,7 +593,7 @@ public class moa {
 			final JCheckBox admin = new JCheckBox("Admin");
 			JButton login = new JButton("Login");
 			mainFrame.getRootPane().setDefaultButton(login);
-			
+
 			login.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (memberExists(usernameField.getText(),
@@ -603,7 +603,8 @@ public class moa {
 						}
 						mainFrame.dispose();
 						login_name = usernameField.getText();
-						login_phone = String.valueOf(passwordField.getPassword());
+						login_phone = String.valueOf(passwordField
+								.getPassword());
 						start();
 					} else {
 						passwordField.setText("");
@@ -786,26 +787,28 @@ public class moa {
 			p1.setOpaque(false);
 			JPanel p2 = createTab("RSVP to an event");
 			p2.setOpaque(false);
-			//JPanel p3 = createTab("Search for Artist");
+			// JPanel p3 = createTab("Search for Artist");
 			JPanel p3 = new JPanel(new BorderLayout());
 			p3.setOpaque(false);
 			JPanel p4 = createTab("Search for Member");
 			p4.setOpaque(false);
-			
+
 			JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
 			JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-			
-			JLabel aNameLabel = new JLabel("Search by artist name: ", JLabel.RIGHT);
-			JLabel aNatLabel = new JLabel("Search by artist nationality: ", JLabel.RIGHT);
-			
+
+			JLabel aNameLabel = new JLabel("Search by artist name: ",
+					JLabel.RIGHT);
+			JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+					JLabel.RIGHT);
+
 			final JTextField artistName = new JTextField(20);
 			final JTextField artistNat = new JTextField(20);
-			
+
 			aLabelPanel.add(aNameLabel);
 			aFieldPanel.add(artistName);
 			aLabelPanel.add(aNatLabel);
 			aFieldPanel.add(artistNat);
-			
+
 			artistName.addActionListener(new ActionListener() {
 
 				@Override
@@ -815,15 +818,28 @@ public class moa {
 				}
 
 			});
-			
+
 			artistName.requestFocus();
 			p3.add(aLabelPanel, BorderLayout.WEST);
 			p3.add(aFieldPanel, BorderLayout.CENTER);
 			p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-			
+
 			searchPanel(p4);
 
 			if (isAdmin) {
+				// Trophy button //////////////////////////////////////////////////
+				JButton award = new JButton("Award Oldest Member!");
+				Image image = Toolkit.getDefaultToolkit().getImage(
+						"lib/trophy.png");
+				JLabel imageLabel = new JLabel();
+				imageLabel.setIcon(new ImageIcon(image));
+				JPanel awardPanel = new JPanel(new BorderLayout());
+				awardPanel.add(imageLabel, BorderLayout.NORTH);
+				awardPanel.setOpaque(false);
+				awardPanel.add(award);
+				p4.add(awardPanel);
+				awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+				////////////////////////////////////////////////////////////////////
 				tabs.addTab("Members", p4);
 
 			} else {
@@ -888,14 +904,15 @@ public class moa {
 
 			search.setForeground(Color.BLUE);
 			search.setFont(new Font("Helvetica", Font.PLAIN, 14));
-			search.addActionListener(new ActionListener(){
+			search.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
-					//will display profile for searched member createProfileTabe blablabla
+					// will display profile for searched member
+					// createProfileTabe blablabla
 				}
-				
+
 			});
 			editPanel.add(search);
 
@@ -933,35 +950,35 @@ public class moa {
 		}
 
 		private JPanel createProfileTab() {
-			
+
 			Query q = new Query();
 			final Member m = new Member();
-			
-			// SELECT * FROM member_1 WHERE mname = login_name AND phone = login_phone
-			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '" + login_name 
-					+ "' AND phone ='"+login_phone+"'");
+
+			// SELECT * FROM member_1 WHERE mname = login_name AND phone =
+			// login_phone
+			ResultSet rs = q.queryWhere(con, "*", "member_1", "mname = '"
+					+ login_name + "' AND phone ='" + login_phone + "'");
 
 			String db_name = null;
 			int db_age = -1;
 			String db_addr = null;
 			String db_email = null;
 			String db_phone = null;
-			//String db_sign = null;
-			
-			
+			// String db_sign = null;
+
 			try {
 				rs.next();
-				
+
 				db_name = rs.getString("mname");
 				db_age = rs.getInt("age");
 				db_addr = rs.getString("addr");
 				db_email = rs.getString("email");
 				db_phone = rs.getString("phone");
-				//db_sign = rs.getString("signUpDate");
+				// db_sign = rs.getString("signUpDate");
 			} catch (SQLException ex) {
 				System.out.println("createProfile Message: " + ex.getMessage());
 			}
-			
+
 			JPanel p = new JPanel(new BorderLayout());
 			JPanel p2 = new JPanel(new BorderLayout());
 			JPanel labPanel = new JPanel(new GridLayout(5, 1));
@@ -1021,9 +1038,8 @@ public class moa {
 
 			final ActionListener saveListener = new ActionListener() {
 
-								
 				@Override
-				public void actionPerformed(ActionEvent e) {					
+				public void actionPerformed(ActionEvent e) {
 					String mname_new = fields[0].getText();
 					fields[0].setEditable(false);
 					int age_new = Integer.parseInt(fields[1].getText());
@@ -1035,7 +1051,8 @@ public class moa {
 					String phone_new = fields[4].getText();
 					fields[4].setEditable(false);
 
-					int err = m.updateMember(con, login_name, login_phone, mname_new, phone_new, addr_new, age_new, email_new);
+					int err = m.updateMember(con, login_name, login_phone,
+							mname_new, phone_new, addr_new, age_new, email_new);
 					if (err < 1) {
 						System.out.println("Error updating member");
 					}
