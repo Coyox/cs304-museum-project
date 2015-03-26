@@ -555,9 +555,9 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			isAdmin = true;
-			start();
-			// signIn();
+			//isAdmin = true;
+			//start();
+			 signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
