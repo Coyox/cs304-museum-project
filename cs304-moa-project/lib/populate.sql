@@ -158,7 +158,7 @@ INSERT INTO member_2 values
 (50, 50);
 
 INSERT INTO member_1 values
-('Darla the Snowoman', 101, NULL, 'marlborough@school.ca', '5703040404', '2007-12-13');
+('Darla', 101, NULL, 'marlborough@school.ca', '5703040404', '2007-12-13');
 INSERT INTO member_2 values
 (101, 45);
 
@@ -263,7 +263,7 @@ INSERT INTO RSVPs values
 ('Jones'' Wedding', 'Kimmy', '0000000000');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Darla the Snowoman', '5703040404');
+('Jones'' Wedding', 'Darla', '5703040404');
 
 INSERT INTO RSVPs values
 ('Legacy Awards Dinner','Farshid', '0314897556');
