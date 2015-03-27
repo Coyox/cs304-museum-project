@@ -557,9 +557,9 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-			// isAdmin = true;
-			// start();
-			signIn();
+			isAdmin = true;
+			start();
+			// signIn();
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -832,6 +832,21 @@ public class moa {
 				// Trophy button
 				// //////////////////////////////////////////////////
 				JButton award = new JButton("Award Oldest Member!");
+
+				award.addActionListener(new ActionListener() {
+					Query q = new Query();
+					ResultSet rs;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						rs = q.queryWhere(con, "m.mname, m.phone, m.age",
+								"member_1 m",
+								"(m.age=(select max(m2.age) from member_1 m2))");
+						ImageIcon icon = new ImageIcon("lib/crash.png");
+						tablePopUp(rs, "Winner(s)!", icon);
+					}
+
+				});
 				Image image = Toolkit.getDefaultToolkit().getImage(
 						"lib/trophy.png");
 				JLabel imageLabel = new JLabel();
@@ -913,46 +928,14 @@ public class moa {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					// will display profile for searched member
-					// createProfileTabe blablabla
 					ResultSet rs = q.queryWhere(con, "*", "member_1",
 							"(mname='" + nameField.getText() + "' and phone='"
 									+ phoneField.getText() + "')");
 
 					// names of columns
-
-					ResultSetMetaData rsmd;
-					try {
-						rsmd = rs.getMetaData();
-
-						Vector<String> columnNames = new Vector<String>();
-						int columnCount = rsmd.getColumnCount();
-						for (int i = 1; i <= columnCount; i++) {
-							columnNames.add(rsmd.getColumnName(i));
-						}
-
-						// data of the table
-						Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-						while (rs.next()) {
-							Vector<Object> vector = new Vector<Object>();
-							for (int j = 1; j <= columnCount; j++) {
-								vector.add(rs.getObject(j));
-							}
-							data.add(vector);
-						}
-						ImageIcon icon = new ImageIcon("lib/blank-profile.png");
-						DefaultTableModel defTable = new DefaultTableModel(
-								data, columnNames);
-						JTable table = new JTable(defTable);
-						JOptionPane.showMessageDialog(mainFrame,
-								new JScrollPane(table),
-								"User: " + nameField.getText(), 0, icon);
-
-					} catch (SQLException e1) {
-						JOptionPane.showMessageDialog(mainFrame,
-								e1.getMessage());
-					}
+					String title = "User: " + nameField.getText();
+					ImageIcon icon = new ImageIcon("blank-profile.png");
+					tablePopUp(rs, title, icon);
 				}
 			});
 			editPanel.add(search);
@@ -964,6 +947,42 @@ public class moa {
 			editPanel.setOpaque(false);
 		}
 
+		/**
+		 * @param rs
+		 * @param title
+		 * @param icon2 
+		 */
+		private void tablePopUp(ResultSet rs, String title, ImageIcon icon) {
+			ResultSetMetaData rsmd;
+			try {
+				rsmd = rs.getMetaData();
+
+				Vector<String> columnNames = new Vector<String>();
+				int columnCount = rsmd.getColumnCount();
+				for (int i = 1; i <= columnCount; i++) {
+					columnNames.add(rsmd.getColumnName(i));
+				}
+
+				// data of the table
+				Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+				while (rs.next()) {
+					Vector<Object> vector = new Vector<Object>();
+					for (int j = 1; j <= columnCount; j++) {
+						vector.add(rs.getObject(j));
+					}
+					data.add(vector);
+				}
+				DefaultTableModel defTable = new DefaultTableModel(
+						data, columnNames);
+				JTable table = new JTable(defTable);
+				JOptionPane.showMessageDialog(mainFrame,
+						new JScrollPane(table), title, 0, icon);
+
+			} catch (SQLException e1) {
+				JOptionPane.showMessageDialog(mainFrame,
+						e1.getMessage());
+			}
+		}
 		/**
 		 * @param y
 		 * @param x
@@ -1015,11 +1034,12 @@ public class moa {
 				db_addr = rs.getString("addr");
 				db_email = rs.getString("email");
 				db_phone = rs.getString("phone");
+				rs.close();
+
 				// db_sign = rs.getString("signUpDate");
 			} catch (SQLException ex) {
 				System.out.println("createProfile Message: " + ex.getMessage());
 			}
-
 			JPanel p = new JPanel(new BorderLayout());
 			JPanel p2 = new JPanel(new BorderLayout());
 			JPanel labPanel = new JPanel(new GridLayout(5, 1));
