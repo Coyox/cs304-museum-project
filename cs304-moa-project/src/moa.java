@@ -28,7 +28,7 @@ public class moa {
 			System.in));
 
 	private Connection con;
-	private Boolean isAdmin = false;
+	private Boolean isAdmin = true;
 	private moaGUI gui;
 
 	private String login_name;
@@ -793,10 +793,12 @@ public class moa {
 			JPanel p3 = new JPanel(new BorderLayout());
 			p3.setOpaque(false);
 			JPanel p4 = createTab("Search for Member");
+			//JPanel p4 = new JPanel(new BorderLayout());
 			p4.setOpaque(false);
 
 			JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
 			JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+			JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
 
 			JLabel aNameLabel = new JLabel("Search by artist name: ",
 					JLabel.RIGHT);
@@ -805,11 +807,16 @@ public class moa {
 
 			final JTextField artistName = new JTextField(20);
 			final JTextField artistNat = new JTextField(20);
+			
+			JButton aNameButton = new JButton("Search");
+			JButton aNatButton = new JButton("Search");
 
 			aLabelPanel.add(aNameLabel);
 			aFieldPanel.add(artistName);
 			aLabelPanel.add(aNatLabel);
 			aFieldPanel.add(artistNat);
+			aSearchPanel.add(aNameButton);
+			aSearchPanel.add(aNatButton);
 
 			artistName.addActionListener(new ActionListener() {
 
@@ -822,8 +829,10 @@ public class moa {
 			});
 
 			artistName.requestFocus();
+			aLabelPanel.setOpaque(false);
 			p3.add(aLabelPanel, BorderLayout.WEST);
 			p3.add(aFieldPanel, BorderLayout.CENTER);
+			p3.add(aSearchPanel, BorderLayout.EAST);
 			p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 
 			searchPanel(p4);
@@ -854,7 +863,7 @@ public class moa {
 			tabs.setMnemonicAt(1, KeyEvent.VK_2);
 			tabs.addTab("Events", p2);
 			tabs.setMnemonicAt(2, KeyEvent.VK_3);
-			tabs.addTab("Search", p3);
+			tabs.addTab("Artists", p3);
 			tabs.setMnemonicAt(3, KeyEvent.VK_4);
 
 			tabbedPanel.add(tabs);
