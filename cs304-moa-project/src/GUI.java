@@ -10,14 +10,13 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin;
+	Boolean isAdmin = false;
 	private String login_name;
 	private String login_phone;
 	Connection con;
 
 	public GUI(Connection conn) {
 
-		isAdmin = true;
 		con = conn;
 		
 		//start();
@@ -242,163 +241,13 @@ public class GUI {
 
 	private void start() {
 		setUpFrame("Welcome", 500, 500);
-
-		JPanel tabbedPanel = new JPanel(new GridLayout());
-		JTabbedPane tabs = new JTabbedPane();
-
-		// probably make this a method of its own
-		JPanel p = createProfileTab();
-		JPanel p1 = createTab("Browse exhibits and artifacts");
-		p1.setOpaque(false);
-		JPanel p2 = createTab("RSVP to an event");
-		p2.setOpaque(false);
-		// JPanel p3 = createTab("Search for Artist");
-		JPanel p3 = new JPanel(new BorderLayout());
-		p3.setOpaque(false);
-		JPanel p4 = createTab("Search for Member");
-		//JPanel p4 = new JPanel(new BorderLayout());
-		p4.setOpaque(false);
-
-		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
-
-		JLabel aNameLabel = new JLabel("Search by artist name: ",
-				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
-				JLabel.RIGHT);
-
-		final JTextField artistName = new JTextField(20);
-		final JTextField artistNat = new JTextField(20);
 		
-		JButton aNameButton = new JButton("Search");
-		JButton aNatButton = new JButton("Search");
-
-		aLabelPanel.add(aNameLabel);
-		aFieldPanel.add(artistName);
-		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(artistNat);
-		aSearchPanel.add(aNameButton);
-		aSearchPanel.add(aNatButton);
-
-		artistName.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ artistName.getText());
-			}
-
-		});
-
-		artistName.requestFocus();
-		aLabelPanel.setOpaque(false);
-		p3.add(aLabelPanel, BorderLayout.WEST);
-		p3.add(aFieldPanel, BorderLayout.CENTER);
-		p3.add(aSearchPanel, BorderLayout.EAST);
-		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-
-		searchPanel(p4);
-
-		if (isAdmin) {
-			// Trophy button
-			// //////////////////////////////////////////////////
-			JButton award = new JButton("Award Oldest Member!");
-
-			award.addActionListener(new ActionListener() {
-				Query q = new Query();
-				ResultSet rs;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					rs = q.queryWhere(con, "m.mname, m.phone, m.age",
-							"member_1 m",
-							"(m.age=(select max(m2.age) from member_1 m2))");
-					ImageIcon icon = new ImageIcon("lib/crash.png");
-					tablePopUp(rs, "Winner(s)!", icon);
-				}
-
-			});
-			Image image = Toolkit.getDefaultToolkit().getImage(
-					"lib/trophy.png");
-			JLabel imageLabel = new JLabel();
-			imageLabel.setIcon(new ImageIcon(image));
-			final JPanel awardPanel = new JPanel(new BorderLayout());
-			awardPanel.add(imageLabel, BorderLayout.NORTH);
-			awardPanel.setOpaque(false);
-			awardPanel.add(award);
-			award.addActionListener(new ActionListener() {
-				Statement stmt;
-				String query ="SELECT m.mname, m.phone,m.age " +
-						"FROM member_1 m " +
-						"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					// will display profile for searched member
-					// createProfileTabe blablabla
-					
-
-					// names of columns
-
-					ResultSetMetaData rsmd;
-					try {
-						stmt = con.createStatement();
-						ResultSet rs = stmt.executeQuery(query);
-						rsmd = rs.getMetaData();
-
-						Vector<String> columnNames = new Vector<String>();
-						int columnCount = rsmd.getColumnCount();
-						for (int i = 1; i <= columnCount; i++) {
-							columnNames.add(rsmd.getColumnName(i));
-						}
-
-						// data of the table
-						Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-						while (rs.next()) {
-							Vector<Object> vector = new Vector<Object>();
-							for (int j = 1; j <= columnCount; j++) {
-								vector.add(rs.getObject(j));
-							}
-							data.add(vector);
-						}
-						ImageIcon icon = new ImageIcon("lib/blank-profile.png");
-						DefaultTableModel defTable = new DefaultTableModel(
-								data, columnNames);
-						JTable table = new JTable(defTable);
-						JOptionPane.showMessageDialog(mainFrame,
-								new JScrollPane(table),
-								"Oldest Member!" , 0, icon);
-
-					} catch (SQLException e1) {
-						JOptionPane.showMessageDialog(mainFrame,
-								e1.getMessage());
-					}
-				}
-			});
-			p4.add(awardPanel);
-			awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
-					0));
-			// //////////////////////////////////////////////////////////////////
-			tabs.addTab("Members", p4);
-
-		} else {
-			tabs.addTab("Profile", p);
-		}
-		tabs.setMnemonicAt(0, KeyEvent.VK_1);
-		tabs.addTab("Exhibits", p1);
-		tabs.setMnemonicAt(1, KeyEvent.VK_2);
-		tabs.addTab("Events", p2);
-		tabs.setMnemonicAt(2, KeyEvent.VK_3);
-		tabs.addTab("Artists", p3);
-		tabs.setMnemonicAt(3, KeyEvent.VK_4);
-
-		tabbedPanel.add(tabs);
+		JPanel tabbedPanel = createTabs();
 
 		Container pane = mainFrame.getContentPane();
 		pane.setLayout(new BorderLayout());
 
-		JLabel adminLabel = new JLabel("signed in as admin");
+		JLabel adminLabel = new JLabel("Signed in as admin.");
 		adminLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 		Font font = new Font("Helvetica", Font.ITALIC, 12);
 		adminLabel.setFont(font);
@@ -410,11 +259,45 @@ public class GUI {
 
 		mainFrame.setVisible(true);
 	}
+	
+	private JPanel createTabs() {
+		JPanel tabbedPanel = new JPanel(new GridLayout());
+		JTabbedPane tabs = new JTabbedPane();
+		
+		if (!isAdmin) {
+			JPanel profile = createProfileTab();
+			tabs.addTab("Profile", profile);
+		} else {
+			JPanel admin = createAdminTab();
+			JPanel award = createAwardPanel();
+			admin.add(award);
+			tabs.addTab("Members", admin);
+		}
+		
+		JPanel exhibits = createExhibitTab();
+		
+		JPanel RSVP = createRSVPTab();
+		
+		JPanel Artist = createArtistTab();
 
-	/**
-	 * @param p4
-	 */
-	private void searchPanel(JPanel p4) {
+		tabs.setMnemonicAt(0, KeyEvent.VK_1);
+		tabs.addTab("Exhibits", exhibits);
+		tabs.setMnemonicAt(1, KeyEvent.VK_2);
+		tabs.addTab("Events", RSVP);
+		tabs.setMnemonicAt(2, KeyEvent.VK_3);
+		tabs.addTab("Artists", Artist);
+		tabs.setMnemonicAt(3, KeyEvent.VK_4);
+
+		tabbedPanel.add(tabs);
+		
+		return tabbedPanel;
+	}
+	
+	private JPanel createAdminTab() {
+		//JPanel admin = createTab("Search for Member");
+		JPanel admin = new JPanel(false);
+		admin.setOpaque(false);
+		
 		JPanel membPanel = new JPanel(new BorderLayout());
 		JPanel labPanel = new JPanel(new GridLayout(2, 1));
 		JPanel textPanel = new JPanel(new GridLayout(2, 1));
@@ -426,8 +309,8 @@ public class GUI {
 		footer.add(editPanel, BorderLayout.CENTER);
 		footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
 		footer.setOpaque(false);
-		p4.add(membPanel, BorderLayout.CENTER);
-		p4.add(footer, BorderLayout.SOUTH);
+		admin.add(membPanel, BorderLayout.CENTER);
+		admin.add(footer, BorderLayout.SOUTH);
 
 		JLabel name = new JLabel("Member Name: ");
 		labPanel.add(name);
@@ -478,11 +361,157 @@ public class GUI {
 		});
 		editPanel.add(search);
 
-		p4.setOpaque(false);
+		admin.setOpaque(false);
 		membPanel.setOpaque(false);
 		labPanel.setOpaque(false);
 		textPanel.setOpaque(false);
 		editPanel.setOpaque(false);
+		
+		return admin;
+	}
+	
+	private JPanel createAwardPanel() {
+		JButton award = new JButton("Award Oldest Member!");
+
+		award.addActionListener(new ActionListener() {
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "m.mname, m.phone, m.age",
+						"member_1 m",
+						"(m.age=(select max(m2.age) from member_1 m2))");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "Winner(s)!", icon);
+			}
+
+		});
+		Image image = Toolkit.getDefaultToolkit().getImage(
+				"lib/trophy.png");
+		JLabel imageLabel = new JLabel();
+		imageLabel.setIcon(new ImageIcon(image));
+		
+		final JPanel awardPanel = new JPanel(new BorderLayout());
+		awardPanel.add(imageLabel, BorderLayout.NORTH);
+		awardPanel.setOpaque(false);
+		awardPanel.add(award);
+		award.addActionListener(new ActionListener() {
+			Statement stmt;
+			String query ="SELECT m.mname, m.phone,m.age " +
+					"FROM member_1 m " +
+					"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// will display profile for searched member
+				// createProfileTabe blablabla
+				
+
+				// names of columns
+
+				ResultSetMetaData rsmd;
+				try {
+					stmt = con.createStatement();
+					ResultSet rs = stmt.executeQuery(query);
+					rsmd = rs.getMetaData();
+
+					Vector<String> columnNames = new Vector<String>();
+					int columnCount = rsmd.getColumnCount();
+					for (int i = 1; i <= columnCount; i++) {
+						columnNames.add(rsmd.getColumnName(i));
+					}
+
+					// data of the table
+					Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+					while (rs.next()) {
+						Vector<Object> vector = new Vector<Object>();
+						for (int j = 1; j <= columnCount; j++) {
+							vector.add(rs.getObject(j));
+						}
+						data.add(vector);
+					}
+					ImageIcon icon = new ImageIcon("lib/blank-profile.png");
+					DefaultTableModel defTable = new DefaultTableModel(
+							data, columnNames);
+					JTable table = new JTable(defTable);
+					JOptionPane.showMessageDialog(mainFrame,
+							new JScrollPane(table),
+							"Oldest Member!" , 0, icon);
+
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(mainFrame,
+							e1.getMessage());
+				}
+			}
+		});
+		awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+		
+		return awardPanel;
+	}
+	
+	private JPanel createExhibitTab() {
+		JPanel p1 = createTab("Browse exhibits and artifacts");
+		p1.setOpaque(false);
+		
+		return p1;
+	}
+	
+	private JPanel createRSVPTab() {
+		JPanel p2 = createTab("RSVP to an event");
+		p2.setOpaque(false);
+		
+		return p2;
+	}
+	
+	private JPanel createArtistTab() {
+		// JPanel p3 = createTab("Search for Artist");
+		JPanel p3 = new JPanel(new BorderLayout());
+		p3.setOpaque(false);
+
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+
+		JLabel aNameLabel = new JLabel("Search by artist name: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+				JLabel.RIGHT);
+
+		final JTextField artistName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		Font font = new Font("Helvetica", Font.PLAIN, 14);
+		artistName.setFont(font);
+		artistNat.setFont(font);
+		
+		JButton aNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
+
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(artistName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(aNameButton);
+		aSearchPanel.add(aNatButton);
+
+		artistName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistName.getText());
+			}
+
+		});
+
+		artistName.requestFocus();
+		aLabelPanel.setOpaque(false);
+		p3.add(aLabelPanel, BorderLayout.WEST);
+		p3.add(aFieldPanel, BorderLayout.CENTER);
+		p3.add(aSearchPanel, BorderLayout.EAST);
+		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
+		
+		return p3;
 	}
 
 	/**
@@ -548,7 +577,6 @@ public class GUI {
 	}
 
 	private JPanel createProfileTab() {
-
 		Query q = new Query();
 		final Member m = new Member();
 
