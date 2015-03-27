@@ -95,8 +95,8 @@ public class Query {
 
 			stmt = con.createStatement();
 			count = stmt.executeUpdate(query);
-			
-			//stmt.close();
+			con.commit();
+			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("stockUpdate Message: " + ex.getMessage());
 		}
