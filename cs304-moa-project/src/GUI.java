@@ -478,7 +478,7 @@ public class GUI {
 		JPanel top = new JPanel(new GridLayout(1,2));
 		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
 		label.setOpaque(false);
-		Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
+		final Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
 		final DefaultComboBoxModel model= new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
 		comboBox.setOpaque(false);
@@ -523,7 +523,7 @@ public class GUI {
 		if (isAdmin) {
 			JPanel eDelete = new JPanel(new GridLayout(2,1));
 			JPanel top2 = new JPanel(new GridLayout(1,2));
-			JLabel label2 = new JLabel("Delete (Expired) Exhibit and Associated Objects: ", SwingConstants.RIGHT);
+			JLabel label2 = new JLabel("Delete Exhibit and Associated Objects: ", SwingConstants.RIGHT);
 			label2.setOpaque(false);
 			final DefaultComboBoxModel model2= new DefaultComboBoxModel(names);
 			final JComboBox comboBox2 = new JComboBox(model2);
@@ -557,6 +557,9 @@ public class GUI {
 					} else {
 						JOptionPane.showMessageDialog(new JFrame(), "Deleted " + count + " rows!", 
 								"Delete Exhibit", JOptionPane.INFORMATION_MESSAGE);
+						names.remove(exhibit);
+						comboBox.setSelectedIndex(0);
+						comboBox2.setSelectedIndex(0);
 					}
 				}
 			});
