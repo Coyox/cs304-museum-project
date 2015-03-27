@@ -1,7 +1,5 @@
 
 import java.sql.*;
-// for reading from the command line
-import java.io.*;
 
 public class Member {
 	
@@ -29,6 +27,9 @@ public class Member {
 			System.out.println("updateMember: " + ex.getMessage());
 			try {
 				con.rollback();
+				if (ex.getMessage().contains("ORA-00001")) {
+					return -2;
+				}
 			} catch (SQLException ex2) {
 				System.out.println("updateMember2: " + ex2.getMessage());
 				System.exit(-1);

@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -152,7 +153,6 @@ public class GUI {
 		mainFrame.dispose();
 		setUpFrame("Sign Up", 400, 500);
 
-		final JPanel panel = new JPanel();
 		String[] labels = { "First Name: ", "Last Name: ", "Age: ",
 				"Address: ", "E-Mail: ", "Phone Number: " };
 		int numPairs = labels.length;
@@ -242,79 +242,13 @@ public class GUI {
 
 	private void start() {
 		setUpFrame("Welcome", 500, 500);
-
-		JPanel tabbedPanel = new JPanel(new GridLayout());
-		JTabbedPane tabs = new JTabbedPane();
-
-		// probably make this a method of its own
-		JPanel p = createProfileTab();
-		JPanel p1 = createTab("Browse exhibits and artifacts");
-		p1.setOpaque(false);
-		JPanel p2 = new JPanel(new BorderLayout());
-		p2.setOpaque(false);
-		// JPanel p3 = createTab("Search for Artist");
-		JPanel p3 = new JPanel(new BorderLayout());
-		p3.setOpaque(false);
-		JPanel p4 = createTab("Search for Member");
-		//JPanel p4 = new JPanel(new BorderLayout());
-		p4.setOpaque(false);
-
-		searchEventPanel(p2);
-		searchArtistPanel(p3);
-		searchPanel(p4);
-
-		if (isAdmin) {
-			// Trophy button
-			// //////////////////////////////////////////////////
-			JButton award = new JButton("Award Oldest Member!");
-
-			award.addActionListener(new ActionListener() {
-				Query q = new Query();
-				ResultSet rs;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					rs = q.queryWhere(con, "m.mname, m.phone, m.age",
-							"member_1 m",
-							"(m.age=(select max(m2.age) from member_1 m2))");
-					ImageIcon icon = new ImageIcon("lib/crash.png");
-					tablePopUp(rs, "Winner(s)!", icon);
-				}
-
-			});
-			Image image = Toolkit.getDefaultToolkit().getImage(
-					"lib/trophy.png");
-			JLabel imageLabel = new JLabel();
-			imageLabel.setIcon(new ImageIcon(image));
-			final JPanel awardPanel = new JPanel(new BorderLayout());
-			awardPanel.add(imageLabel, BorderLayout.NORTH);
-			awardPanel.setOpaque(false);
-			awardPanel.add(award);
-			
-			p4.add(awardPanel);
-			
-			awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
-					0));
-			// //////////////////////////////////////////////////////////////////
-			tabs.addTab("Members", p4);
-
-		} else {
-			tabs.addTab("Profile", p);
-		}
-		tabs.setMnemonicAt(0, KeyEvent.VK_1);
-		tabs.addTab("Exhibits", p1);
-		tabs.setMnemonicAt(1, KeyEvent.VK_2);
-		tabs.addTab("Events", p2);
-		tabs.setMnemonicAt(2, KeyEvent.VK_3);
-		tabs.addTab("Artists", p3);
-		tabs.setMnemonicAt(3, KeyEvent.VK_4);
-
-		tabbedPanel.add(tabs);
+		
+		JPanel tabbedPanel = createTabs();
 
 		Container pane = mainFrame.getContentPane();
 		pane.setLayout(new BorderLayout());
 
-		JLabel adminLabel = new JLabel("signed in as admin");
+		JLabel adminLabel = new JLabel("Signed in as admin.");
 		adminLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 		Font font = new Font("Helvetica", Font.ITALIC, 12);
 		adminLabel.setFont(font);
@@ -323,10 +257,375 @@ public class GUI {
 		}
 
 		mainFrame.add(tabbedPanel);
-
+		mainFrame.pack();
 		mainFrame.setVisible(true);
 	}
+	
+	private JPanel createTabs() {
+		JPanel tabbedPanel = new JPanel(new GridLayout());
+		JTabbedPane tabs = new JTabbedPane();
+		
+		if (!isAdmin) {
+			JPanel profile = createProfileTab();
+			tabs.addTab("Profile", profile);
+		} else {
+			JPanel admin = createAdminTab();
+			JPanel award = createAwardPanel();
+			admin.add(award);
+			tabs.addTab("Members", admin);
+		}
 
+		tabs.setMnemonicAt(0, KeyEvent.VK_2);
+		
+		JPanel exhibit = createExhibitSearch();
+		JPanel RSVP = createRSVPTab();
+		JPanel Artist = createArtistTab();
+		
+		tabs.addTab("Exhibit", exhibit);
+		tabs.setMnemonicAt(1, KeyEvent.VK_3);
+		tabs.addTab("Events", RSVP);
+		tabs.setMnemonicAt(2, KeyEvent.VK_4);
+		tabs.addTab("Artists", Artist);
+		tabs.setMnemonicAt(3, KeyEvent.VK_5);
+
+		tabbedPanel.add(tabs);
+		
+		return tabbedPanel;
+	}
+	
+	private JPanel createAdminTab() {
+		//JPanel admin = createTab("Search for Member");
+		JPanel main = new JPanel(new GridLayout(2,1));
+		JPanel admin = new JPanel(new BorderLayout());
+		admin.setOpaque(false);
+		
+		JPanel membPanel = new JPanel(new BorderLayout());
+		JPanel labPanel = new JPanel(new GridLayout(2, 1));
+		JPanel textPanel = new JPanel(new GridLayout(2, 1));
+		final JPanel editPanel = new JPanel(new BorderLayout());
+		JPanel footer = new JPanel(new BorderLayout());
+
+		membPanel.add(labPanel, BorderLayout.WEST);
+		membPanel.add(textPanel, BorderLayout.CENTER);
+		footer.add(editPanel, BorderLayout.CENTER);
+		footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
+		footer.setOpaque(false);
+		admin.add(membPanel, BorderLayout.CENTER);
+		admin.add(footer, BorderLayout.SOUTH);
+
+		JLabel name = new JLabel("Member Name: ");
+		labPanel.add(name);
+		final JTextField nameField = new JTextField(20);
+		nameField.requestFocus();
+		textPanel.add(nameField);
+
+		JLabel phone = new JLabel("Phone Number: ");
+		labPanel.add(phone);
+		final JTextField phoneField = new JTextField(20);
+		textPanel.add(phoneField);
+
+		final JButton search = new JButton("search");
+
+		search.setForeground(Color.BLUE);
+		search.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		search.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				// names of columns
+				String title = "User Searching";
+				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
+
+				// Read inputs
+				String mName = nameField.getText();
+				String mPhone = phoneField.getText();
+				boolean emptyName = mName.equals("");
+				boolean emptyPhone = mPhone.equals("");
+				
+				// Check conditions for search
+				
+				// If both fields empty get all members
+				if(emptyName && emptyPhone){
+					rs = q.query(con, "*", "member_1");
+				} else if (emptyName && !emptyPhone){
+					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
+					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.", "Phone Number Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
+					rs = q.queryWhere(con, "*", "member_1", 
+							"(phone LIKE '%" + mPhone + "%')");
+				} else if (!emptyName && emptyPhone){
+					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
+					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.", "Name Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
+					// Because db is not caps agnostic
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+							"(mname LIKE '" + capFirst + "%')");
+				} else {
+					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
+					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.",
+					    		"Name Error", JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
+					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
+					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.",
+					    		"Phone Number Error", JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+						"(mname LIKE '%" + capFirst +
+						"%' and phone LIKE '%" + mPhone + "%')");
+
+				}
+				
+				tablePopUp(rs, title, icon);
+			}
+		});
+		editPanel.add(search);
+
+		admin.setOpaque(false);
+		membPanel.setOpaque(false);
+		labPanel.setOpaque(false);
+		textPanel.setOpaque(false);
+		editPanel.setOpaque(false);
+		
+		main.add(admin);
+		
+		return main;
+	}
+	
+	private JPanel createAwardPanel() {
+		JButton award = new JButton("Award Oldest Member!");
+
+		Image image = Toolkit.getDefaultToolkit().getImage(
+				"lib/trophy.png");
+		JLabel imageLabel = new JLabel();
+		imageLabel.setIcon(new ImageIcon(image));
+		
+		final JPanel awardPanel = new JPanel(new BorderLayout());
+		awardPanel.add(imageLabel, BorderLayout.NORTH);
+		awardPanel.setOpaque(false);
+		awardPanel.add(award);
+		award.addActionListener(new ActionListener() {
+			Statement stmt;
+			String query ="SELECT m.mname, m.phone,m.age " +
+					"FROM member_1 m " +
+					"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// will display profile for searched member
+				// createProfileTabe blablabla
+
+
+				// names of columns
+
+				ResultSetMetaData rsmd;
+				try {
+					stmt = con.createStatement();
+					ResultSet rs = stmt.executeQuery(query);
+					rsmd = rs.getMetaData();
+
+					Vector<String> columnNames = new Vector<String>();
+					int columnCount = rsmd.getColumnCount();
+					for (int i = 1; i <= columnCount; i++) {
+						columnNames.add(rsmd.getColumnName(i));
+					}
+
+					// data of the table
+					Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+					while (rs.next()) {
+						Vector<Object> vector = new Vector<Object>();
+						for (int j = 1; j <= columnCount; j++) {
+							vector.add(rs.getObject(j));
+						}
+						data.add(vector);
+					}
+					ImageIcon icon = new ImageIcon("lib/blank-profile.png");
+					DefaultTableModel defTable = new DefaultTableModel(
+							data, columnNames);
+					JTable table = new JTable(defTable);
+					JOptionPane.showMessageDialog(mainFrame,
+							new JScrollPane(table),
+							"Oldest Member!" , 0, icon);
+
+				} catch (SQLException e1) {
+					JOptionPane.showMessageDialog(mainFrame,
+							e1.getMessage());
+				}
+			}
+		});
+		awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+		
+		return awardPanel;
+	}
+	
+	private JPanel createExhibitSearch() {
+		Query q = new Query();
+		JPanel main = new JPanel(new GridLayout(2,1));
+		//JPanel main = new JPanel(new BorderLayout());
+		JPanel eSearch = new JPanel(new GridLayout(2,1));
+		
+		JPanel top = new JPanel(new GridLayout(1,2));
+		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
+		label.setOpaque(false);
+		Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
+		final DefaultComboBoxModel model= new DefaultComboBoxModel(names);
+		final JComboBox comboBox = new JComboBox(model);
+		comboBox.setOpaque(false);
+		comboBox.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
+		top.add(label);
+		top.add(comboBox);
+		top.setOpaque(false);
+		//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+		
+		JPanel buttons = new JPanel(false);
+		buttons.setOpaque(false);
+		JButton go = new JButton("Go");
+		buttons.add(go);
+		//go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		go.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String exhibit = (String) comboBox.getSelectedItem();
+				System.out.println(exhibit);
+
+				String statement = "SELECT  o1.objectID, o1.location, e.specialist " + 
+								   "FROM (object_has_1 o1 INNER JOIN object_has_3 o3 " +
+								   "ON o1.location = o3.location " +
+								   "INNER JOIN exhibit e " +
+								   "on e.ename = o3.ename) " +
+								   "WHERE e.ename = '" + exhibit + "'";
+				
+				ResultSet rs = q.stockQuery(con, statement);
+				if (rs != null) {
+					tablePopUp(rs, exhibit, null);
+				}
+			}
+		});
+		
+		eSearch.add(top);
+		eSearch.add(buttons);
+		eSearch.setOpaque(false);
+		
+		if (isAdmin) {
+			JPanel eDelete = new JPanel(new GridLayout(2,1));
+			JPanel top2 = new JPanel(new GridLayout(1,2));
+			JLabel label2 = new JLabel("Delete (Expired) Exhibit and Associated Objects: ", SwingConstants.RIGHT);
+			label2.setOpaque(false);
+			final DefaultComboBoxModel model2= new DefaultComboBoxModel(names);
+			final JComboBox comboBox2 = new JComboBox(model2);
+			comboBox2.setOpaque(false);
+			comboBox2.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
+			top2.add(label2);
+			top2.add(comboBox2);
+			top2.setOpaque(false);
+			//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+			
+			JPanel buttons2 = new JPanel(false);
+			buttons2.setOpaque(false);
+			JButton go2 = new JButton("Go");
+			buttons2.add(go2);
+			//go2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+			
+			eDelete.add(top2);
+			eDelete.add(buttons2);
+			eDelete.setOpaque(false);
+			
+			main.add(eSearch);
+			main.add(eDelete);
+		} else {
+			main = eSearch;
+		}
+		
+		return main;
+	}
+	
+	private JPanel createRSVPTab() {
+		JPanel p2 = new JPanel(new BorderLayout());
+		p2.setOpaque(false);
+		
+		JButton RSVP_by_everyone = new JButton("Find the events RSVPed by everyone!");
+
+		RSVP_by_everyone.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "e.title, e.fee",
+						"event e",
+						"NOT EXISTS " +
+						"( SELECT * FROM member_1 m WHERE NOT EXISTS" +
+						"(SELECT * FROM RSVPs r " +
+						"WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The events RSVPed by everyone!", icon);
+			}
+		});
+
+		
+		JButton RSVP_avg = new JButton("Find the average age of members RSVPing each event!");
+
+		RSVP_avg.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "e.title, avg(m.age) as avg_age",
+						"event e, RSVPs r, member_1 m",
+						"e.title =r.title and m.mname=r.mname and m.phone = r.phone GROUP BY e.title");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The most popular events!", icon);
+			}
+		});
+		
+		JButton RSVP_amount = new JButton("Find the RSVP amount for each event!");
+
+		RSVP_amount.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			
+				rs = q.queryWhere(con, "e.title, count(r.mname) as AMOUNT",
+						"event e, RSVPs r",
+						"e.title =r.title GROUP BY e.title");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The events RSVP amout!", icon);
+			}
+		});
+
+		final JPanel RSVPPanel = new JPanel(new GridLayout(3,1));
+		RSVPPanel.setOpaque(false);
+		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
+				100));
+		
+		RSVPPanel.add(RSVP_by_everyone);
+		RSVPPanel.add(RSVP_avg);
+		RSVPPanel.add(RSVP_amount);
+		
+		p2.add(RSVPPanel, BorderLayout.NORTH);
+		
+		return p2;
+	}
+	
+	/* EMILY'S ARTIST CODE. COMBINE WITH ONE BELOW
 	private void searchArtistPanel(JPanel p3) {
 		// TODO Auto-generated method stub
 		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
@@ -404,11 +703,11 @@ public class GUI {
 				ResultSet rs;
 				String table = "artist";
 				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
+					rs = q.queryWhere(con, "aname, nationality", table,
 							"(nationality like '" + artistNat.getText() + "')");
 				}				
 				else{
-					 rs = q.queryWhere(con, "*", table,
+					 rs = q.queryWhere(con, "aname, nationality", table,
 						"(nationality='" + artistNat.getText() + "')");
 				}
 			
@@ -425,110 +724,89 @@ public class GUI {
 		p3.add(aSearchPanel, BorderLayout.EAST);
 		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 	}
+*/
+	private JPanel createArtistTab() {
+		// JPanel p3 = createTab("Search for Artist");
+		JPanel p3 = new JPanel(new BorderLayout());
+		p3.setOpaque(false);
 
-	private void searchEventPanel(JPanel p2) {
-		// TODO Auto-generated method stub
-		JButton RSVP_by_everyone = new JButton("Find the events RSVPed by everyone!");
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2, 1));
 
-		RSVP_by_everyone.addActionListener(new ActionListener() {
+		final JLabel aNameLabel = new JLabel("Search by artist name: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+				JLabel.RIGHT);
 
-			Query q = new Query();
-			ResultSet rs;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				rs = q.queryWhere(con, "e.title, e.fee",
-						"event e",
-						"NOT EXISTS " +
-						"( SELECT * FROM member_1 m WHERE NOT EXISTS" +
-						"(SELECT * FROM RSVPs r " +
-						"WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
-				ImageIcon icon = new ImageIcon("lib/crash.png");
-				tablePopUp(rs, "The events RSVPed by everyone!", icon);
-			}
-		});
-		final JPanel RSVPPanel = new JPanel(new BorderLayout());
-		RSVPPanel.setOpaque(false);
-		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
-				100));
-		RSVPPanel.add(RSVP_by_everyone, BorderLayout.CENTER);
+		final JTextField artistName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		Font font = new Font("Helvetica", Font.PLAIN, 14);
+		artistName.setFont(font);
+		artistNat.setFont(font);
 		
-		p2.add(RSVPPanel, BorderLayout.NORTH);
-	}
+		JButton aNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
 
-	/**
-	 * @param p4
-	 */
-	private void searchPanel(JPanel p4) {
-		JPanel membPanel = new JPanel(new BorderLayout());
-		JPanel labPanel = new JPanel(new GridLayout(2, 1));
-		JPanel textPanel = new JPanel(new GridLayout(2, 1));
-		final JPanel editPanel = new JPanel(new BorderLayout());
-		JPanel footer = new JPanel(new BorderLayout());
+		JPanel checkSearch = new JPanel(new GridLayout(1,3));
+		final JCheckBox date = new JCheckBox("Birthdate");
+		date.setOpaque(false);
+		final JCheckBox nat = new JCheckBox("Nationality");
+		nat.setOpaque(false);
+		JLabel include = new JLabel("Include in search: ");
+		include.setOpaque(false);
+		checkSearch.add(include);
+		checkSearch.add(date);
+		checkSearch.add(nat);
+		
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(artistName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(aNameButton);
+		aSearchPanel.add(aNatButton);
 
-		membPanel.add(labPanel, BorderLayout.WEST);
-		membPanel.add(textPanel, BorderLayout.CENTER);
-		footer.add(editPanel, BorderLayout.CENTER);
-		footer.setBorder(BorderFactory.createEmptyBorder(0, 180, 0, 180));
-		footer.setOpaque(false);
-		p4.add(membPanel, BorderLayout.CENTER);
-		p4.add(footer, BorderLayout.SOUTH);
-
-		JLabel name = new JLabel("Member Name: ");
-		labPanel.add(name);
-		final JTextField nameField = new JTextField(20);
-		nameField.requestFocus();
-		textPanel.add(nameField);
-
-		JLabel phone = new JLabel("Phone Number: ");
-		labPanel.add(phone);
-		final JTextField phoneField = new JTextField(20);
-		textPanel.add(phoneField);
-
-		final JButton search = new JButton("search");
-
-		search.setForeground(Color.BLUE);
-		search.setFont(new Font("Helvetica", Font.PLAIN, 14));
-		search.addActionListener(new ActionListener() {
-			Query q = new Query();
-
+		aNameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "member_1";
-				if (nameField.getText().equals("")){
-					 rs = q.queryWhere(con, "*", table,
-							"(phone='"+ phoneField.getText() + "')");
+				artistName.requestFocus();
+				Query q = new Query();
+				String select = "aname";
+				if (date.isSelected()) {
+					select = select + ", dateOfBirth";
 				}
-				else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname like '" + nameField.getText() + "')");
+				if (nat.isSelected()) {
+					select = select + ", nationality";
 				}
-				else if (phoneField.getText().equals("")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname='" + nameField.getText() + "')");
-				}
-				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(mname='" + nameField.getText() + "' and phone='"
-								+ phoneField.getText() + "')");
-				}
-			
-
-				// names of columns
-				String title = "User Searching";
-				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
-				tablePopUp(rs, title, icon);
+				ResultSet rs = q.queryWhere(con, select, "artist", "aname = '" + artistName.getText() + "'");
+				System.out.println("aname = '" + artistName.getText() + "'");
+				tablePopUp(rs, "Artists", null);
+				artistName.setText("");
 			}
 		});
-		editPanel.add(search);
+		
+		aNatButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Query q = new Query();
+				ResultSet rs = q.queryWhere(con, "aname as Name, dateOfBirth, nationality ", "artist", " nationality = '" + artistNat.getText() + "'");
+				System.out.println("nationality = '" + artistNat.getText() + "'");
+				tablePopUp(rs, "Artists", null);
+				artistNat.setText("");
+				artistNat.requestFocus();
+			}
+		});
 
-		p4.setOpaque(false);
-		membPanel.setOpaque(false);
-		labPanel.setOpaque(false);
-		textPanel.setOpaque(false);
-		editPanel.setOpaque(false);
+		artistName.requestFocus();
+		aLabelPanel.setOpaque(false);
+		checkSearch.setOpaque(false);
+		p3.add(aLabelPanel, BorderLayout.WEST);
+		p3.add(aFieldPanel, BorderLayout.CENTER);
+		p3.add(aSearchPanel, BorderLayout.EAST);
+		p3.add(checkSearch, BorderLayout.SOUTH);
+		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
+		
+		return p3;
 	}
 
 	/**
@@ -561,7 +839,6 @@ public class GUI {
 			JTable table = new JTable(defTable);
 			JOptionPane.showMessageDialog(mainFrame,
 					new JScrollPane(table), title, 0, icon);
-
 		} catch (SQLException e1) {
 			JOptionPane.showMessageDialog(mainFrame,
 					e1.getMessage());
@@ -594,7 +871,6 @@ public class GUI {
 	}
 
 	private JPanel createProfileTab() {
-
 		Query q = new Query();
 		final Member m = new Member();
 
@@ -608,7 +884,6 @@ public class GUI {
 		String db_addr = null;
 		String db_email = null;
 		String db_phone = null;
-		// String db_sign = null;
 
 		try {
 			rs.next();
@@ -699,8 +974,46 @@ public class GUI {
 
 				int err = m.updateMember(con, login_name, login_phone,
 						mname_new, phone_new, addr_new, age_new, email_new);
-				if (err < 1) {
+				if (err == -1) {
 					System.out.println("Error updating member");
+				} else if (err == -2) {
+					Query q2 = new Query();
+					// MEMBER WITH SAME NAME AND PHONE ALREADT EXIST
+					System.out.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
+					
+					JOptionPane.showMessageDialog(new JFrame(), "Member with same Name and Phone already exist.", 
+							"Constraint Error", JOptionPane.ERROR_MESSAGE);
+					
+					ResultSet rs = q2.queryWhere(con, "*", "member_1", "mname = '"
+							+ login_name + "' AND phone ='" + login_phone + "'");
+
+					String db_name = null;
+					int db_age = -1;
+					String db_addr = null;
+					String db_email = null;
+					String db_phone = null;
+
+					try {
+						rs.next();
+
+						db_name = rs.getString("mname");
+						db_age = rs.getInt("age");
+						db_addr = rs.getString("addr");
+						db_email = rs.getString("email");
+						db_phone = rs.getString("phone");
+						rs.close();
+
+						// db_sign = rs.getString("signUpDate");
+					} catch (SQLException ex) {
+						System.out.println("createProfile Message: " + ex.getMessage());
+					}
+					
+					fields[0].setText(db_name);
+					fields[1].setText(Integer.toString(db_age));
+					fields[2].setText(db_addr);
+					fields[3].setText(db_email);
+					fields[4].setText(db_phone);
+					
 				}
 				editPanel.remove(save);
 				editPanel.add(edit);
