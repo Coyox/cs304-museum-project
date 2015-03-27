@@ -7,6 +7,8 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 public class GUI {
@@ -20,16 +22,6 @@ public class GUI {
 
 		//isAdmin = true;
 		con = conn;
-		
-		//start();
-		//signIn();
-
-		// Toolkit tk = Toolkit.getDefaultToolkit();
-		// Dimension dim = tk.getScreenSize();
-		// int xPos = (dim.width / 2) - (mainFrame.getWidth() / 2);
-		// int yPos = (dim.height / 2) - (mainFrame.height() / 2);
-		//
-		// mainFrame.setLocation(xPos, yPos);
 
 	}
 
@@ -101,14 +93,6 @@ public class GUI {
 		mainFrame.add(labelPanel, BorderLayout.WEST);
 		mainFrame.add(fieldPanel, BorderLayout.CENTER);
 		mainFrame.add(footer, BorderLayout.SOUTH);
-
-		// anonymous inner class for closing the window
-		// mainFrame.addWindowListener(new WindowAdapter() {
-		// public void windowClosing(WindowEvent e) {
-		// System.exit(0);
-		// }
-		// });
-
 		// visibility
 		mainFrame.pack();
 		mainFrame.setVisible(true);
@@ -420,10 +404,6 @@ public class GUI {
 					"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				// will display profile for searched member
-				// createProfileTabe blablabla
-
 
 				// names of columns
 
@@ -824,7 +804,6 @@ public class GUI {
 			for (int i = 1; i <= columnCount; i++) {
 				columnNames.add(rsmd.getColumnName(i));
 			}
-
 			// data of the table
 			Vector<Vector<Object>> data = new Vector<Vector<Object>>();
 			while (rs.next()) {
@@ -837,6 +816,15 @@ public class GUI {
 			DefaultTableModel defTable = new DefaultTableModel(
 					data, columnNames);
 			JTable table = new JTable(defTable);
+			
+			table.getModel().addTableModelListener(new TableModelListener(){
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					System.out.println("Find a way to update this info?");					
+				}
+				
+			});
+			
 			JOptionPane.showMessageDialog(mainFrame,
 					new JScrollPane(table), title, 0, icon);
 		} catch (SQLException e1) {
@@ -844,6 +832,7 @@ public class GUI {
 					e1.getMessage());
 		}
 	}
+	
 	/**
 	 * @param y
 	 * @param x
@@ -962,7 +951,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String mname_new = fields[0].getText();
-				fields[0].setEditable(false);
+//				fields[0].setEditable(false);
 				int age_new = Integer.parseInt(fields[1].getText());
 				fields[1].setEditable(false);
 				String addr_new = fields[2].getText();
@@ -970,18 +959,19 @@ public class GUI {
 				String email_new = fields[3].getText();
 				fields[3].setEditable(false);
 				String phone_new = fields[4].getText();
-				fields[4].setEditable(false);
+//				fields[4].setEditable(false);
 
 				int err = m.updateMember(con, login_name, login_phone,
 						mname_new, phone_new, addr_new, age_new, email_new);
 				if (err == -1) {
-					System.out.println("Error updating member");
+					JOptionPane.showMessageDialog(mainFrame, "Oops! Couldn't update", "Error", JOptionPane.ERROR_MESSAGE);
+//					System.out.println("Error updating member");
 				} else if (err == -2) {
 					Query q2 = new Query();
 					// MEMBER WITH SAME NAME AND PHONE ALREADT EXIST
 					System.out.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
 					
-					JOptionPane.showMessageDialog(new JFrame(), "Member with same Name and Phone already exist.", 
+					JOptionPane.showMessageDialog(mainFrame, "Member with same Name and Phone already exist.", 
 							"Constraint Error", JOptionPane.ERROR_MESSAGE);
 					
 					ResultSet rs = q2.queryWhere(con, "*", "member_1", "mname = '"
@@ -1025,11 +1015,13 @@ public class GUI {
 		ActionListener editListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				fields[0].setEditable(true);
+//				fields[0].setEditable(true);
+				fields[0].setToolTipText("Cannot Update Name");
 				fields[1].setEditable(true);
 				fields[2].setEditable(true);
 				fields[3].setEditable(true);
-				fields[4].setEditable(true);
+				fields[4].setToolTipText("Cannot Update Phone Number");
+//				fields[4].setEditable(true);
 
 				editPanel.remove(edit);
 				editPanel.add(save);
