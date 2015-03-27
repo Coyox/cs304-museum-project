@@ -540,6 +540,27 @@ public class GUI {
 			buttons2.add(go2);
 			//go2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			
+			go2.addActionListener(new ActionListener() {
+				Query q = new Query();
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String exhibit = (String) comboBox2.getSelectedItem();
+					System.out.println(exhibit);
+
+					String statement = "DELETE FROM exhibit WHERE ename= '" + exhibit + "'";
+					
+					int count = q.stockUpdate(con, statement);
+					if (count < 0) {
+						JOptionPane.showMessageDialog(new JFrame(), "Error Occured", 
+								"Delete Exhibit Error", JOptionPane.ERROR_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(new JFrame(), "Deleted " + count + " rows!", 
+								"Delete Exhibit", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+			});
+			
 			eDelete.add(top2);
 			eDelete.add(buttons2);
 			eDelete.setOpaque(false);

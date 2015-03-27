@@ -86,4 +86,21 @@ public class Query {
 		
 		return rs;
 	}
+	
+	public int stockUpdate(Connection con, String query) {
+		Statement stmt;
+		int count = -1;
+		System.out.println(query);
+		try {
+
+			stmt = con.createStatement();
+			count = stmt.executeUpdate(query);
+			
+			//stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("stockUpdate Message: " + ex.getMessage());
+		}
+		
+		return count;
+	}
 }
