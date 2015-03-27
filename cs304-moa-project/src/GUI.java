@@ -369,13 +369,13 @@ public class GUI {
 							"(mname LIKE '" + capFirst + "%')");
 				} else {
 					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
-					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.", "Name Error",
-					            JOptionPane.ERROR_MESSAGE);
+					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.",
+					    		"Name Error", JOptionPane.ERROR_MESSAGE);
 					    return;
 					}
 					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
-					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.", "Phone Number Error",
-					            JOptionPane.ERROR_MESSAGE);
+					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.",
+					    		"Phone Number Error", JOptionPane.ERROR_MESSAGE);
 					    return;
 					}
 					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
