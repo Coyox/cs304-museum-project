@@ -259,47 +259,8 @@ public class GUI {
 		//JPanel p4 = new JPanel(new BorderLayout());
 		p4.setOpaque(false);
 
-		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
-
-		JLabel aNameLabel = new JLabel("Search by artist name: ",
-				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
-				JLabel.RIGHT);
-
-		final JTextField artistName = new JTextField(20);
-		final JTextField artistNat = new JTextField(20);
-		
-		JButton aNameButton = new JButton("Search");
-		JButton aNatButton = new JButton("Search");
-
-		aLabelPanel.add(aNameLabel);
-		aFieldPanel.add(artistName);
-		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(artistNat);
-		aSearchPanel.add(aNameButton);
-		aSearchPanel.add(aNatButton);
-
-		artistName.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ artistName.getText());
-			}
-
-		});
-
-		artistName.requestFocus();
-		aLabelPanel.setOpaque(false);
-		p3.add(aLabelPanel, BorderLayout.WEST);
-		p3.add(aFieldPanel, BorderLayout.CENTER);
-		p3.add(aSearchPanel, BorderLayout.EAST);
-		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-
 		searchEventPanel(p2);
-		
+		searchArtistPanel(p3);
 		searchPanel(p4);
 
 		if (isAdmin) {
@@ -363,6 +324,105 @@ public class GUI {
 		mainFrame.add(tabbedPanel);
 
 		mainFrame.setVisible(true);
+	}
+
+	private void searchArtistPanel(JPanel p3) {
+		// TODO Auto-generated method stub
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+
+		JLabel aNameLabel = new JLabel("Search by artist name: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+				JLabel.RIGHT);
+
+		final JTextField artistName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		
+		JButton aNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
+
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(artistName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(aNameButton);
+		aSearchPanel.add(aNatButton);
+
+		artistName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistName.getText());
+			}
+
+		});
+
+		artistName.requestFocus();
+		
+		artistNat.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistNat.getText());
+			}
+
+		});
+		
+		aNameButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistName.getText().contains("%")||artistName.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(aname like '" + artistName.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(aname='" + artistName.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aNatButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(nationality like '" + artistNat.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(nationality='" + artistNat.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aLabelPanel.setOpaque(false);
+		p3.add(aLabelPanel, BorderLayout.WEST);
+		p3.add(aFieldPanel, BorderLayout.CENTER);
+		p3.add(aSearchPanel, BorderLayout.EAST);
+		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 	}
 
 	private void searchEventPanel(JPanel p2) {
@@ -434,29 +494,30 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ResultSet rs;
+				String table = "member_1";
 				if (nameField.getText().equals("")){
-					 rs = q.queryWhere(con, "*", "member_1",
+					 rs = q.queryWhere(con, "*", table,
 							"(phone='"+ phoneField.getText() + "')");
 				}
 				else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
-					rs = q.queryWhere(con, "*", "member_1",
+					rs = q.queryWhere(con, "*", table,
 							"(mname like '" + nameField.getText() + "')");
 				}
 				else if (phoneField.getText().equals("")){
-					rs = q.queryWhere(con, "*", "member_1",
+					rs = q.queryWhere(con, "*", table,
 							"(mname='" + nameField.getText() + "')");
 				}
 				
 				else{
-					 rs = q.queryWhere(con, "*", "member_1",
+					 rs = q.queryWhere(con, "*", table,
 						"(mname='" + nameField.getText() + "' and phone='"
 								+ phoneField.getText() + "')");
 				}
 			
 
 				// names of columns
-				String title = "User: " + nameField.getText();
-				ImageIcon icon = new ImageIcon("blank-profile.png");
+				String title = "User Searching";
+				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
 				tablePopUp(rs, title, icon);
 			}
 		});
