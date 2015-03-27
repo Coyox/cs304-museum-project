@@ -618,15 +618,10 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
-<<<<<<< HEAD
+
 			isAdmin = true;
 			start();
 			// signIn();
-=======
-			 isAdmin = true;
-			 start();
-			//signIn();
->>>>>>> 52e0dab0fec4240a41fac3145f05a9cd2ce0dfd8
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
