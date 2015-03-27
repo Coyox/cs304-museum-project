@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -333,6 +334,9 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ResultSet rs;
+				// names of columns
+				String title = "User Searching";
+				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
 
 				// Read inputs
 				String mName = nameField.getText();
@@ -346,14 +350,34 @@ public class GUI {
 				if(emptyName && emptyPhone){
 					rs = q.query(con, "*", "member_1");
 				} else if (emptyName && !emptyPhone){
+					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
+					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.", "Phone Number Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
 					rs = q.queryWhere(con, "*", "member_1", 
 							"(phone LIKE '%" + mPhone + "%')");
 				} else if (!emptyName && emptyPhone){
+					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
+					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.", "Name Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
 					// Because db is not caps agnostic
 					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
 					rs = q.queryWhere(con, "*", "member_1",
 							"(mname LIKE '" + capFirst + "%')");
 				} else {
+					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
+					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.", "Name Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
+					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
+					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.", "Phone Number Error",
+					            JOptionPane.ERROR_MESSAGE);
+					    return;
+					}
 					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
 					rs = q.queryWhere(con, "*", "member_1",
 						"(mname LIKE '%" + capFirst +
@@ -361,9 +385,6 @@ public class GUI {
 
 				}
 				
-				// names of columns
-				String title = "User Searching";
-				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
 				tablePopUp(rs, title, icon);
 			}
 		});
