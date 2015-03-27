@@ -95,7 +95,8 @@ mname VARCHAR(50),
 phone VARCHAR(12),
 PRIMARY KEY (title, mname, phone),
 FOREIGN KEY (title) REFERENCES event,
-FOREIGN KEY (mname, phone) REFERENCES member_1);
+FOREIGN KEY (mname, phone) REFERENCES member_1
+ON DELETE CASCADE);
 
 -- populate the tables with data!
 
@@ -120,7 +121,7 @@ INSERT INTO exhibit values
 ('Claiming Space: Voices of Urban Aboriginal Youth', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 'Pam Brown');
 
 INSERT INTO exhibit values
-('Don''t Give Up!','2015-04-30 10:00:00', '2015-05-09 16:00:00', NULL);
+('Do Not Give Up!','2015-04-30 10:00:00', '2015-05-09 16:00:00', NULL);
 
 INSERT INTO exhibit values
 ('Safar/Voyage','2015-10-30 10:00:00', '2014-11-09 16:00:00', 'Dr. Fereshteh Daftari');
@@ -200,7 +201,7 @@ INSERT INTO object_has_1 values
 INSERT INTO object_has_2 values
 ('France', '1945-12-06', 'Romanticism');
 --INSERT INTO object_has_3 values
---('F1R20', 'Don''t Give Up!');
+--('F1R20', 'Do Not Give Up!');
 
 INSERT INTO object_has_1 values
 (8, 'Painting', 'F1R14', 'France', '1945-11-06');
