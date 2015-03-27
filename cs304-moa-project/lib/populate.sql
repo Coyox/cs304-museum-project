@@ -146,6 +146,15 @@ INSERT INTO artist values
 INSERT INTO artist values
 ('Gorgo', '1818-09-27', 'Spartan');
 
+INSERT INTO artist values
+('Gorgo', '1833-04-05', 'American');
+
+INSERT INTO artist values
+('Picasso', '1900-11-05', 'American');
+
+INSERT INTO artist values
+('Glitter', '1840-11-05', 'British');
+
 -- members
 INSERT INTO member_1 values
 ('Suzie', 17, 'Wreak Beach', NULL, '7781122334', NULL);

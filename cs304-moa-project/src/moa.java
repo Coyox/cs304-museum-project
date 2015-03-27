@@ -903,7 +903,7 @@ public class moa {
 				awardPanel.add(award);
 				award.addActionListener(new ActionListener() {
 					Statement stmt;
-					String query ="SELECT * " +
+					String query ="SELECT m.mname, m.phone,m.age " +
 							"FROM member_1 m " +
 							"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
 					@Override
@@ -1026,12 +1026,29 @@ public class moa {
 					// TODO Auto-generated method stub
 					// will display profile for searched member
 					// createProfileTabe blablabla
-					ResultSet rs = q.queryWhere(con, "*", "member_1",
+					ResultSet rs;
+					if (nameField.getText().equals("")){
+						 rs = q.queryWhere(con, "*", "member_1",
+								"(phone='"+ phoneField.getText() + "')");
+					}
+					else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
+						rs = q.queryWhere(con, "*", "member_1",
+								"(mname like '" + nameField.getText() + "')");
+					}
+					else if (phoneField.getText().equals("")){
+						rs = q.queryWhere(con, "*", "member_1",
+								"(mname='" + nameField.getText() + "')");
+					}
+					
+					else{
+						 rs = q.queryWhere(con, "*", "member_1",
 							"(mname='" + nameField.getText() + "' and phone='"
 									+ phoneField.getText() + "')");
+					}
+				
 
 					// names of columns
-
+					
 					ResultSetMetaData rsmd;
 					try {
 						rsmd = rs.getMetaData();
@@ -1057,7 +1074,7 @@ public class moa {
 						JTable table = new JTable(defTable);
 						JOptionPane.showMessageDialog(mainFrame,
 								new JScrollPane(table),
-								"User: " + nameField.getText(), 0, icon);
+								"User Searching", 0, icon);
 
 					} catch (SQLException e1) {
 						JOptionPane.showMessageDialog(mainFrame,
