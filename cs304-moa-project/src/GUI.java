@@ -10,17 +10,17 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin;
+	Boolean isAdmin = false;
 	private String login_name;
 	private String login_phone;
 	Connection con;
 
 	public GUI(Connection conn) {
 
-		isAdmin = true;
+		//isAdmin = true;
 		con = conn;
 		
-		start();
+		//start();
 		//signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
@@ -32,7 +32,7 @@ public class GUI {
 
 	}
 
-	private void signIn() {
+	public void signIn() {
 		// Frame Stuff
 		if (mainFrame != null) {
 			mainFrame.dispose();
@@ -292,6 +292,7 @@ public class GUI {
 			awardPanel.add(award);
 			
 			p4.add(awardPanel);
+			
 			awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
 					0));
 			// //////////////////////////////////////////////////////////////////
