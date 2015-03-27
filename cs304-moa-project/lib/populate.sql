@@ -164,8 +164,8 @@ INSERT INTO member_2 values
 
 INSERT INTO member_1 values
 ('Suzie', 17, 'Rek Beach', NULL, '1122334455', NULL);
-INSERT INTO member_2 values
-(17, 45);
+--INSERT INTO member_2 values
+--(17, 45);
 
 INSERT INTO member_1 values
 ('Farshid', 50, '1234 EOSC', 'il-os@ubc.ca', '0314897556', '0001-01-01');
@@ -199,8 +199,15 @@ INSERT INTO object_has_1 values
 (5, 'Painting', 'F1R18', 'France', '1945-12-06');
 INSERT INTO object_has_2 values
 ('France', '1945-12-06', 'Romanticism');
+--INSERT INTO object_has_3 values
+--('F1R20', 'Don''t Give Up!');
+
+INSERT INTO object_has_1 values
+(8, 'Painting', 'F1R14', 'France', '1945-11-06');
+INSERT INTO object_has_2 values
+('France', '1945-11-06', 'Romanticism');
 INSERT INTO object_has_3 values
-('F1R20', 'Don''t Give Up!');
+('F1R14', 'Claiming Space: Voices of Urban Aboriginal Youth');
 
 INSERT INTO object_has_1 values
 (7, 'Sculpture', 'F2R06', 'England', '1815-02-06');
