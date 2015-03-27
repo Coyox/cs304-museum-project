@@ -333,29 +333,30 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ResultSet rs;
+				String table = "member_1";
 				if (nameField.getText().equals("")){
-					 rs = q.queryWhere(con, "*", "member_1",
+					 rs = q.queryWhere(con, "*", table,
 							"(phone='"+ phoneField.getText() + "')");
 				}
 				else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
-					rs = q.queryWhere(con, "*", "member_1",
+					rs = q.queryWhere(con, "*", table,
 							"(mname like '" + nameField.getText() + "')");
 				}
 				else if (phoneField.getText().equals("")){
-					rs = q.queryWhere(con, "*", "member_1",
+					rs = q.queryWhere(con, "*", table,
 							"(mname='" + nameField.getText() + "')");
 				}
 				
 				else{
-					 rs = q.queryWhere(con, "*", "member_1",
+					 rs = q.queryWhere(con, "*", table,
 						"(mname='" + nameField.getText() + "' and phone='"
 								+ phoneField.getText() + "')");
 				}
 			
 
 				// names of columns
-				String title = "User: " + nameField.getText();
-				ImageIcon icon = new ImageIcon("blank-profile.png");
+				String title = "User Searching";
+				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
 				tablePopUp(rs, title, icon);
 			}
 		});
@@ -451,19 +452,242 @@ public class GUI {
 	}
 	
 	private JPanel createExhibitTab() {
-		JPanel p1 = createTab("Browse exhibits and artifacts");
+		JPanel p1 = new JPanel(new BorderLayout());
 		p1.setOpaque(false);
+		
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+
+		JLabel aNameLabel = new JLabel("Search by exhibit: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by objectID: ",
+				JLabel.RIGHT);
+
+		final JTextField exhibitName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		
+		JButton eNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
+
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(exhibitName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(eNameButton);
+		aSearchPanel.add(aNatButton);
+
+		exhibitName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ exhibitName.getText());
+			}
+
+		});
+
+		exhibitName.requestFocus();
+		
+		artistNat.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistNat.getText());
+			}
+
+		});
+		
+		eNameButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "exhibit";
+				if (exhibitName.getText().contains("%")||exhibitName.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(ename like '" + exhibitName.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(ename='" + exhibitName.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aNatButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(nationality like '" + artistNat.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(nationality='" + artistNat.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aLabelPanel.setOpaque(false);
+		p1.add(aLabelPanel, BorderLayout.WEST);
+		p1.add(aFieldPanel, BorderLayout.CENTER);
+		p1.add(aSearchPanel, BorderLayout.EAST);
+		p1.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 		
 		return p1;
 	}
 	
 	private JPanel createRSVPTab() {
-		JPanel p2 = createTab("RSVP to an event");
+		JPanel p2 = new JPanel(new BorderLayout());
 		p2.setOpaque(false);
+		
+		JButton RSVP_by_everyone = new JButton("Find the events RSVPed by everyone!");
+
+		RSVP_by_everyone.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "e.title, e.fee",
+						"event e",
+						"NOT EXISTS " +
+						"( SELECT * FROM member_1 m WHERE NOT EXISTS" +
+						"(SELECT * FROM RSVPs r " +
+						"WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The events RSVPed by everyone!", icon);
+			}
+		});
+		final JPanel RSVPPanel = new JPanel(new BorderLayout());
+		RSVPPanel.setOpaque(false);
+		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
+				100));
+		RSVPPanel.add(RSVP_by_everyone, BorderLayout.CENTER);
+		
+		p2.add(RSVPPanel, BorderLayout.NORTH);
 		
 		return p2;
 	}
 	
+	/* EMILY'S ARTIST CODE. COMBINE WITH ONE BELOW
+	private void searchArtistPanel(JPanel p3) {
+		// TODO Auto-generated method stub
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+
+		JLabel aNameLabel = new JLabel("Search by artist name: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+				JLabel.RIGHT);
+
+		final JTextField artistName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		
+		JButton aNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
+
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(artistName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(aNameButton);
+		aSearchPanel.add(aNatButton);
+
+		artistName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistName.getText());
+			}
+
+		});
+
+		artistName.requestFocus();
+		
+		artistNat.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistNat.getText());
+			}
+
+		});
+		
+		aNameButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistName.getText().contains("%")||artistName.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(aname like '" + artistName.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(aname='" + artistName.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aNatButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
+					rs = q.queryWhere(con, "aname, nationality", table,
+							"(nationality like '" + artistNat.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "aname, nationality", table,
+						"(nationality='" + artistNat.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aLabelPanel.setOpaque(false);
+		p3.add(aLabelPanel, BorderLayout.WEST);
+		p3.add(aFieldPanel, BorderLayout.CENTER);
+		p3.add(aSearchPanel, BorderLayout.EAST);
+		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
+	}
+*/
 	private JPanel createArtistTab() {
 		// JPanel p3 = createTab("Search for Artist");
 		JPanel p3 = new JPanel(new BorderLayout());
