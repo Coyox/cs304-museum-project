@@ -38,4 +38,33 @@ public class Member {
 
 		return count;
 	}
+	
+	public int deleteMember(Connection con, String mname, String phone) {
+		PreparedStatement ps;
+		int count = -1;
+
+		try {
+			// cant be just member? either member_1, member_2, member_3?
+			ps = con.prepareStatement("DELETE FROM member_1 WHERE mname=? AND phone=?");
+			ps.setString(1, mname);
+			ps.setString(2, phone);
+
+			count = ps.executeUpdate();
+			con.commit();
+			ps.close();
+		} catch (SQLException ex) {
+			System.out.println("deleteMember: " + ex.getMessage());
+			try {
+				con.rollback();
+			} catch (SQLException ex2) {
+				System.out.println("deleteMember2: " + ex2.getMessage());
+				System.exit(-1);
+			}
+		}
+		System.out.println("Deleted " + count + " row(s).");
+		// wait for RETURN before displaying menu again
+		
+		return count;
+	}
+	
 }
