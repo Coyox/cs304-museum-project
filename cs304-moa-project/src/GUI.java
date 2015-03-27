@@ -151,7 +151,6 @@ public class GUI {
 		mainFrame.dispose();
 		setUpFrame("Sign Up", 400, 500);
 
-		final JPanel panel = new JPanel();
 		String[] labels = { "First Name: ", "Last Name: ", "Age: ",
 				"Address: ", "E-Mail: ", "Phone Number: " };
 		int numPairs = labels.length;
@@ -276,6 +275,8 @@ public class GUI {
 		
 		JPanel exhibits = createExhibitTab();
 		
+		JPanel exhibit = createExhibitSearch();
+		
 		JPanel RSVP = createRSVPTab();
 		
 		JPanel Artist = createArtistTab();
@@ -283,10 +284,12 @@ public class GUI {
 		tabs.setMnemonicAt(0, KeyEvent.VK_1);
 		tabs.addTab("Exhibits", exhibits);
 		tabs.setMnemonicAt(1, KeyEvent.VK_2);
-		tabs.addTab("Events", RSVP);
+		tabs.addTab("Exhibit", exhibit);
 		tabs.setMnemonicAt(2, KeyEvent.VK_3);
-		tabs.addTab("Artists", Artist);
+		tabs.addTab("Events", RSVP);
 		tabs.setMnemonicAt(3, KeyEvent.VK_4);
+		tabs.addTab("Artists", Artist);
+		tabs.setMnemonicAt(3, KeyEvent.VK_5);
 
 		tabbedPanel.add(tabs);
 		
@@ -384,20 +387,6 @@ public class GUI {
 	private JPanel createAwardPanel() {
 		JButton award = new JButton("Award Oldest Member!");
 
-		award.addActionListener(new ActionListener() {
-			Query q = new Query();
-			ResultSet rs;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				rs = q.queryWhere(con, "m.mname, m.phone, m.age",
-						"member_1 m",
-						"(m.age=(select max(m2.age) from member_1 m2))");
-				ImageIcon icon = new ImageIcon("lib/crash.png");
-				tablePopUp(rs, "Winner(s)!", icon);
-			}
-
-		});
 		Image image = Toolkit.getDefaultToolkit().getImage(
 				"lib/trophy.png");
 		JLabel imageLabel = new JLabel();
@@ -535,8 +524,6 @@ public class GUI {
 			}
 		});
 		
-		
-		
 		aLabelPanel.setOpaque(false);
 		p1.add(aLabelPanel, BorderLayout.WEST);
 		p1.add(aFieldPanel, BorderLayout.CENTER);
@@ -544,6 +531,59 @@ public class GUI {
 		p1.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 		
 		return p1;
+	}
+	
+	private JPanel createExhibitSearch() {
+		Query q = new Query();
+		JPanel main = new JPanel(new GridLayout(2,1));
+		
+		JPanel top = new JPanel(new GridLayout(1,2));
+		
+		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
+		label.setOpaque(false);
+		Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
+		final DefaultComboBoxModel model= new DefaultComboBoxModel(names);
+		final JComboBox comboBox = new JComboBox(model);
+		comboBox.setOpaque(false);
+		comboBox.setBorder(BorderFactory.createEmptyBorder(100,0,100,0));
+		top.add(label);
+		top.add(comboBox);
+		top.setOpaque(false);
+		//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+		
+		JPanel buttons = new JPanel(false);
+		buttons.setOpaque(false);
+		JButton go = new JButton("Go");
+		buttons.add(go);
+		go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		go.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String exhibit = (String) comboBox.getSelectedItem();
+				System.out.println(exhibit);
+
+				String statement = "(SELECT  o1.objectID, o1.location, e.specialist " + 
+								   "FROM object_has_1 o1 INNER JOIN object_has_3 o3 " +
+								   "ON o1.location = o3.location " +
+								   "INNER JOIN exhibit e " +
+								   "on e.ename = o3.ename " +
+								   "WHERE e.ename = '" + exhibit + "')";
+				
+				ResultSet rs = q.stockQuery(con, statement);
+				if (rs != null) {
+					tablePopUp(rs, exhibit, null);
+				}
+			}
+		});
+		
+		main.add(top);
+		main.add(buttons);
+		main.setOpaque(false);
+		
+		return main;
 	}
 	
 	private JPanel createRSVPTab() {

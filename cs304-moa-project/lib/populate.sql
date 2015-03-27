@@ -162,6 +162,11 @@ INSERT INTO member_2 values
 (17, 45);
 
 INSERT INTO member_1 values
+('Suzie', 17, 'Rek Beach', NULL, '1122334455', NULL);
+INSERT INTO member_2 values
+(17, 45);
+
+INSERT INTO member_1 values
 ('Farshid', 50, '1234 EOSC', 'il-os@ubc.ca', '0314897556', '0001-01-01');
 INSERT INTO member_2 values
 (50, 50);
@@ -273,6 +278,9 @@ INSERT INTO RSVPs values
 
 INSERT INTO RSVPs values
 ('Jones'' Wedding', 'Darla', '5703040404');
+
+INSERT INTO RSVPs values
+('Jones'' Wedding', 'Suzie', '1122334455');
 
 INSERT INTO RSVPs values
 ('Legacy Awards Dinner','Farshid', '0314897556');
