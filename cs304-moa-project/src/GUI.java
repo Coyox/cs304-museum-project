@@ -20,8 +20,8 @@ public class GUI {
 		isAdmin = true;
 		con = conn;
 		
-		//start();
-		signIn();
+		start();
+		//signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
 		// Dimension dim = tk.getScreenSize();
@@ -250,7 +250,7 @@ public class GUI {
 		JPanel p = createProfileTab();
 		JPanel p1 = createTab("Browse exhibits and artifacts");
 		p1.setOpaque(false);
-		JPanel p2 = createTab("RSVP to an event");
+		JPanel p2 = new JPanel(new BorderLayout());
 		p2.setOpaque(false);
 		// JPanel p3 = createTab("Search for Artist");
 		JPanel p3 = new JPanel(new BorderLayout());
@@ -298,6 +298,8 @@ public class GUI {
 		p3.add(aSearchPanel, BorderLayout.EAST);
 		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 
+		searchEventPanel(p2);
+		
 		searchPanel(p4);
 
 		if (isAdmin) {
@@ -327,55 +329,7 @@ public class GUI {
 			awardPanel.add(imageLabel, BorderLayout.NORTH);
 			awardPanel.setOpaque(false);
 			awardPanel.add(award);
-			award.addActionListener(new ActionListener() {
-				Statement stmt;
-				String query ="SELECT m.mname, m.phone,m.age " +
-						"FROM member_1 m " +
-						"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					// will display profile for searched member
-					// createProfileTabe blablabla
-					
-
-					// names of columns
-
-					ResultSetMetaData rsmd;
-					try {
-						stmt = con.createStatement();
-						ResultSet rs = stmt.executeQuery(query);
-						rsmd = rs.getMetaData();
-
-						Vector<String> columnNames = new Vector<String>();
-						int columnCount = rsmd.getColumnCount();
-						for (int i = 1; i <= columnCount; i++) {
-							columnNames.add(rsmd.getColumnName(i));
-						}
-
-						// data of the table
-						Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-						while (rs.next()) {
-							Vector<Object> vector = new Vector<Object>();
-							for (int j = 1; j <= columnCount; j++) {
-								vector.add(rs.getObject(j));
-							}
-							data.add(vector);
-						}
-						ImageIcon icon = new ImageIcon("lib/blank-profile.png");
-						DefaultTableModel defTable = new DefaultTableModel(
-								data, columnNames);
-						JTable table = new JTable(defTable);
-						JOptionPane.showMessageDialog(mainFrame,
-								new JScrollPane(table),
-								"Oldest Member!" , 0, icon);
-
-					} catch (SQLException e1) {
-						JOptionPane.showMessageDialog(mainFrame,
-								e1.getMessage());
-					}
-				}
-			});
+			
 			p4.add(awardPanel);
 			awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
 					0));
@@ -409,6 +363,36 @@ public class GUI {
 		mainFrame.add(tabbedPanel);
 
 		mainFrame.setVisible(true);
+	}
+
+	private void searchEventPanel(JPanel p2) {
+		// TODO Auto-generated method stub
+		JButton RSVP_by_everyone = new JButton("Find the events RSVPed by everyone!");
+
+		RSVP_by_everyone.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "e.title, e.fee",
+						"event e",
+						"NOT EXISTS " +
+						"( SELECT * FROM member_1 m WHERE NOT EXISTS" +
+						"(SELECT * FROM RSVPs r " +
+						"WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The events RSVPed by everyone!", icon);
+			}
+		});
+		final JPanel RSVPPanel = new JPanel(new BorderLayout());
+		RSVPPanel.setOpaque(false);
+		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
+				100));
+		RSVPPanel.add(RSVP_by_everyone, BorderLayout.CENTER);
+		
+		p2.add(RSVPPanel, BorderLayout.NORTH);
 	}
 
 	/**
