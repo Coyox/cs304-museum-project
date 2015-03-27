@@ -499,12 +499,12 @@ public class GUI {
 				String exhibit = (String) comboBox.getSelectedItem();
 				System.out.println(exhibit);
 
-				String statement = "(SELECT  o1.objectID, o1.location, e.specialist " + 
-								   "FROM object_has_1 o1 INNER JOIN object_has_3 o3 " +
+				String statement = "SELECT  o1.objectID, o1.location, e.specialist " + 
+								   "FROM (object_has_1 o1 INNER JOIN object_has_3 o3 " +
 								   "ON o1.location = o3.location " +
 								   "INNER JOIN exhibit e " +
-								   "on e.ename = o3.ename " +
-								   "WHERE e.ename = '" + exhibit + "')";
+								   "on e.ename = o3.ename) " +
+								   "WHERE e.ename = '" + exhibit + "'";
 				
 				ResultSet rs = q.stockQuery(con, statement);
 				if (rs != null) {

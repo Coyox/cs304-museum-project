@@ -71,7 +71,8 @@ CREATE TABLE object_has_3
 (location VARCHAR(100),
 ename VARCHAR(100),
 PRIMARY KEY (location),
-FOREIGN KEY (ename) REFERENCES exhibit);
+FOREIGN KEY (ename) REFERENCES exhibit
+ON DELETE CASCADE);
 
 CREATE TABLE creates
 (aname VARCHAR(50),

@@ -1,7 +1,5 @@
 
 import java.sql.*;
-// for reading from the command line
-import java.io.*;
 
 public class Member {
 	
