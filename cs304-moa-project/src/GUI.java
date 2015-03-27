@@ -248,6 +248,7 @@ public class GUI {
 		pane.setLayout(new BorderLayout());
 
 		JLabel adminLabel = new JLabel("Signed in as admin.");
+		adminLabel.setOpaque(false);
 		adminLabel.setBorder(BorderFactory.createEmptyBorder(10, 5, 0, 5));
 		Font font = new Font("Helvetica", Font.ITALIC, 12);
 		adminLabel.setFont(font);
@@ -295,6 +296,7 @@ public class GUI {
 	private JPanel createAdminTab() {
 		//JPanel admin = createTab("Search for Member");
 		JPanel main = new JPanel(new GridLayout(2,1));
+		main.setOpaque(false);
 		JPanel admin = new JPanel(new BorderLayout());
 		admin.setOpaque(false);
 		
@@ -469,6 +471,7 @@ public class GUI {
 	private JPanel createExhibitSearch() {
 		Query q = new Query();
 		JPanel main = new JPanel(new GridLayout(2,1));
+		main.setOpaque(false);
 		//JPanel main = new JPanel(new BorderLayout());
 		JPanel eSearch = new JPanel(new GridLayout(2,1));
 		
