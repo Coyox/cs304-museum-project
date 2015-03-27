@@ -28,7 +28,7 @@ public class moa {
 			System.in));
 
 	private Connection con;
-	private Boolean isAdmin = true;
+	private Boolean isAdmin = false;
 	private GUI gui;
 
 	private String login_name;

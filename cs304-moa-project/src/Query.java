@@ -10,6 +10,7 @@ public class Query {
 		Statement stmt;
 		ResultSet rs = null;
 		String statement = "SELECT " + select + " FROM " + from + " WHERE " + where;
+		System.out.println(statement);
 		try {
 
 			stmt = con.createStatement();
