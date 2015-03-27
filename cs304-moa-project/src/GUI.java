@@ -248,17 +248,17 @@ public class GUI {
 
 		// probably make this a method of its own
 		JPanel p = createProfileTab();
-		JPanel p1 = createTab("Browse exhibits and artifacts");
+		JPanel p1 = new JPanel(new BorderLayout());
 		p1.setOpaque(false);
 		JPanel p2 = new JPanel(new BorderLayout());
 		p2.setOpaque(false);
-		// JPanel p3 = createTab("Search for Artist");
 		JPanel p3 = new JPanel(new BorderLayout());
 		p3.setOpaque(false);
 		JPanel p4 = createTab("Search for Member");
 		//JPanel p4 = new JPanel(new BorderLayout());
 		p4.setOpaque(false);
 
+		searchExhibitPanel(p1);
 		searchEventPanel(p2);
 		searchArtistPanel(p3);
 		searchPanel(p4);
@@ -324,6 +324,105 @@ public class GUI {
 		mainFrame.add(tabbedPanel);
 
 		mainFrame.setVisible(true);
+	}
+
+	private void searchExhibitPanel(JPanel p1) {
+		// TODO Auto-generated method stub
+		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+
+		JLabel aNameLabel = new JLabel("Search by exhibit: ",
+				JLabel.RIGHT);
+		JLabel aNatLabel = new JLabel("Search by objectID: ",
+				JLabel.RIGHT);
+
+		final JTextField exhibitName = new JTextField(20);
+		final JTextField artistNat = new JTextField(20);
+		
+		JButton eNameButton = new JButton("Search");
+		JButton aNatButton = new JButton("Search");
+
+		aLabelPanel.add(aNameLabel);
+		aFieldPanel.add(exhibitName);
+		aLabelPanel.add(aNatLabel);
+		aFieldPanel.add(artistNat);
+		aSearchPanel.add(eNameButton);
+		aSearchPanel.add(aNatButton);
+
+		exhibitName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ exhibitName.getText());
+			}
+
+		});
+
+		exhibitName.requestFocus();
+		
+		artistNat.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Search Data Base for "
+						+ artistNat.getText());
+			}
+
+		});
+		
+		eNameButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "exhibit";
+				if (exhibitName.getText().contains("%")||exhibitName.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(ename like '" + exhibitName.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(ename='" + exhibitName.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aNatButton.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
+				String table = "artist";
+				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
+					rs = q.queryWhere(con, "*", table,
+							"(nationality like '" + artistNat.getText() + "')");
+				}				
+				else{
+					 rs = q.queryWhere(con, "*", table,
+						"(nationality='" + artistNat.getText() + "')");
+				}
+			
+				// names of columns
+				String title = "Artist Searching";
+				ImageIcon icon = new ImageIcon("lib/artist.png");
+				tablePopUp(rs, title, icon);
+			}
+		});
+		
+		aLabelPanel.setOpaque(false);
+		p1.add(aLabelPanel, BorderLayout.WEST);
+		p1.add(aFieldPanel, BorderLayout.CENTER);
+		p1.add(aSearchPanel, BorderLayout.EAST);
+		p1.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 	}
 
 	private void searchArtistPanel(JPanel p3) {
@@ -403,11 +502,11 @@ public class GUI {
 				ResultSet rs;
 				String table = "artist";
 				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
+					rs = q.queryWhere(con, "aname, nationality", table,
 							"(nationality like '" + artistNat.getText() + "')");
 				}				
 				else{
-					 rs = q.queryWhere(con, "*", table,
+					 rs = q.queryWhere(con, "aname, nationality", table,
 						"(nationality='" + artistNat.getText() + "')");
 				}
 			
