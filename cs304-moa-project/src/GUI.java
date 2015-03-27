@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin = true;
+	Boolean isAdmin = false;
 	private String login_name;
 	private String login_phone;
 	Connection con;
@@ -20,8 +20,8 @@ public class GUI {
 
 		con = conn;
 		
-		start();
-		//signIn();
+		//start();
+		signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
 		// Dimension dim = tk.getScreenSize();
@@ -273,22 +273,17 @@ public class GUI {
 			admin.add(award);
 			tabs.addTab("Members", admin);
 		}
-		
-		JPanel exhibits = createExhibitTab();
+
+		tabs.setMnemonicAt(0, KeyEvent.VK_2);
 		
 		JPanel exhibit = createExhibitSearch();
-		
 		JPanel RSVP = createRSVPTab();
-		
 		JPanel Artist = createArtistTab();
-
-		tabs.setMnemonicAt(0, KeyEvent.VK_1);
-		tabs.addTab("Exhibits", exhibits);
-		tabs.setMnemonicAt(1, KeyEvent.VK_2);
+		
 		tabs.addTab("Exhibit", exhibit);
-		tabs.setMnemonicAt(2, KeyEvent.VK_3);
+		tabs.setMnemonicAt(1, KeyEvent.VK_3);
 		tabs.addTab("Events", RSVP);
-		tabs.setMnemonicAt(3, KeyEvent.VK_4);
+		tabs.setMnemonicAt(2, KeyEvent.VK_4);
 		tabs.addTab("Artists", Artist);
 		tabs.setMnemonicAt(3, KeyEvent.VK_5);
 
@@ -469,89 +464,6 @@ public class GUI {
 		awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 		
 		return awardPanel;
-	}
-	
-	private JPanel createExhibitTab() {
-		JPanel p1 = new JPanel(new BorderLayout());
-		p1.setOpaque(false);
-		
-		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(1,1));
-
-		JLabel aNameLabel = new JLabel("Search by exhibit: ",
-				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Write what you want to show: ",
-				JLabel.RIGHT);
-
-		final JTextField exhibitName = new JTextField(20);
-		final JTextField selection = new JTextField(20);
-		
-		JButton eNameButton = new JButton("Search");
-
-		aLabelPanel.add(aNameLabel);
-		aFieldPanel.add(exhibitName);
-		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(selection);
-		aSearchPanel.add(eNameButton);
-
-		exhibitName.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ exhibitName.getText());
-			}
-
-		});
-
-		exhibitName.requestFocus();
-		
-		selection.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ selection.getText());
-			}
-
-		});
-		
-		eNameButton.addActionListener(new ActionListener() {
-			Query q = new Query();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ResultSet rs = null;
-				String table = "exhibit e, object_has_1 o1, object_has_3 o3";
-				if(exhibitName.getText().equals("") || selection.getText().equals("") ){
-					
-				}
-				else{
-				if (exhibitName.getText().contains("%")||exhibitName.getText().contains("_")){
-					rs = q.queryWhere(con, selection.getText(), table,
-							"(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
-				}				
-				else{
-					 rs = q.queryWhere(con, selection.getText(), table,
-							 "(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
-				}
-			
-				// names of columns
-				String title = "Artist Searching";
-				ImageIcon icon = new ImageIcon("lib/artist.png");
-				tablePopUp(rs, title, icon);
-				}
-			}
-		});
-		
-		aLabelPanel.setOpaque(false);
-		p1.add(aLabelPanel, BorderLayout.WEST);
-		p1.add(aFieldPanel, BorderLayout.CENTER);
-		p1.add(aSearchPanel, BorderLayout.EAST);
-		p1.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-		
-		return p1;
 	}
 	
 	private JPanel createExhibitSearch() {
@@ -900,7 +812,6 @@ public class GUI {
 		String db_addr = null;
 		String db_email = null;
 		String db_phone = null;
-		// String db_sign = null;
 
 		try {
 			rs.next();
@@ -991,8 +902,46 @@ public class GUI {
 
 				int err = m.updateMember(con, login_name, login_phone,
 						mname_new, phone_new, addr_new, age_new, email_new);
-				if (err < 1) {
+				if (err == -1) {
 					System.out.println("Error updating member");
+				} else if (err == -2) {
+					Query q2 = new Query();
+					// MEMBER WITH SAME NAME AND PHONE ALREADT EXIST
+					System.out.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
+					
+					JOptionPane.showMessageDialog(new JFrame(), "Member with same Name and Phone already exist.", 
+							"Constraint Error", JOptionPane.ERROR_MESSAGE);
+					
+					ResultSet rs = q2.queryWhere(con, "*", "member_1", "mname = '"
+							+ login_name + "' AND phone ='" + login_phone + "'");
+
+					String db_name = null;
+					int db_age = -1;
+					String db_addr = null;
+					String db_email = null;
+					String db_phone = null;
+
+					try {
+						rs.next();
+
+						db_name = rs.getString("mname");
+						db_age = rs.getInt("age");
+						db_addr = rs.getString("addr");
+						db_email = rs.getString("email");
+						db_phone = rs.getString("phone");
+						rs.close();
+
+						// db_sign = rs.getString("signUpDate");
+					} catch (SQLException ex) {
+						System.out.println("createProfile Message: " + ex.getMessage());
+					}
+					
+					fields[0].setText(db_name);
+					fields[1].setText(Integer.toString(db_age));
+					fields[2].setText(db_addr);
+					fields[3].setText(db_email);
+					fields[4].setText(db_phone);
+					
 				}
 				editPanel.remove(save);
 				editPanel.add(edit);
