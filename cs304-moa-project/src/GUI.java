@@ -137,11 +137,10 @@ public class GUI {
 		mainFrame.dispose();
 		setUpFrame("Sign Up", 400, 500);
 
-		String[] labels = { "First Name: ", "Last Name: ", "Age: ",
+		String[] labels = { "Name: ", "Age: ",
 				"Address: ", "E-Mail: ", "Phone Number: " };
 		int numPairs = labels.length;
-		final JTextField[] fields = { new JTextField(20),
-				new JTextField(20), new JTextField(20), new JTextField(20),
+		final JTextField[] fields = {new JTextField(20), new JTextField(20), new JTextField(20),
 				new JTextField(20), new JTextField(20) };
 
 		JPanel labelPanel = new JPanel(new GridLayout(labels.length, 1));
@@ -180,14 +179,15 @@ public class GUI {
 							"Please fill in all fields");
 				} else {
 
-					String mname = fields[0].getText() + " "
-							+ fields[1].getText();
-					int age = Integer.parseInt(fields[2].getText());
-					String addr = fields[3].getText();
-					String email = fields[4].getText();
-					String phone = fields[5].getText();
+					String mname = fields[0].getText();
+					int age = Integer.parseInt(fields[1].getText());
+					String addr = fields[2].getText();
+					String email = fields[3].getText();
+					String phone = fields[4].getText();
 					try {
 						m.insert(mname, age, addr, email, phone);
+						JOptionPane.showMessageDialog(mainFrame, "Success");
+						signIn();
 					} catch (SQLException e1) {
 						JOptionPane.showMessageDialog(mainFrame,
 								e1.getMessage());
@@ -200,8 +200,6 @@ public class GUI {
 							System.exit(-1);
 						}
 					}
-					JOptionPane.showMessageDialog(mainFrame, "Success");
-					signIn();
 				}
 			}
 		});
@@ -216,7 +214,6 @@ public class GUI {
 		mainFrame.add(labelPanel, BorderLayout.WEST);
 		labelPanel.setBorder(BorderFactory
 				.createEmptyBorder(10, 10, 10, 10));
-		// labelPanel.setBackground(Color.darkGray);
 		mainFrame.add(fieldPanel, BorderLayout.CENTER);
 		mainFrame.add(footer, BorderLayout.SOUTH);
 		// visibility

@@ -435,9 +435,8 @@ public class moa {
 		PreparedStatement ps3;
 
 		try {
-			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
+			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?,?)");
 			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
-			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
 
 			ps.setString(1, mname);
 			ps.setInt(2, age);
@@ -455,18 +454,14 @@ public class moa {
 
 			signUpDate = Calendar.getInstance().getTime();
 			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
-			ps3.setString(1, email);
-			ps3.setDate(2, sqlDate);
+			ps.setDate(6, sqlDate);
 
 			ps.executeUpdate();
 			ps2.executeUpdate();
-			ps3.executeUpdate();
-
 			// commit work
 			con.commit();
 			ps.close();
 			ps2.close();
-			ps3.close();
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
 			throw ex;
