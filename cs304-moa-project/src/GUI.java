@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin = false;
+	Boolean isAdmin = true;
 	private String login_name;
 	private String login_phone;
 	Connection con;
@@ -19,8 +19,8 @@ public class GUI {
 
 		con = conn;
 		
-		//start();
-		signIn();
+		start();
+		//signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
 		// Dimension dim = tk.getScreenSize();
@@ -334,27 +334,34 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ResultSet rs;
-				String table = "member_1";
-				if (nameField.getText().equals("")){
-					 rs = q.queryWhere(con, "*", table,
-							"(phone='"+ phoneField.getText() + "')");
-				}
-				else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname like '" + nameField.getText() + "')");
-				}
-				else if (phoneField.getText().equals("")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname='" + nameField.getText() + "')");
+
+				// Read inputs
+				String mName = nameField.getText();
+				String mPhone = phoneField.getText();
+				boolean emptyName = mName.equals("");
+				boolean emptyPhone = mPhone.equals("");
+				
+				// Check conditions for search
+				
+				// If both fields empty get all members
+				if(emptyName && emptyPhone){
+					rs = q.query(con, "*", "member_1");
+				} else if (emptyName && !emptyPhone){
+					rs = q.queryWhere(con, "*", "member_1", 
+							"(phone LIKE '%" + mPhone + "%')");
+				} else if (!emptyName && emptyPhone){
+					// Because db is not caps agnostic
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+							"(mname LIKE '" + capFirst + "%')");
+				} else {
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+						"(mname LIKE '%" + capFirst +
+						"%' and phone LIKE '%" + mPhone + "%')");
+
 				}
 				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(mname='" + nameField.getText() + "' and phone='"
-								+ phoneField.getText() + "')");
-				}
-			
-
 				// names of columns
 				String title = "User Searching";
 				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
@@ -460,25 +467,23 @@ public class GUI {
 		
 		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
 		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(1,1));
 
 		JLabel aNameLabel = new JLabel("Search by exhibit: ",
 				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Search by objectID: ",
+		JLabel aNatLabel = new JLabel("Write what you want to show: ",
 				JLabel.RIGHT);
 
 		final JTextField exhibitName = new JTextField(20);
-		final JTextField artistNat = new JTextField(20);
+		final JTextField selection = new JTextField(20);
 		
 		JButton eNameButton = new JButton("Search");
-		JButton aNatButton = new JButton("Search");
 
 		aLabelPanel.add(aNameLabel);
 		aFieldPanel.add(exhibitName);
 		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(artistNat);
+		aFieldPanel.add(selection);
 		aSearchPanel.add(eNameButton);
-		aSearchPanel.add(aNatButton);
 
 		exhibitName.addActionListener(new ActionListener() {
 
@@ -492,12 +497,12 @@ public class GUI {
 
 		exhibitName.requestFocus();
 		
-		artistNat.addActionListener(new ActionListener() {
+		selection.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Search Data Base for "
-						+ artistNat.getText());
+						+ selection.getText());
 			}
 
 		});
@@ -507,46 +512,30 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "exhibit";
+				ResultSet rs = null;
+				String table = "exhibit e, object_has_1 o1, object_has_3 o3";
+				if(exhibitName.getText().equals("") || selection.getText().equals("") ){
+					
+				}
+				else{
 				if (exhibitName.getText().contains("%")||exhibitName.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(ename like '" + exhibitName.getText() + "')");
+					rs = q.queryWhere(con, selection.getText(), table,
+							"(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
 				}				
 				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(ename='" + exhibitName.getText() + "')");
+					 rs = q.queryWhere(con, selection.getText(), table,
+							 "(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
 				}
 			
 				// names of columns
 				String title = "Artist Searching";
 				ImageIcon icon = new ImageIcon("lib/artist.png");
 				tablePopUp(rs, title, icon);
+				}
 			}
 		});
 		
-		aNatButton.addActionListener(new ActionListener() {
-			Query q = new Query();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "artist";
-				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(nationality like '" + artistNat.getText() + "')");
-				}				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(nationality='" + artistNat.getText() + "')");
-				}
-			
-				// names of columns
-				String title = "Artist Searching";
-				ImageIcon icon = new ImageIcon("lib/artist.png");
-				tablePopUp(rs, title, icon);
-			}
-		});
+		
 		
 		aLabelPanel.setOpaque(false);
 		p1.add(aLabelPanel, BorderLayout.WEST);
