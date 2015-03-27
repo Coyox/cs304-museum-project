@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin = false;
+	Boolean isAdmin = true;
 	private String login_name;
 	private String login_phone;
 	Connection con;
@@ -20,8 +20,8 @@ public class GUI {
 
 		con = conn;
 		
-		//start();
-		signIn();
+		start();
+		//signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
 		// Dimension dim = tk.getScreenSize();
@@ -469,16 +469,17 @@ public class GUI {
 	private JPanel createExhibitSearch() {
 		Query q = new Query();
 		JPanel main = new JPanel(new GridLayout(2,1));
+		//JPanel main = new JPanel(new BorderLayout());
+		JPanel eSearch = new JPanel(new GridLayout(2,1));
 		
 		JPanel top = new JPanel(new GridLayout(1,2));
-		
 		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
 		label.setOpaque(false);
 		Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
 		final DefaultComboBoxModel model= new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
 		comboBox.setOpaque(false);
-		comboBox.setBorder(BorderFactory.createEmptyBorder(100,0,100,0));
+		comboBox.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
 		top.add(label);
 		top.add(comboBox);
 		top.setOpaque(false);
@@ -488,7 +489,7 @@ public class GUI {
 		buttons.setOpaque(false);
 		JButton go = new JButton("Go");
 		buttons.add(go);
-		go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		//go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		
 		go.addActionListener(new ActionListener() {
 			Query q = new Query();
@@ -512,9 +513,39 @@ public class GUI {
 			}
 		});
 		
-		main.add(top);
-		main.add(buttons);
-		main.setOpaque(false);
+		eSearch.add(top);
+		eSearch.add(buttons);
+		eSearch.setOpaque(false);
+		
+		if (isAdmin) {
+			JPanel eDelete = new JPanel(new GridLayout(2,1));
+			JPanel top2 = new JPanel(new GridLayout(1,2));
+			JLabel label2 = new JLabel("Delete (Expired) Exhibit and Associated Objects: ", SwingConstants.RIGHT);
+			label2.setOpaque(false);
+			final DefaultComboBoxModel model2= new DefaultComboBoxModel(names);
+			final JComboBox comboBox2 = new JComboBox(model2);
+			comboBox2.setOpaque(false);
+			comboBox2.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
+			top2.add(label2);
+			top2.add(comboBox2);
+			top2.setOpaque(false);
+			//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+			
+			JPanel buttons2 = new JPanel(false);
+			buttons2.setOpaque(false);
+			JButton go2 = new JButton("Go");
+			buttons2.add(go2);
+			//go2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+			
+			eDelete.add(top2);
+			eDelete.add(buttons2);
+			eDelete.setOpaque(false);
+			
+			main.add(eSearch);
+			main.add(eDelete);
+		} else {
+			main = eSearch;
+		}
 		
 		return main;
 	}
