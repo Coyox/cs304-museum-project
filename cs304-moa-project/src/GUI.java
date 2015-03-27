@@ -256,7 +256,7 @@ public class GUI {
 		}
 
 		mainFrame.add(tabbedPanel);
-
+		mainFrame.pack();
 		mainFrame.setVisible(true);
 	}
 	
@@ -471,9 +471,9 @@ public class GUI {
 
 		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
 		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(2, 1));
 
-		JLabel aNameLabel = new JLabel("Search by artist name: ",
+		final JLabel aNameLabel = new JLabel("Search by artist name: ",
 				JLabel.RIGHT);
 		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
 				JLabel.RIGHT);
@@ -487,6 +487,17 @@ public class GUI {
 		JButton aNameButton = new JButton("Search");
 		JButton aNatButton = new JButton("Search");
 
+		JPanel checkSearch = new JPanel(new GridLayout(1,3));
+		final JCheckBox date = new JCheckBox("Birthdate");
+		date.setOpaque(false);
+		final JCheckBox nat = new JCheckBox("Nationality");
+		nat.setOpaque(false);
+		JLabel include = new JLabel("Include in search: ");
+		include.setOpaque(false);
+		checkSearch.add(include);
+		checkSearch.add(date);
+		checkSearch.add(nat);
+		
 		aLabelPanel.add(aNameLabel);
 		aFieldPanel.add(artistName);
 		aLabelPanel.add(aNatLabel);
@@ -494,21 +505,44 @@ public class GUI {
 		aSearchPanel.add(aNameButton);
 		aSearchPanel.add(aNatButton);
 
-		artistName.addActionListener(new ActionListener() {
-
+		aNameButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ artistName.getText());
+				artistName.requestFocus();
+				Query q = new Query();
+				String select = "aname";
+				if (date.isSelected()) {
+					select = select + ", dateOfBirth";
+				}
+				if (nat.isSelected()) {
+					select = select + ", nationality";
+				}
+				ResultSet rs = q.queryWhere(con, select, "artist", "aname = '" + artistName.getText() + "'");
+				System.out.println("aname = '" + artistName.getText() + "'");
+				tablePopUp(rs, "Artists", null);
+				artistName.setText("");
 			}
-
+		});
+		
+		aNatButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Query q = new Query();
+				ResultSet rs = q.queryWhere(con, "aname as Name, dateOfBirth, nationality ", "artist", " nationality = '" + artistNat.getText() + "'");
+				System.out.println("nationality = '" + artistNat.getText() + "'");
+				tablePopUp(rs, "Artists", null);
+				artistNat.setText("");
+				artistNat.requestFocus();
+			}
 		});
 
 		artistName.requestFocus();
 		aLabelPanel.setOpaque(false);
+		checkSearch.setOpaque(false);
 		p3.add(aLabelPanel, BorderLayout.WEST);
 		p3.add(aFieldPanel, BorderLayout.CENTER);
 		p3.add(aSearchPanel, BorderLayout.EAST);
+		p3.add(checkSearch, BorderLayout.SOUTH);
 		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
 		
 		return p3;
@@ -544,7 +578,6 @@ public class GUI {
 			JTable table = new JTable(defTable);
 			JOptionPane.showMessageDialog(mainFrame,
 					new JScrollPane(table), title, 0, icon);
-
 		} catch (SQLException e1) {
 			JOptionPane.showMessageDialog(mainFrame,
 					e1.getMessage());
