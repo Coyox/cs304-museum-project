@@ -542,11 +542,51 @@ public class GUI {
 				tablePopUp(rs, "The events RSVPed by everyone!", icon);
 			}
 		});
-		final JPanel RSVPPanel = new JPanel(new BorderLayout());
+
+		
+		JButton RSVP_avg = new JButton("Find the average age of members RSVPing each event!");
+
+		RSVP_avg.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				rs = q.queryWhere(con, "e.title, avg(m.age) as avg_age",
+						"event e, RSVPs r, member_1 m",
+						"e.title =r.title and m.mname=r.mname and m.phone = r.phone GROUP BY e.title");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The most popular events!", icon);
+			}
+		});
+		
+		JButton RSVP_amount = new JButton("Find the RSVP amount for each event!");
+
+		RSVP_amount.addActionListener(new ActionListener() {
+
+			Query q = new Query();
+			ResultSet rs;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			
+				rs = q.queryWhere(con, "e.title, count(r.mname) as AMOUNT",
+						"event e, RSVPs r",
+						"e.title =r.title GROUP BY e.title");
+				ImageIcon icon = new ImageIcon("lib/crash.png");
+				tablePopUp(rs, "The events RSVP amout!", icon);
+			}
+		});
+
+		final JPanel RSVPPanel = new JPanel(new GridLayout(3,1));
 		RSVPPanel.setOpaque(false);
 		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
 				100));
-		RSVPPanel.add(RSVP_by_everyone, BorderLayout.CENTER);
+		
+		RSVPPanel.add(RSVP_by_everyone);
+		RSVPPanel.add(RSVP_avg);
+		RSVPPanel.add(RSVP_amount);
 		
 		p2.add(RSVPPanel, BorderLayout.NORTH);
 		
