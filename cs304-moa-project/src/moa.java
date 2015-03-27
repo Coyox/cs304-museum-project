@@ -48,7 +48,7 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_k8w8", "a20713137")) {
+		if (connect("ora_e7u9a", "a71498133")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
@@ -105,7 +105,8 @@ public class moa {
 				System.out.print("6.  Insert Member\n");
 				System.out.print("7.  Query\n");
 				System.out.print("8.  Delete Member\n");
-				System.out.print("9.  Update Member\n>>");
+				System.out.print("9.  Update Member\n");
+				System.out.print("10. Test division\n>>");
 				try {
 					choice = Integer.parseInt(in.readLine());
 				} catch (Exception e) {
@@ -141,6 +142,9 @@ public class moa {
 				case 9:
 					updateMember();
 					break;
+				case 10:
+					excuteQuery();
+					break;
 				default:
 					System.out.println("Please enter a valid choice.");
 					// wait for RETURN before displaying menu again
@@ -165,6 +169,63 @@ public class moa {
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
 		}
+	}
+
+	private void excuteQuery() {
+		Statement stmt;
+		//Division
+		//Find the events RSVPed by every member.
+		String query1 = "SELECT e.title, e.startDate, e.fee FROM event e " +
+				"WHERE NOT EXISTS ( SELECT * FROM member_1 m WHERE NOT EXISTS" +
+				"(SELECT * FROM RSVPs r WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))";
+		//Aggregation
+		//Find the name, phone and age of the oldest member.
+		String query2 ="SELECT m.mname, m.phone, m.age " +
+				"FROM member_1 m " +
+				"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+		String[] colNames;
+		int[] colType;
+		String result;
+		ResultSet rs;
+
+		try {
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query2);
+
+			// get info on ResultSet
+			ResultSetMetaData rsmd = rs.getMetaData();
+			// get number of columns
+			int numCols = rsmd.getColumnCount();
+			colNames = new String[numCols];
+			colType = new int[numCols];
+			System.out.println(" ");
+			// display column names;
+			for (int i = 0; i < numCols; i++) {
+				// get column name and print it
+
+				colNames[i] = rsmd.getColumnName(i + 1);
+				colType[i] = rsmd.getColumnType(i + 1);
+				System.out.printf("%-25s", colNames[i]);
+			}
+			System.out.println(" ");
+
+			while (rs.next()) {
+				for (int i = 0; i < numCols; i++) {
+					if (colType[i] == 91) {
+						System.out.print(rs.getDate(colNames[i]) + "        ");
+					} else {
+						result = rs.getString(colNames[i]);
+						System.out.printf("%-25s", result);
+					}
+				}
+				System.out.println(" ");
+			}
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("Message: " + ex.getMessage());
+		}
+		
+
 	}
 
 	private void browseArtists() {
@@ -557,9 +618,15 @@ public class moa {
 		JFrame mainFrame;
 
 		public moaGUI() {
+<<<<<<< HEAD
 			isAdmin = true;
 			start();
 			// signIn();
+=======
+			 isAdmin = true;
+			 start();
+			//signIn();
+>>>>>>> 52e0dab0fec4240a41fac3145f05a9cd2ce0dfd8
 
 			// Toolkit tk = Toolkit.getDefaultToolkit();
 			// Dimension dim = tk.getScreenSize();
@@ -851,10 +918,59 @@ public class moa {
 						"lib/trophy.png");
 				JLabel imageLabel = new JLabel();
 				imageLabel.setIcon(new ImageIcon(image));
-				JPanel awardPanel = new JPanel(new BorderLayout());
+				final JPanel awardPanel = new JPanel(new BorderLayout());
 				awardPanel.add(imageLabel, BorderLayout.NORTH);
 				awardPanel.setOpaque(false);
 				awardPanel.add(award);
+				award.addActionListener(new ActionListener() {
+					Statement stmt;
+					String query ="SELECT m.mname, m.phone,m.age " +
+							"FROM member_1 m " +
+							"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						// will display profile for searched member
+						// createProfileTabe blablabla
+						
+
+						// names of columns
+
+						ResultSetMetaData rsmd;
+						try {
+							stmt = con.createStatement();
+							ResultSet rs = stmt.executeQuery(query);
+							rsmd = rs.getMetaData();
+
+							Vector<String> columnNames = new Vector<String>();
+							int columnCount = rsmd.getColumnCount();
+							for (int i = 1; i <= columnCount; i++) {
+								columnNames.add(rsmd.getColumnName(i));
+							}
+
+							// data of the table
+							Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+							while (rs.next()) {
+								Vector<Object> vector = new Vector<Object>();
+								for (int j = 1; j <= columnCount; j++) {
+									vector.add(rs.getObject(j));
+								}
+								data.add(vector);
+							}
+							ImageIcon icon = new ImageIcon("lib/blank-profile.png");
+							DefaultTableModel defTable = new DefaultTableModel(
+									data, columnNames);
+							JTable table = new JTable(defTable);
+							JOptionPane.showMessageDialog(mainFrame,
+									new JScrollPane(table),
+									"Oldest Member!" , 0, icon);
+
+						} catch (SQLException e1) {
+							JOptionPane.showMessageDialog(mainFrame,
+									e1.getMessage());
+						}
+					}
+				});
 				p4.add(awardPanel);
 				awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0,
 						0));
@@ -928,9 +1044,26 @@ public class moa {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ResultSet rs = q.queryWhere(con, "*", "member_1",
+					ResultSet rs;
+					if (nameField.getText().equals("")){
+						 rs = q.queryWhere(con, "*", "member_1",
+								"(phone='"+ phoneField.getText() + "')");
+					}
+					else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
+						rs = q.queryWhere(con, "*", "member_1",
+								"(mname like '" + nameField.getText() + "')");
+					}
+					else if (phoneField.getText().equals("")){
+						rs = q.queryWhere(con, "*", "member_1",
+								"(mname='" + nameField.getText() + "')");
+					}
+					
+					else{
+						 rs = q.queryWhere(con, "*", "member_1",
 							"(mname='" + nameField.getText() + "' and phone='"
 									+ phoneField.getText() + "')");
+					}
+				
 
 					// names of columns
 					String title = "User: " + nameField.getText();
