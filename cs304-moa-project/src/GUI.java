@@ -295,7 +295,8 @@ public class GUI {
 	
 	private JPanel createAdminTab() {
 		//JPanel admin = createTab("Search for Member");
-		JPanel admin = new JPanel(false);
+		JPanel main = new JPanel(new GridLayout(2,1));
+		JPanel admin = new JPanel(new BorderLayout());
 		admin.setOpaque(false);
 		
 		JPanel membPanel = new JPanel(new BorderLayout());
@@ -368,7 +369,9 @@ public class GUI {
 		textPanel.setOpaque(false);
 		editPanel.setOpaque(false);
 		
-		return admin;
+		main.add(admin);
+		
+		return main;
 	}
 	
 	private JPanel createAwardPanel() {
