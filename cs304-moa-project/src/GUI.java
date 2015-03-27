@@ -330,25 +330,23 @@ public class GUI {
 		// TODO Auto-generated method stub
 		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
 		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
+		JPanel aSearchPanel = new JPanel(new GridLayout(1,1));
 
 		JLabel aNameLabel = new JLabel("Search by exhibit: ",
 				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Search by objectID: ",
+		JLabel aNatLabel = new JLabel("Write what you want to show: ",
 				JLabel.RIGHT);
 
 		final JTextField exhibitName = new JTextField(20);
-		final JTextField artistNat = new JTextField(20);
+		final JTextField selection = new JTextField(20);
 		
 		JButton eNameButton = new JButton("Search");
-		JButton aNatButton = new JButton("Search");
 
 		aLabelPanel.add(aNameLabel);
 		aFieldPanel.add(exhibitName);
 		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(artistNat);
+		aFieldPanel.add(selection);
 		aSearchPanel.add(eNameButton);
-		aSearchPanel.add(aNatButton);
 
 		exhibitName.addActionListener(new ActionListener() {
 
@@ -362,12 +360,12 @@ public class GUI {
 
 		exhibitName.requestFocus();
 		
-		artistNat.addActionListener(new ActionListener() {
+		selection.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Search Data Base for "
-						+ artistNat.getText());
+						+ selection.getText());
 			}
 
 		});
@@ -377,46 +375,30 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "exhibit";
+				ResultSet rs = null;
+				String table = "exhibit e, object_has_1 o1, object_has_3 o3";
+				if(exhibitName.getText().equals("") || selection.getText().equals("") ){
+					
+				}
+				else{
 				if (exhibitName.getText().contains("%")||exhibitName.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(ename like '" + exhibitName.getText() + "')");
+					rs = q.queryWhere(con, selection.getText(), table,
+							"(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
 				}				
 				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(ename='" + exhibitName.getText() + "')");
+					 rs = q.queryWhere(con, selection.getText(), table,
+							 "(e.ename like '" + exhibitName.getText() + "') and o1.location=o3.location and o3.ename=e.ename");
 				}
 			
 				// names of columns
 				String title = "Artist Searching";
 				ImageIcon icon = new ImageIcon("lib/artist.png");
 				tablePopUp(rs, title, icon);
+				}
 			}
 		});
 		
-		aNatButton.addActionListener(new ActionListener() {
-			Query q = new Query();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "artist";
-				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(nationality like '" + artistNat.getText() + "')");
-				}				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(nationality='" + artistNat.getText() + "')");
-				}
-			
-				// names of columns
-				String title = "Artist Searching";
-				ImageIcon icon = new ImageIcon("lib/artist.png");
-				tablePopUp(rs, title, icon);
-			}
-		});
+		
 		
 		aLabelPanel.setOpaque(false);
 		p1.add(aLabelPanel, BorderLayout.WEST);
