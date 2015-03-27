@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin = false;
+	Boolean isAdmin = true;
 	private String login_name;
 	private String login_phone;
 	Connection con;
@@ -19,8 +19,8 @@ public class GUI {
 
 		con = conn;
 		
-		//start();
-		signIn();
+		start();
+		//signIn();
 
 		// Toolkit tk = Toolkit.getDefaultToolkit();
 		// Dimension dim = tk.getScreenSize();
@@ -333,27 +333,34 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ResultSet rs;
-				String table = "member_1";
-				if (nameField.getText().equals("")){
-					 rs = q.queryWhere(con, "*", table,
-							"(phone='"+ phoneField.getText() + "')");
-				}
-				else if (nameField.getText().contains("%")||nameField.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname like '" + nameField.getText() + "')");
-				}
-				else if (phoneField.getText().equals("")){
-					rs = q.queryWhere(con, "*", table,
-							"(mname='" + nameField.getText() + "')");
+
+				// Read inputs
+				String mName = nameField.getText();
+				String mPhone = phoneField.getText();
+				boolean emptyName = mName.equals("");
+				boolean emptyPhone = mPhone.equals("");
+				
+				// Check conditions for search
+				
+				// If both fields empty get all members
+				if(emptyName && emptyPhone){
+					rs = q.query(con, "*", "member_1");
+				} else if (emptyName && !emptyPhone){
+					rs = q.queryWhere(con, "*", "member_1", 
+							"(phone LIKE '%" + mPhone + "%')");
+				} else if (!emptyName && emptyPhone){
+					// Because db is not caps agnostic
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+							"(mname LIKE '" + capFirst + "%')");
+				} else {
+					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1",
+						"(mname LIKE '%" + capFirst +
+						"%' and phone LIKE '%" + mPhone + "%')");
+
 				}
 				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(mname='" + nameField.getText() + "' and phone='"
-								+ phoneField.getText() + "')");
-				}
-			
-
 				// names of columns
 				String title = "User Searching";
 				ImageIcon icon = new ImageIcon("lib/blank-profile.png");
