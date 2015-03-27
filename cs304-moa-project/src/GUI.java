@@ -11,25 +11,15 @@ import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 	JFrame mainFrame;
-	Boolean isAdmin = true;
+	Boolean isAdmin = false;
 	private String login_name;
 	private String login_phone;
 	Connection con;
 
 	public GUI(Connection conn) {
-
 		con = conn;
-		
-		start();
-		//signIn();
-
-		// Toolkit tk = Toolkit.getDefaultToolkit();
-		// Dimension dim = tk.getScreenSize();
-		// int xPos = (dim.width / 2) - (mainFrame.getWidth() / 2);
-		// int yPos = (dim.height / 2) - (mainFrame.height() / 2);
-		//
-		// mainFrame.setLocation(xPos, yPos);
-
+		//start();
+		signIn();
 	}
 
 	private void signIn() {
@@ -421,13 +411,6 @@ public class GUI {
 					"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				// will display profile for searched member
-				// createProfileTabe blablabla
-				
-
-				// names of columns
-
 				ResultSetMetaData rsmd;
 				try {
 					stmt = con.createStatement();
@@ -797,7 +780,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent e) {
 				artistName.requestFocus();
 				Query q = new Query();
-				String select = "aname";
+				String select = "aname as name";
 				if (date.isSelected()) {
 					select = select + ", dateOfBirth";
 				}
@@ -815,7 +798,14 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Query q = new Query();
-				ResultSet rs = q.queryWhere(con, "aname as Name, dateOfBirth, nationality ", "artist", " nationality = '" + artistNat.getText() + "'");
+				String select = "aname as name";
+				if (date.isSelected()) {
+					select = select + ", dateOfBirth";
+				}
+				if (nat.isSelected()) {
+					select = select + ", nationality";
+				}
+				ResultSet rs = q.queryWhere(con, select, "artist", " nationality = '" + artistNat.getText() + "'");
 				System.out.println("nationality = '" + artistNat.getText() + "'");
 				tablePopUp(rs, "Artists", null);
 				artistNat.setText("");
@@ -980,8 +970,9 @@ public class GUI {
 				emailField, digitsField };
 
 		// Name Edit
-		final JButton edit = new JButton("Edit");
 		final JButton save = new JButton("Save Changes");
+		final JButton edit = new JButton("Edit");
+		JButton delete = new JButton("Delete Account");
 
 		final ActionListener saveListener = new ActionListener() {
 
@@ -1042,7 +1033,7 @@ public class GUI {
 					
 				}
 				editPanel.remove(save);
-				editPanel.add(edit);
+				editPanel.add(edit, BorderLayout.CENTER);
 				edit.requestFocus();
 			}
 
@@ -1058,22 +1049,39 @@ public class GUI {
 				fields[4].setEditable(true);
 
 				editPanel.remove(edit);
-				editPanel.add(save);
+				editPanel.add(save, BorderLayout.CENTER);
 				save.requestFocus();
 				fields[0].requestFocus();
 
 			}
 
 		};
+		
+		delete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Member m = new Member();
+				int err = m.deleteMember(con, login_name, login_phone);
+				if (err == -1) {
+					System.out.println("Error deleting member");
+				} else {
+					mainFrame.dispose();
+					System.exit(0);
+				}
+			}
+		});
 
-		edit.setForeground(Color.BLUE);
-		edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		//edit.setForeground(Color.BLUE);
+		//edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
 		edit.addActionListener(editListener);
-		editPanel.add(edit);
+		editPanel.add(edit, BorderLayout.CENTER);
 
-		save.setForeground(Color.BLUE);
-		save.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		//save.setForeground(Color.BLUE);
+		//save.setFont(new Font("Helvetica", Font.PLAIN, 14));
 		save.addActionListener(saveListener);
+		
+		delete.setForeground(Color.RED);
+		editPanel.add(delete, BorderLayout.EAST);
 
 		p.setBorder(BorderFactory.createEmptyBorder(120, 10, 120, 50));
 		p.setOpaque(false);
