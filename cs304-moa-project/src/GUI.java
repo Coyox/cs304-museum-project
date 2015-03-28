@@ -704,20 +704,23 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				String event = (String) comboBox.getSelectedItem();
 				int count = q.stockUpdate(con,
 						"DELETE from RSVPs WHERE mname='" + login_name
 								+ "' AND phone='" + login_phone
 								+ "' AND title='" + comboBox2.getSelectedItem()
 								+ "'");
-//				mainFrame.validate();
-//				mainFrame.repaint();
+				events.remove(event);
+				names.add(event);
+				mainFrame.validate();
+				mainFrame.repaint();
 				if (!events.isEmpty()) {
 					comboBox.setSelectedIndex(0);
 				} else {
 					comboBox.setSelectedIndex(-1);
 				}
 				if (count != 1) {
-					System.out.println("Error unRSVPing");
+					JOptionPane.showMessageDialog(mainFrame, "error unRSVPing!");
 				}
 			}
 		});
@@ -731,13 +734,16 @@ public class GUI {
 				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +event+
 						"', '" + login_name + "', '" + login_phone + "')");
 				names.remove(event);
+				events.add(event);
+				mainFrame.validate();
+				mainFrame.repaint();
 				if (!names.isEmpty()) {
 					comboBox.setSelectedIndex(0);
 				} else {
 					comboBox.setSelectedIndex(-1);
 				}
 				if (count != 1) {
-					System.out.println("Error RSVPing");
+					JOptionPane.showMessageDialog(mainFrame, "error RSVPing!");
 				}
 			}
 		});
@@ -884,14 +890,6 @@ public class GUI {
 			DefaultTableModel defTable = new DefaultTableModel(data,
 					columnNames);
 			JTable table = new JTable(defTable);
-
-			table.getModel().addTableModelListener(new TableModelListener() {
-				@Override
-				public void tableChanged(TableModelEvent e) {
-					System.out.println("Find a way to update this info?");
-				}
-
-			});
 
 			JOptionPane.showMessageDialog(mainFrame, new JScrollPane(table),
 					title, 0, icon);
