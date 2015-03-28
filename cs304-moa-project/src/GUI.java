@@ -207,7 +207,8 @@ public class GUI {
 							// undo the insert
 							con.rollback();
 						} catch (SQLException ex2) {
-							System.out.println("Message2: " + ex2.getMessage());
+							JOptionPane.showMessageDialog(mainFrame,
+									ex2.getMessage());
 							System.exit(-1);
 						}
 					}
@@ -501,7 +502,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String exhibit = (String) comboBox.getSelectedItem();
-				System.out.println(exhibit);
+				//System.out.println(exhibit);
 
 				String statement = "SELECT  o1.objectID, o1.location, e.specialist "
 						+ "FROM (object_has_1 o1 INNER JOIN object_has_3 o3 "
@@ -549,7 +550,7 @@ public class GUI {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					String exhibit = (String) comboBox2.getSelectedItem();
-					System.out.println(exhibit);
+					//System.out.println(exhibit);
 
 					String statement = "DELETE FROM exhibit WHERE ename= '"
 							+ exhibit + "'";
@@ -822,7 +823,7 @@ buttonPanel.setOpaque(false);
 				} else{
 					rs = q.queryWhere(con, select, "artist", "aname = '"
 							+ artistName.getText() + "'");
-					System.out.println("aname = '" + artistName.getText() + "'");
+					//System.out.println("aname = '" + artistName.getText() + "'");
 				}
 				tablePopUp(rs, "Artists", null);
 				artistName.setText("");
@@ -848,8 +849,8 @@ buttonPanel.setOpaque(false);
 				} else {
 				rs = q.queryWhere(con, select, "artist",
 						" nationality = '" + nationality + "'");
-				System.out.println("nationality = '" + nationality
-						+ "'");
+				//System.out.println("nationality = '" + nationality
+				//		+ "'");
 				}
 				tablePopUp(rs, "Artists", null);
 				artistNat.setText("");
@@ -957,7 +958,9 @@ buttonPanel.setOpaque(false);
 
 			// db_sign = rs.getString("signUpDate");
 		} catch (SQLException ex) {
-			System.out.println("createProfile Message: " + ex.getMessage());
+			//System.out.println("createProfile Message: " + ex.getMessage());
+			JOptionPane.showMessageDialog(mainFrame,
+					ex.getMessage());
 		}
 
 		JPanel p = new JPanel(new BorderLayout());
@@ -1043,8 +1046,8 @@ buttonPanel.setOpaque(false);
 				} else if (err == -2) {
 					Query q2 = new Query();
 					// MEMBER WITH SAME NAME AND PHONE ALREADT EXIST
-					System.out
-							.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
+					//System.out
+					//		.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
 
 					JOptionPane.showMessageDialog(mainFrame,
 							"Member with same Name and Phone already exist.",
@@ -1072,8 +1075,8 @@ buttonPanel.setOpaque(false);
 
 						// db_sign = rs.getString("signUpDate");
 					} catch (SQLException ex) {
-						System.out.println("createProfile Message: "
-								+ ex.getMessage());
+						//System.out.println("createProfile Message: "
+						//		+ ex.getMessage());
 					}
 
 					fields[0].setText(db_name);
@@ -1116,7 +1119,7 @@ buttonPanel.setOpaque(false);
 				Member m = new Member();
 				int err = m.deleteMember(con, login_name, login_phone);
 				if (err == -1) {
-					System.out.println("Error deleting member");
+					//System.out.println("Error deleting member");
 				} else {
 					mainFrame.dispose();
 					System.exit(0);
