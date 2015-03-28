@@ -20,15 +20,15 @@ drop table member_1;
 -- recreate all tables
 CREATE TABLE event
 (title VARCHAR(100),
-startDate TIMESTAMP NOT NULL,
-endDate TIMESTAMP NOT NULL,
+startDate DATE NOT NULL,
+endDate DATE NOT NULL,
 fee INTEGER,
 PRIMARY KEY (title));
 
 CREATE TABLE exhibit
 (ename VARCHAR(100),
-startDate TIMESTAMP NOT NULL,
-endDate TIMESTAMP NOT NULL,
+startDate DATE NOT NULL,
+endDate DATE NOT NULL,
 specialist VARCHAR(50),
 PRIMARY KEY (ename));
 
@@ -96,35 +96,35 @@ ON DELETE CASCADE);
 
 -- event
 INSERT INTO event values
-('Jones Wedding', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 0);
+('Jones Wedding', '2014-04-30', '2014-05-09', 0);
 
 INSERT INTO event values
-('Legacy Awards Dinner','2015-04-30 10:00:00', '2015-05-09 16:00:00', 50);
+('Legacy Awards Dinner','2015-04-30', '2015-05-09', 50);
 
 INSERT INTO event values
-('Spring Break Camp','2015-10-30 10:00:00', '2014-11-09 16:00:00', 20);
+('Spring Break Camp','2015-10-30', '2014-11-09', 20);
 
 INSERT INTO event values
-('Exhibit Opening Luncheon','2014-12-20 10:00:00', '2014-12-31 16:00:00', 60);
+('Exhibit Opening Luncheon','2014-12-20', '2014-12-31', 60);
 
 INSERT INTO event values
-('Exhibit Closing Dinner','2014-01-01 10:00:00', '2014-01-09 16:00:00', 0);
+('Exhibit Closing Dinner','2014-01-01', '2014-01-09', 0);
 
 -- exhibit
 INSERT INTO exhibit values
-('Claiming Space: Voices of Urban Aboriginal Youth', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 'Pam Brown');
+('Claiming Space: Voices of Urban Aboriginal Youth', '2014-04-30', '2014-05-09', 'Pam Brown');
 
 INSERT INTO exhibit values
-('Do Not Give Up!','2015-04-30 10:00:00', '2015-05-09 16:00:00', NULL);
+('Do Not Give Up!','2015-04-30', '2015-05-09', NULL);
 
 INSERT INTO exhibit values
-('Safar/Voyage','2015-10-30 10:00:00', '2014-11-09 16:00:00', 'Dr. Fereshteh Daftari');
+('Safar/Voyage','2015-10-30', '2014-11-09', 'Dr. Fereshteh Daftari');
 
 INSERT INTO exhibit values
-('Pigapicha! 100 Years of Studio Photography in Nairobi','2014-12-20 10:00:00', '2014-12-31 16:00:00', 'Katharina Greven');
+('Pigapicha! 100 Years of Studio Photography in Nairobi','2014-12-20', '2014-12-31', 'Katharina Greven');
 
 INSERT INTO exhibit values
-('Speaking to Memory','2014-01-01 10:00:00', '2014-01-09 16:00:00', NULL);
+('Speaking to Memory','2014-01-01', '2014-01-09', NULL);
 
 -- artist
 INSERT INTO artist values
