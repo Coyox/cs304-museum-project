@@ -19,9 +19,9 @@ public class GUI {
 	Connection con;
 
 	public GUI(Connection conn) {
-		//isAdmin = true;
+		// isAdmin = true;
 		con = conn;
-		//start();
+		// start();
 		signIn();
 	}
 
@@ -53,19 +53,30 @@ public class GUI {
 
 		login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (memberExists(usernameField.getText(),
-						String.valueOf(passwordField.getPassword()))) {
-					if (admin.isSelected()) {
+				if (admin.isSelected()) {
+
+					if (usernameField.getText().equals("admin")
+							&& String.valueOf(passwordField.getPassword())
+									.equals("")) {
 						isAdmin = true;
+						mainFrame.dispose();
+						start();
+					} else {
+						passwordField.setText("");
+						passwordField.requestFocus();
 					}
-					mainFrame.dispose();
-					login_name = usernameField.getText();
-					login_phone = String.valueOf(passwordField
-							.getPassword());
-					start();
 				} else {
-					passwordField.setText("");
-					passwordField.requestFocus();
+					if ((memberExists(usernameField.getText(),
+							String.valueOf(passwordField.getPassword())))) {
+						mainFrame.dispose();
+						login_name = usernameField.getText();
+						login_phone = String.valueOf(passwordField
+								.getPassword());
+						start();
+					} else {
+						passwordField.setText("");
+						passwordField.requestFocus();
+					}
 				}
 			}
 		});
@@ -82,10 +93,8 @@ public class GUI {
 		fieldPanel.add(usernameField);
 		labelPanel.add(password);
 		fieldPanel.add(passwordField);
-		labelPanel
-				.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 0));
-		fieldPanel
-				.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
+		labelPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 0));
+		fieldPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10));
 
 		footer.add(login);
 		footer.add(signup);
@@ -137,11 +146,11 @@ public class GUI {
 		mainFrame.dispose();
 		setUpFrame("Sign Up", 400, 500);
 
-		String[] labels = { "Name: ", "Age: ",
-				"Address: ", "E-Mail: ", "Phone Number: " };
+		String[] labels = { "Name: ", "Age: ", "Address: ", "E-Mail: ",
+				"Phone Number: " };
 		int numPairs = labels.length;
-		final JTextField[] fields = {new JTextField(20), new JTextField(20), new JTextField(20),
-				new JTextField(20), new JTextField(20) };
+		final JTextField[] fields = { new JTextField(20), new JTextField(20),
+				new JTextField(20), new JTextField(20), new JTextField(20) };
 
 		JPanel labelPanel = new JPanel(new GridLayout(labels.length, 1));
 		JPanel fieldPanel = new JPanel(new GridLayout(labels.length, 1));
@@ -195,8 +204,7 @@ public class GUI {
 							// undo the insert
 							con.rollback();
 						} catch (SQLException ex2) {
-							System.out.println("Message2: "
-									+ ex2.getMessage());
+							System.out.println("Message2: " + ex2.getMessage());
 							System.exit(-1);
 						}
 					}
@@ -212,8 +220,7 @@ public class GUI {
 		});
 
 		mainFrame.add(labelPanel, BorderLayout.WEST);
-		labelPanel.setBorder(BorderFactory
-				.createEmptyBorder(10, 10, 10, 10));
+		labelPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		mainFrame.add(fieldPanel, BorderLayout.CENTER);
 		mainFrame.add(footer, BorderLayout.SOUTH);
 		// visibility
@@ -223,7 +230,7 @@ public class GUI {
 
 	private void start() {
 		setUpFrame("Welcome", 500, 500);
-		
+
 		JPanel tabbedPanel = createTabs();
 
 		Container pane = mainFrame.getContentPane();
@@ -242,11 +249,11 @@ public class GUI {
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 	}
-	
+
 	private JPanel createTabs() {
 		JPanel tabbedPanel = new JPanel(new GridLayout());
 		JTabbedPane tabs = new JTabbedPane();
-		
+
 		if (!isAdmin) {
 			JPanel profile = createProfileTab();
 			tabs.addTab("Profile", profile);
@@ -258,11 +265,11 @@ public class GUI {
 		}
 
 		tabs.setMnemonicAt(0, KeyEvent.VK_2);
-		
+
 		JPanel exhibit = createExhibitSearch();
 		JPanel RSVP = createRSVPTab();
 		JPanel Artist = createArtistTab();
-		
+
 		tabs.addTab("Exhibit", exhibit);
 		tabs.setMnemonicAt(1, KeyEvent.VK_3);
 		tabs.addTab("Events", RSVP);
@@ -271,17 +278,17 @@ public class GUI {
 		tabs.setMnemonicAt(3, KeyEvent.VK_5);
 
 		tabbedPanel.add(tabs);
-		
+
 		return tabbedPanel;
 	}
-	
+
 	private JPanel createAdminTab() {
-		//JPanel admin = createTab("Search for Member");
-		JPanel main = new JPanel(new GridLayout(2,1));
+		// JPanel admin = createTab("Search for Member");
+		JPanel main = new JPanel(new GridLayout(2, 1));
 		main.setOpaque(false);
 		JPanel admin = new JPanel(new BorderLayout());
 		admin.setOpaque(false);
-		
+
 		JPanel membPanel = new JPanel(new BorderLayout());
 		JPanel labPanel = new JPanel(new GridLayout(2, 1));
 		JPanel textPanel = new JPanel(new GridLayout(2, 1));
@@ -326,48 +333,60 @@ public class GUI {
 				String mPhone = phoneField.getText();
 				boolean emptyName = mName.equals("");
 				boolean emptyPhone = mPhone.equals("");
-				
+
 				// Check conditions for search
-				
+
 				// If both fields empty get all members
-				if(emptyName && emptyPhone){
+				if (emptyName && emptyPhone) {
 					rs = q.query(con, "*", "member_1");
-				} else if (emptyName && !emptyPhone){
-					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
-					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.", "Phone Number Error",
-					            JOptionPane.ERROR_MESSAGE);
-					    return;
+				} else if (emptyName && !emptyPhone) {
+					if (!mPhone.matches("\\d+") || mPhone.length() > 10) {
+						JOptionPane
+								.showMessageDialog(
+										new JFrame(),
+										"Phone number must be a sequence of numbers up to 10 characters.",
+										"Phone Number Error",
+										JOptionPane.ERROR_MESSAGE);
+						return;
 					}
-					rs = q.queryWhere(con, "*", "member_1", 
-							"(phone LIKE '%" + mPhone + "%')");
-				} else if (!emptyName && emptyPhone){
-					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
-					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.", "Name Error",
-					            JOptionPane.ERROR_MESSAGE);
-					    return;
+					rs = q.queryWhere(con, "*", "member_1", "(phone LIKE '%"
+							+ mPhone + "%')");
+				} else if (!emptyName && emptyPhone) {
+					if (!Pattern.matches("[a-zA-Z\\s]*", mName)) {
+						JOptionPane.showMessageDialog(new JFrame(),
+								"Name must be a sequence of letters or words.",
+								"Name Error", JOptionPane.ERROR_MESSAGE);
+						return;
 					}
 					// Because db is not caps agnostic
-					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
-					rs = q.queryWhere(con, "*", "member_1",
-							"(mname LIKE '" + capFirst + "%')");
+					String capFirst = mName.substring(0, 1).toUpperCase()
+							+ mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1", "(mname LIKE '"
+							+ capFirst + "%')");
 				} else {
-					if(!Pattern.matches("[a-zA-Z\\s]*", mName)){
-					    JOptionPane.showMessageDialog(new JFrame(), "Name must be a sequence of letters or words.",
-					    		"Name Error", JOptionPane.ERROR_MESSAGE);
-					    return;
+					if (!Pattern.matches("[a-zA-Z\\s]*", mName)) {
+						JOptionPane.showMessageDialog(new JFrame(),
+								"Name must be a sequence of letters or words.",
+								"Name Error", JOptionPane.ERROR_MESSAGE);
+						return;
 					}
-					if(!mPhone.matches("\\d+") || mPhone.length() > 10){
-					    JOptionPane.showMessageDialog(new JFrame(), "Phone number must be a sequence of numbers up to 10 characters.",
-					    		"Phone Number Error", JOptionPane.ERROR_MESSAGE);
-					    return;
+					if (!mPhone.matches("\\d+") || mPhone.length() > 10) {
+						JOptionPane
+								.showMessageDialog(
+										new JFrame(),
+										"Phone number must be a sequence of numbers up to 10 characters.",
+										"Phone Number Error",
+										JOptionPane.ERROR_MESSAGE);
+						return;
 					}
-					String capFirst = mName.substring(0, 1).toUpperCase() + mName.substring(1);
-					rs = q.queryWhere(con, "*", "member_1",
-						"(mname LIKE '%" + capFirst +
-						"%' and phone LIKE '%" + mPhone + "%')");
+					String capFirst = mName.substring(0, 1).toUpperCase()
+							+ mName.substring(1);
+					rs = q.queryWhere(con, "*", "member_1", "(mname LIKE '%"
+							+ capFirst + "%' and phone LIKE '%" + mPhone
+							+ "%')");
 
 				}
-				
+
 				tablePopUp(rs, title, icon);
 			}
 		});
@@ -378,29 +397,29 @@ public class GUI {
 		labPanel.setOpaque(false);
 		textPanel.setOpaque(false);
 		editPanel.setOpaque(false);
-		
+
 		main.add(admin);
-		
+
 		return main;
 	}
-	
+
 	private JPanel createAwardPanel() {
 		JButton award = new JButton("Award Oldest Member!");
 
-		Image image = Toolkit.getDefaultToolkit().getImage(
-				"lib/trophy.png");
+		Image image = Toolkit.getDefaultToolkit().getImage("lib/trophy.png");
 		JLabel imageLabel = new JLabel();
 		imageLabel.setIcon(new ImageIcon(image));
-		
+
 		final JPanel awardPanel = new JPanel(new BorderLayout());
 		awardPanel.add(imageLabel, BorderLayout.NORTH);
 		awardPanel.setOpaque(false);
 		awardPanel.add(award);
 		award.addActionListener(new ActionListener() {
 			Statement stmt;
-			String query ="SELECT m.mname, m.phone,m.age " +
-					"FROM member_1 m " +
-					"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+			String query = "SELECT m.mname, m.phone,m.age "
+					+ "FROM member_1 m "
+					+ "WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// names of columns
@@ -426,50 +445,48 @@ public class GUI {
 						data.add(vector);
 					}
 					ImageIcon icon = new ImageIcon("lib/blank-profile.png");
-					DefaultTableModel defTable = new DefaultTableModel(
-							data, columnNames);
+					DefaultTableModel defTable = new DefaultTableModel(data,
+							columnNames);
 					JTable table = new JTable(defTable);
-					JOptionPane.showMessageDialog(mainFrame,
-							new JScrollPane(table),
-							"Oldest Member!" , 0, icon);
+					JOptionPane.showMessageDialog(mainFrame, new JScrollPane(
+							table), "Oldest Member!", 0, icon);
 
 				} catch (SQLException e1) {
-					JOptionPane.showMessageDialog(mainFrame,
-							e1.getMessage());
+					JOptionPane.showMessageDialog(mainFrame, e1.getMessage());
 				}
 			}
 		});
 		awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
-		
+
 		return awardPanel;
 	}
-	
+
 	private JPanel createExhibitSearch() {
 		Query q = new Query();
-		JPanel main = new JPanel(new GridLayout(2,1));
+		JPanel main = new JPanel(new GridLayout(2, 1));
 		main.setOpaque(false);
-		//JPanel main = new JPanel(new BorderLayout());
-		JPanel eSearch = new JPanel(new GridLayout(2,1));
-		
-		JPanel top = new JPanel(new GridLayout(1,2));
+		// JPanel main = new JPanel(new BorderLayout());
+		JPanel eSearch = new JPanel(new GridLayout(2, 1));
+
+		JPanel top = new JPanel(new GridLayout(1, 2));
 		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
 		label.setOpaque(false);
 		final Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
-		final DefaultComboBoxModel model= new DefaultComboBoxModel(names);
+		final DefaultComboBoxModel model = new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
 		comboBox.setOpaque(false);
-		comboBox.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
+		comboBox.setBorder(BorderFactory.createEmptyBorder(40, 0, 40, 0));
 		top.add(label);
 		top.add(comboBox);
 		top.setOpaque(false);
-		//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
-		
+		// top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+
 		JPanel buttons = new JPanel(false);
 		buttons.setOpaque(false);
 		JButton go = new JButton("Go");
 		buttons.add(go);
-		//go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-		
+		// go.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
 		go.addActionListener(new ActionListener() {
 			Query q = new Query();
 
@@ -478,44 +495,46 @@ public class GUI {
 				String exhibit = (String) comboBox.getSelectedItem();
 				System.out.println(exhibit);
 
-				String statement = "SELECT  o1.objectID, o1.location, e.specialist " + 
-								   "FROM (object_has_1 o1 INNER JOIN object_has_3 o3 " +
-								   "ON o1.location = o3.location " +
-								   "INNER JOIN exhibit e " +
-								   "on e.ename = o3.ename) " +
-								   "WHERE e.ename = '" + exhibit + "'";
-				
+				String statement = "SELECT  o1.objectID, o1.location, e.specialist "
+						+ "FROM (object_has_1 o1 INNER JOIN object_has_3 o3 "
+						+ "ON o1.location = o3.location "
+						+ "INNER JOIN exhibit e "
+						+ "on e.ename = o3.ename) "
+						+ "WHERE e.ename = '" + exhibit + "'";
+
 				ResultSet rs = q.stockQuery(con, statement);
 				if (rs != null) {
 					tablePopUp(rs, exhibit, null);
 				}
 			}
 		});
-		
+
 		eSearch.add(top);
 		eSearch.add(buttons);
 		eSearch.setOpaque(false);
-		
+
 		if (isAdmin) {
-			JPanel eDelete = new JPanel(new GridLayout(2,1));
-			JPanel top2 = new JPanel(new GridLayout(1,2));
-			JLabel label2 = new JLabel("Delete Exhibit and Associated Objects: ", SwingConstants.RIGHT);
+			JPanel eDelete = new JPanel(new GridLayout(2, 1));
+			JPanel top2 = new JPanel(new GridLayout(1, 2));
+			JLabel label2 = new JLabel(
+					"Delete Exhibit and Associated Objects: ",
+					SwingConstants.RIGHT);
 			label2.setOpaque(false);
-			final DefaultComboBoxModel model2= new DefaultComboBoxModel(names);
+			final DefaultComboBoxModel model2 = new DefaultComboBoxModel(names);
 			final JComboBox comboBox2 = new JComboBox(model2);
 			comboBox2.setOpaque(false);
-			comboBox2.setBorder(BorderFactory.createEmptyBorder(40,0,40,0));
+			comboBox2.setBorder(BorderFactory.createEmptyBorder(40, 0, 40, 0));
 			top2.add(label2);
 			top2.add(comboBox2);
 			top2.setOpaque(false);
-			//top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
-			
+			// top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+
 			JPanel buttons2 = new JPanel(false);
 			buttons2.setOpaque(false);
 			JButton go2 = new JButton("Go");
 			buttons2.add(go2);
-			//go2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-			
+			// go2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
 			go2.addActionListener(new ActionListener() {
 				Query q = new Query();
 
@@ -524,40 +543,44 @@ public class GUI {
 					String exhibit = (String) comboBox2.getSelectedItem();
 					System.out.println(exhibit);
 
-					String statement = "DELETE FROM exhibit WHERE ename= '" + exhibit + "'";
-					
+					String statement = "DELETE FROM exhibit WHERE ename= '"
+							+ exhibit + "'";
+
 					int count = q.stockUpdate(con, statement);
 					if (count < 0) {
-						JOptionPane.showMessageDialog(new JFrame(), "Error Occured", 
-								"Delete Exhibit Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(new JFrame(),
+								"Error Occured", "Delete Exhibit Error",
+								JOptionPane.ERROR_MESSAGE);
 					} else {
-						JOptionPane.showMessageDialog(new JFrame(), "Deleted " + count + " rows!", 
-								"Delete Exhibit", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(new JFrame(), "Deleted "
+								+ count + " rows!", "Delete Exhibit",
+								JOptionPane.INFORMATION_MESSAGE);
 						names.remove(exhibit);
 						comboBox.setSelectedIndex(0);
 						comboBox2.setSelectedIndex(0);
 					}
 				}
 			});
-			
+
 			eDelete.add(top2);
 			eDelete.add(buttons2);
 			eDelete.setOpaque(false);
-			
+
 			main.add(eSearch);
 			main.add(eDelete);
 		} else {
 			main = eSearch;
 		}
-		
+
 		return main;
 	}
-	
+
 	private JPanel createRSVPTab() {
 		JPanel p2 = new JPanel(new BorderLayout());
 		p2.setOpaque(false);
-		
-		JButton RSVP_by_everyone = new JButton("Find the events RSVPed by everyone!");
+
+		JButton RSVP_by_everyone = new JButton(
+				"Find the events RSVPed by everyone!");
 
 		RSVP_by_everyone.addActionListener(new ActionListener() {
 
@@ -566,19 +589,21 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				rs = q.queryWhere(con, "e.title, e.fee",
+				rs = q.queryWhere(
+						con,
+						"e.title, e.fee",
 						"event e",
-						"NOT EXISTS " +
-						"( SELECT * FROM member_1 m WHERE NOT EXISTS" +
-						"(SELECT * FROM RSVPs r " +
-						"WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
+						"NOT EXISTS "
+								+ "( SELECT * FROM member_1 m WHERE NOT EXISTS"
+								+ "(SELECT * FROM RSVPs r "
+								+ "WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))");
 				ImageIcon icon = new ImageIcon("lib/crash.png");
 				tablePopUp(rs, "The events RSVPed by everyone!", icon);
 			}
 		});
 
-		
-		JButton RSVP_avg = new JButton("Find the average age of members RSVPing each event!");
+		JButton RSVP_avg = new JButton(
+				"Find the average age of members RSVPing each event!");
 
 		RSVP_avg.addActionListener(new ActionListener() {
 
@@ -594,8 +619,9 @@ public class GUI {
 				tablePopUp(rs, "The most popular events!", icon);
 			}
 		});
-		
-		JButton RSVP_amount = new JButton("Find the RSVP amount for each event!");
+
+		JButton RSVP_amount = new JButton(
+				"Find the RSVP amount for each event!");
 
 		RSVP_amount.addActionListener(new ActionListener() {
 
@@ -604,129 +630,96 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			
+
 				rs = q.queryWhere(con, "e.title, count(r.mname) as AMOUNT",
-						"event e, RSVPs r",
-						"e.title =r.title GROUP BY e.title");
+						"event e, RSVPs r", "e.title =r.title GROUP BY e.title");
 				ImageIcon icon = new ImageIcon("lib/crash.png");
 				tablePopUp(rs, "The events RSVP amout!", icon);
 			}
 		});
 
-		final JPanel RSVPPanel = new JPanel(new GridLayout(3,1));
+		final JPanel RSVPPanel = new JPanel(new GridLayout(3, 1));
 		RSVPPanel.setOpaque(false);
-		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0,
-				100));
-		
+		RSVPPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 0, 100));
+
 		RSVPPanel.add(RSVP_by_everyone);
 		RSVPPanel.add(RSVP_avg);
 		RSVPPanel.add(RSVP_amount);
-		
+
 		p2.add(RSVPPanel, BorderLayout.NORTH);
-		
+
 		return p2;
 	}
-	
-	/* EMILY'S ARTIST CODE. COMBINE WITH ONE BELOW
-	private void searchArtistPanel(JPanel p3) {
-		// TODO Auto-generated method stub
-		JPanel aLabelPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aFieldPanel = new JPanel(new GridLayout(2, 1));
-		JPanel aSearchPanel = new JPanel(new GridLayout(2,1));
 
-		JLabel aNameLabel = new JLabel("Search by artist name: ",
-				JLabel.RIGHT);
-		JLabel aNatLabel = new JLabel("Search by artist nationality: ",
-				JLabel.RIGHT);
-
-		final JTextField artistName = new JTextField(20);
-		final JTextField artistNat = new JTextField(20);
-		
-		JButton aNameButton = new JButton("Search");
-		JButton aNatButton = new JButton("Search");
-
-		aLabelPanel.add(aNameLabel);
-		aFieldPanel.add(artistName);
-		aLabelPanel.add(aNatLabel);
-		aFieldPanel.add(artistNat);
-		aSearchPanel.add(aNameButton);
-		aSearchPanel.add(aNatButton);
-
-		artistName.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ artistName.getText());
-			}
-
-		});
-
-		artistName.requestFocus();
-		
-		artistNat.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Search Data Base for "
-						+ artistNat.getText());
-			}
-
-		});
-		
-		aNameButton.addActionListener(new ActionListener() {
-			Query q = new Query();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "artist";
-				if (artistName.getText().contains("%")||artistName.getText().contains("_")){
-					rs = q.queryWhere(con, "*", table,
-							"(aname like '" + artistName.getText() + "')");
-				}				
-				else{
-					 rs = q.queryWhere(con, "*", table,
-						"(aname='" + artistName.getText() + "')");
-				}
-			
-				// names of columns
-				String title = "Artist Searching";
-				ImageIcon icon = new ImageIcon("lib/artist.png");
-				tablePopUp(rs, title, icon);
-			}
-		});
-		
-		aNatButton.addActionListener(new ActionListener() {
-			Query q = new Query();
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ResultSet rs;
-				String table = "artist";
-				if (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-					rs = q.queryWhere(con, "aname, nationality", table,
-							"(nationality like '" + artistNat.getText() + "')");
-				}				
-				else{
-					 rs = q.queryWhere(con, "aname, nationality", table,
-						"(nationality='" + artistNat.getText() + "')");
-				}
-			
-				// names of columns
-				String title = "Artist Searching";
-				ImageIcon icon = new ImageIcon("lib/artist.png");
-				tablePopUp(rs, title, icon);
-			}
-		});
-		
-		aLabelPanel.setOpaque(false);
-		p3.add(aLabelPanel, BorderLayout.WEST);
-		p3.add(aFieldPanel, BorderLayout.CENTER);
-		p3.add(aSearchPanel, BorderLayout.EAST);
-		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-	}
-*/
+	/*
+	 * EMILY'S ARTIST CODE. COMBINE WITH ONE BELOW private void
+	 * searchArtistPanel(JPanel p3) { // TODO Auto-generated method stub JPanel
+	 * aLabelPanel = new JPanel(new GridLayout(2, 1)); JPanel aFieldPanel = new
+	 * JPanel(new GridLayout(2, 1)); JPanel aSearchPanel = new JPanel(new
+	 * GridLayout(2,1));
+	 * 
+	 * JLabel aNameLabel = new JLabel("Search by artist name: ", JLabel.RIGHT);
+	 * JLabel aNatLabel = new JLabel("Search by artist nationality: ",
+	 * JLabel.RIGHT);
+	 * 
+	 * final JTextField artistName = new JTextField(20); final JTextField
+	 * artistNat = new JTextField(20);
+	 * 
+	 * JButton aNameButton = new JButton("Search"); JButton aNatButton = new
+	 * JButton("Search");
+	 * 
+	 * aLabelPanel.add(aNameLabel); aFieldPanel.add(artistName);
+	 * aLabelPanel.add(aNatLabel); aFieldPanel.add(artistNat);
+	 * aSearchPanel.add(aNameButton); aSearchPanel.add(aNatButton);
+	 * 
+	 * artistName.addActionListener(new ActionListener() {
+	 * 
+	 * @Override public void actionPerformed(ActionEvent e) {
+	 * System.out.println("Search Data Base for " + artistName.getText()); }
+	 * 
+	 * });
+	 * 
+	 * artistName.requestFocus();
+	 * 
+	 * artistNat.addActionListener(new ActionListener() {
+	 * 
+	 * @Override public void actionPerformed(ActionEvent e) {
+	 * System.out.println("Search Data Base for " + artistNat.getText()); }
+	 * 
+	 * });
+	 * 
+	 * aNameButton.addActionListener(new ActionListener() { Query q = new
+	 * Query();
+	 * 
+	 * @Override public void actionPerformed(ActionEvent e) { ResultSet rs;
+	 * String table = "artist"; if
+	 * (artistName.getText().contains("%")||artistName.getText().contains("_")){
+	 * rs = q.queryWhere(con, "*", table, "(aname like '" + artistName.getText()
+	 * + "')"); } else{ rs = q.queryWhere(con, "*", table, "(aname='" +
+	 * artistName.getText() + "')"); }
+	 * 
+	 * // names of columns String title = "Artist Searching"; ImageIcon icon =
+	 * new ImageIcon("lib/artist.png"); tablePopUp(rs, title, icon); } });
+	 * 
+	 * aNatButton.addActionListener(new ActionListener() { Query q = new
+	 * Query();
+	 * 
+	 * @Override public void actionPerformed(ActionEvent e) { ResultSet rs;
+	 * String table = "artist"; if
+	 * (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
+	 * rs = q.queryWhere(con, "aname, nationality", table, "(nationality like '"
+	 * + artistNat.getText() + "')"); } else{ rs = q.queryWhere(con,
+	 * "aname, nationality", table, "(nationality='" + artistNat.getText() +
+	 * "')"); }
+	 * 
+	 * // names of columns String title = "Artist Searching"; ImageIcon icon =
+	 * new ImageIcon("lib/artist.png"); tablePopUp(rs, title, icon); } });
+	 * 
+	 * aLabelPanel.setOpaque(false); p3.add(aLabelPanel, BorderLayout.WEST);
+	 * p3.add(aFieldPanel, BorderLayout.CENTER); p3.add(aSearchPanel,
+	 * BorderLayout.EAST); p3.setBorder(BorderFactory.createEmptyBorder(10, 10,
+	 * 360, 50)); }
+	 */
 	private JPanel createArtistTab() {
 		// JPanel p3 = createTab("Search for Artist");
 		JPanel p3 = new JPanel(new BorderLayout());
@@ -746,11 +739,11 @@ public class GUI {
 		Font font = new Font("Helvetica", Font.PLAIN, 14);
 		artistName.setFont(font);
 		artistNat.setFont(font);
-		
+
 		JButton aNameButton = new JButton("Search");
 		JButton aNatButton = new JButton("Search");
 
-		JPanel checkSearch = new JPanel(new GridLayout(1,3));
+		JPanel checkSearch = new JPanel(new GridLayout(1, 3));
 		final JCheckBox date = new JCheckBox("Birthdate");
 		date.setOpaque(false);
 		final JCheckBox nat = new JCheckBox("Nationality");
@@ -760,7 +753,7 @@ public class GUI {
 		checkSearch.add(include);
 		checkSearch.add(date);
 		checkSearch.add(nat);
-		
+
 		aLabelPanel.add(aNameLabel);
 		aFieldPanel.add(artistName);
 		aLabelPanel.add(aNatLabel);
@@ -780,13 +773,14 @@ public class GUI {
 				if (nat.isSelected()) {
 					select = select + ", nationality";
 				}
-				ResultSet rs = q.queryWhere(con, select, "artist", "aname = '" + artistName.getText() + "'");
+				ResultSet rs = q.queryWhere(con, select, "artist", "aname = '"
+						+ artistName.getText() + "'");
 				System.out.println("aname = '" + artistName.getText() + "'");
 				tablePopUp(rs, "Artists", null);
 				artistName.setText("");
 			}
 		});
-		
+
 		aNatButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -798,8 +792,10 @@ public class GUI {
 				if (nat.isSelected()) {
 					select = select + ", nationality";
 				}
-				ResultSet rs = q.queryWhere(con, select, "artist", " nationality = '" + artistNat.getText() + "'");
-				System.out.println("nationality = '" + artistNat.getText() + "'");
+				ResultSet rs = q.queryWhere(con, select, "artist",
+						" nationality = '" + artistNat.getText() + "'");
+				System.out.println("nationality = '" + artistNat.getText()
+						+ "'");
 				tablePopUp(rs, "Artists", null);
 				artistNat.setText("");
 				artistNat.requestFocus();
@@ -814,14 +810,14 @@ public class GUI {
 		p3.add(aSearchPanel, BorderLayout.EAST);
 		p3.add(checkSearch, BorderLayout.SOUTH);
 		p3.setBorder(BorderFactory.createEmptyBorder(10, 10, 360, 50));
-		
+
 		return p3;
 	}
 
 	/**
 	 * @param rs
 	 * @param title
-	 * @param icon2 
+	 * @param icon2
 	 */
 	private void tablePopUp(ResultSet rs, String title, ImageIcon icon) {
 		ResultSetMetaData rsmd;
@@ -842,26 +838,25 @@ public class GUI {
 				}
 				data.add(vector);
 			}
-			DefaultTableModel defTable = new DefaultTableModel(
-					data, columnNames);
+			DefaultTableModel defTable = new DefaultTableModel(data,
+					columnNames);
 			JTable table = new JTable(defTable);
-			
-			table.getModel().addTableModelListener(new TableModelListener(){
+
+			table.getModel().addTableModelListener(new TableModelListener() {
 				@Override
 				public void tableChanged(TableModelEvent e) {
-					System.out.println("Find a way to update this info?");					
+					System.out.println("Find a way to update this info?");
 				}
-				
+
 			});
-			
-			JOptionPane.showMessageDialog(mainFrame,
-					new JScrollPane(table), title, 0, icon);
+
+			JOptionPane.showMessageDialog(mainFrame, new JScrollPane(table),
+					title, 0, icon);
 		} catch (SQLException e1) {
-			JOptionPane.showMessageDialog(mainFrame,
-					e1.getMessage());
+			JOptionPane.showMessageDialog(mainFrame, e1.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @param y
 	 * @param x
@@ -917,7 +912,7 @@ public class GUI {
 		} catch (SQLException ex) {
 			System.out.println("createProfile Message: " + ex.getMessage());
 		}
-		
+
 		JPanel p = new JPanel(new BorderLayout());
 		JPanel p2 = new JPanel(new BorderLayout());
 		JPanel labPanel = new JPanel(new GridLayout(5, 1));
@@ -981,7 +976,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String mname_new = fields[0].getText();
-//				fields[0].setEditable(false);
+				// fields[0].setEditable(false);
 				int age_new = Integer.parseInt(fields[1].getText());
 				fields[1].setEditable(false);
 				String addr_new = fields[2].getText();
@@ -989,23 +984,28 @@ public class GUI {
 				String email_new = fields[3].getText();
 				fields[3].setEditable(false);
 				String phone_new = fields[4].getText();
-//				fields[4].setEditable(false);
+				// fields[4].setEditable(false);
 
 				int err = m.updateMember(con, login_name, login_phone,
 						mname_new, phone_new, addr_new, age_new, email_new);
 				if (err == -1) {
-					JOptionPane.showMessageDialog(mainFrame, "Oops! Couldn't update", "Error", JOptionPane.ERROR_MESSAGE);
-//					System.out.println("Error updating member");
+					JOptionPane.showMessageDialog(mainFrame,
+							"Oops! Couldn't update", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					// System.out.println("Error updating member");
 				} else if (err == -2) {
 					Query q2 = new Query();
 					// MEMBER WITH SAME NAME AND PHONE ALREADT EXIST
-					System.out.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
-					
-					JOptionPane.showMessageDialog(mainFrame, "Member with same Name and Phone already exist.", 
+					System.out
+							.println("MEMBER WITH SAME NAME AND PHONE ALREADT EXIST");
+
+					JOptionPane.showMessageDialog(mainFrame,
+							"Member with same Name and Phone already exist.",
 							"Constraint Error", JOptionPane.ERROR_MESSAGE);
-					
-					ResultSet rs = q2.queryWhere(con, "*", "member_1", "mname = '"
-							+ login_name + "' AND phone ='" + login_phone + "'");
+
+					ResultSet rs = q2.queryWhere(con, "*", "member_1",
+							"mname = '" + login_name + "' AND phone ='"
+									+ login_phone + "'");
 
 					String db_name = null;
 					int db_age = -1;
@@ -1025,15 +1025,16 @@ public class GUI {
 
 						// db_sign = rs.getString("signUpDate");
 					} catch (SQLException ex) {
-						System.out.println("createProfile Message: " + ex.getMessage());
+						System.out.println("createProfile Message: "
+								+ ex.getMessage());
 					}
-					
+
 					fields[0].setText(db_name);
 					fields[1].setText(Integer.toString(db_age));
 					fields[2].setText(db_addr);
 					fields[3].setText(db_email);
 					fields[4].setText(db_phone);
-					
+
 				}
 				editPanel.remove(save);
 				editPanel.add(edit, BorderLayout.CENTER);
@@ -1045,13 +1046,13 @@ public class GUI {
 		ActionListener editListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				fields[0].setEditable(true);
+				// fields[0].setEditable(true);
 				fields[0].setToolTipText("Cannot Update Name");
 				fields[1].setEditable(true);
 				fields[2].setEditable(true);
 				fields[3].setEditable(true);
 				fields[4].setToolTipText("Cannot Update Phone Number");
-//				fields[4].setEditable(true);
+				// fields[4].setEditable(true);
 
 				editPanel.remove(edit);
 				editPanel.add(save, BorderLayout.CENTER);
@@ -1061,7 +1062,7 @@ public class GUI {
 			}
 
 		};
-		
+
 		delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1076,15 +1077,15 @@ public class GUI {
 			}
 		});
 
-		//edit.setForeground(Color.BLUE);
-		//edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		// edit.setForeground(Color.BLUE);
+		// edit.setFont(new Font("Helvetica", Font.PLAIN, 14));
 		edit.addActionListener(editListener);
 		editPanel.add(edit, BorderLayout.CENTER);
 
-		//save.setForeground(Color.BLUE);
-		//save.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		// save.setForeground(Color.BLUE);
+		// save.setFont(new Font("Helvetica", Font.PLAIN, 14));
 		save.addActionListener(saveListener);
-		
+
 		delete.setForeground(Color.RED);
 		editPanel.add(delete, BorderLayout.EAST);
 
@@ -1099,8 +1100,7 @@ public class GUI {
 
 	private void viewProfile() {
 		JPanel profilePanel = new JPanel();
-		profilePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20,
-				20));
+		profilePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 		JTextArea text = new JTextArea();
 		text.setText("select member and display info");

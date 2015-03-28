@@ -50,11 +50,6 @@ public class moa {
 		}
 		// if (connect("ora_k8w8", "a20713137")) {
 		if (connect("ora_b6m8", "a52417128")) {
-			// if the username and password are valid,
-			// remove the login window and display a text menu
-			// resetDB();
-
-			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
 			gui = new GUI(con);
 			showMenu();
 		}
