@@ -70,6 +70,33 @@ public class Query {
 		return names;
 	}
 	
+	public Vector<Object> querySelectOne(Connection con, String query) {
+		Statement stmt;
+		ResultSet rs = null;
+		Vector<Object> names = new Vector<Object>();
+		System.out.println(query);
+		try {
+
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnCount = rsmd.getColumnCount();
+			if (columnCount != 1) {
+				return null;
+			}
+			while(rs.next()) {
+				names.add(rs.getObject(1));
+			}
+			
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("queryWhere Message: " + ex.getMessage());
+		}
+		
+		return names;
+	}
+	
 	public ResultSet stockQuery(Connection con, String query) {
 		Statement stmt;
 		ResultSet rs = null;
@@ -103,4 +130,5 @@ public class Query {
 		
 		return count;
 	}
+	
 }

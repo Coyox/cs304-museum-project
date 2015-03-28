@@ -267,6 +267,7 @@ public class GUI {
 
 		JPanel exhibit = createExhibitSearch();
 		JPanel RSVP = createRSVPTab();
+		JPanel RSVPmem = RSVPTab();
 		JPanel Artist = createArtistTab();
 
 		tabs.addTab("Exhibit", exhibit);
@@ -275,12 +276,11 @@ public class GUI {
 		if (!isAdmin) {
 			tabs.addTab("Events", RSVP);
 		} else {
-			tabs.addTab("Events", RSVP);
-		}
+			tabs.addTab("Events2", RSVPmem);
+        }
 		tabs.setMnemonicAt(2, KeyEvent.VK_3);
 		tabs.addTab("Artists", Artist);
 		tabs.setMnemonicAt(3, KeyEvent.VK_4);
-
 		tabbedPanel.add(tabs);
 
 		return tabbedPanel;
@@ -653,6 +653,39 @@ public class GUI {
 		p2.add(RSVPPanel, BorderLayout.NORTH);
 
 		return p2;
+	}
+
+	private JPanel RSVPTab() {
+		Query q = new Query();
+		JPanel main = new JPanel(new BorderLayout());
+		
+		String query = "SELECT e.title FROM event e WHERE e.title NOT IN" +
+				   " (SELECT e1.title FROM event e1, RSVPs r WHERE r.mname ='" +
+				   login_name + "' AND r.phone ='" + login_phone + "' AND e1.title = r.title)";
+		
+		Vector<Object> names = q.querySelectOne(con, query);
+		DefaultComboBoxModel model= new DefaultComboBoxModel(names);
+		final JComboBox comboBox = new JComboBox(model);
+		
+		JButton RSVP = new JButton("RSVP to Event");
+		RSVP.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +comboBox.getSelectedItem()+
+						"', '" + login_name + "', '" + login_phone + "')");
+				
+				if (count != 1) {
+					System.out.println("Error RSVPing");
+				}
+			}
+		});
+		
+		main.add(comboBox, BorderLayout.CENTER);
+		main.add(RSVP, BorderLayout.EAST);
+		
+		return main;
 	}
 
 	/*
