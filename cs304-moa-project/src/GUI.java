@@ -263,19 +263,23 @@ public class GUI {
 			admin.add(award);
 			tabs.addTab("Members", admin);
 		}
-
-		tabs.setMnemonicAt(0, KeyEvent.VK_2);
+		tabs.setMnemonicAt(0, KeyEvent.VK_1);
 
 		JPanel exhibit = createExhibitSearch();
 		JPanel RSVP = createRSVPTab();
 		JPanel Artist = createArtistTab();
 
 		tabs.addTab("Exhibit", exhibit);
-		tabs.setMnemonicAt(1, KeyEvent.VK_3);
-		tabs.addTab("Events", RSVP);
-		tabs.setMnemonicAt(2, KeyEvent.VK_4);
+		tabs.setMnemonicAt(1, KeyEvent.VK_2);
+		
+		if (!isAdmin) {
+			tabs.addTab("Events", RSVP);
+		} else {
+			tabs.addTab("Events", RSVP);
+		}
+		tabs.setMnemonicAt(2, KeyEvent.VK_3);
 		tabs.addTab("Artists", Artist);
-		tabs.setMnemonicAt(3, KeyEvent.VK_5);
+		tabs.setMnemonicAt(3, KeyEvent.VK_4);
 
 		tabbedPanel.add(tabs);
 
