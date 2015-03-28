@@ -125,15 +125,18 @@ public class GUI {
 
 				return true;
 			} else {
-				System.out.println("user does not exist");
+				JOptionPane.showMessageDialog(mainFrame,
+						"Incorrect Login Info");
 				return false;
 			}
 		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
+			JOptionPane.showMessageDialog(mainFrame,
+					ex.getMessage());
 			try {
 				con.rollback();
 			} catch (SQLException ex2) {
-				System.out.println("Message: " + ex2.getMessage());
+				JOptionPane.showMessageDialog(mainFrame,
+						ex2.getMessage());
 				System.exit(-1);
 			}
 			return false;
@@ -289,7 +292,7 @@ public class GUI {
 
 	private JPanel createAdminTab() {
 		// JPanel admin = createTab("Search for Member");
-		JPanel main = new JPanel(new GridLayout(2, 1));
+		JPanel main = new JPanel();
 		main.setOpaque(false);
 		JPanel admin = new JPanel(new BorderLayout());
 		admin.setOpaque(false);
@@ -416,7 +419,7 @@ public class GUI {
 		imageLabel.setIcon(new ImageIcon(image));
 
 		final JPanel awardPanel = new JPanel(new BorderLayout());
-		awardPanel.add(imageLabel, BorderLayout.NORTH);
+		awardPanel.add(imageLabel,BorderLayout.NORTH);
 		awardPanel.setOpaque(false);
 		awardPanel.add(award);
 		award.addActionListener(new ActionListener() {
@@ -461,7 +464,7 @@ public class GUI {
 				}
 			}
 		});
-		awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+		//awardPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 
 		return awardPanel;
 	}
@@ -474,7 +477,7 @@ public class GUI {
 		JPanel eSearch = new JPanel(new GridLayout(2, 1));
 
 		JPanel top = new JPanel(new GridLayout(1, 2));
-		JLabel label = new JLabel("Show Objects in: ", SwingConstants.RIGHT);
+		JLabel label = new JLabel("Show Objects in: ",SwingConstants.RIGHT);
 		label.setOpaque(false);
 		final Vector<Object> names = q.querySelectOne(con, "ename", "exhibit");
 		final DefaultComboBoxModel model = new DefaultComboBoxModel(names);
@@ -484,7 +487,7 @@ public class GUI {
 		top.add(label);
 		top.add(comboBox);
 		top.setOpaque(false);
-		// top.setBorder(BorderFactory.createEmptyBorder(100,0,300,0));
+//		top.setBorder(BorderFactory.createEmptyBorder(0,100,0,200));
 
 		JPanel buttons = new JPanel(false);
 		buttons.setOpaque(false);
@@ -752,7 +755,10 @@ public class GUI {
 
 		buttonPanel.add(RSVP);
 		buttonPanel.add(unattend);
-
+p2.setOpaque(false);
+p.setOpaque(false);
+boxPanel.setOpaque(false);
+buttonPanel.setOpaque(false);
 		return p2;
 	}
 
