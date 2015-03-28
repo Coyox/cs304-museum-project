@@ -33,8 +33,8 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		// if (connect("ora_k8w8", "a20713137")) {
-		if (connect("ora_b6m8", "a52417128")) {
+		if (connect("ora_k8w8", "a20713137")) {
+		//if (connect("ora_b6m8", "a52417128")) {
 			gui = new GUI(con);
 			showMenu();
 		}

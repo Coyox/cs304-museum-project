@@ -662,7 +662,7 @@ public class GUI {
 				   " (SELECT e1.title FROM event e1, RSVPs r WHERE r.mname ='" +
 				   login_name + "' AND r.phone ='" + login_phone + "' AND e1.title = r.title)";
 		
-		Vector<Object> names = q.querySelectOne(con, query);
+		final Vector<Object> names = q.querySelectOne(con, query);
 		DefaultComboBoxModel model= new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
 		
@@ -672,9 +672,15 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +comboBox.getSelectedItem()+
+				String event = (String) comboBox.getSelectedItem();
+				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +event+
 						"', '" + login_name + "', '" + login_phone + "')");
-				
+				names.remove(event);
+				if (!names.isEmpty()) {
+					comboBox.setSelectedIndex(0);
+				} else {
+					comboBox.setSelectedIndex(-1);
+				}
 				if (count != 1) {
 					System.out.println("Error RSVPing");
 				}
