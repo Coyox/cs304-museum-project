@@ -23,14 +23,14 @@ public class Member {
 			con.commit();
 			ps.close();
 		} catch (SQLException ex) {
-			System.out.println("updateMember: " + ex.getMessage());
+			//System.out.println("updateMember: " + ex.getMessage());
 			try {
 				con.rollback();
 				if (ex.getMessage().contains("ORA-00001")) {
 					return -2;
 				}
 			} catch (SQLException ex2) {
-				System.out.println("updateMember2: " + ex2.getMessage());
+				//System.out.println("updateMember2: " + ex2.getMessage());
 				System.exit(-1);
 			}
 		}
@@ -52,15 +52,15 @@ public class Member {
 			con.commit();
 			ps.close();
 		} catch (SQLException ex) {
-			System.out.println("deleteMember: " + ex.getMessage());
+			//System.out.println("deleteMember: " + ex.getMessage());
 			try {
 				con.rollback();
 			} catch (SQLException ex2) {
-				System.out.println("deleteMember2: " + ex2.getMessage());
+				//System.out.println("deleteMember2: " + ex2.getMessage());
 				System.exit(-1);
 			}
 		}
-		System.out.println("Deleted " + count + " row(s).");
+		//System.out.println("Deleted " + count + " row(s).");
 		// wait for RETURN before displaying menu again
 
 		return count;
@@ -96,7 +96,7 @@ public class Member {
 			con.commit();
 			ps.close();
 		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
+			//System.out.println("Message: " + ex.getMessage());
 			throw ex;
 		}
 	}

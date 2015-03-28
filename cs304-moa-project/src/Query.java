@@ -18,7 +18,7 @@ public class Query {
 			
 			//stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("query Message: " + ex.getMessage());
+			//System.out.println("query Message: " + ex.getMessage());
 		}
 		
 		return rs;
@@ -36,7 +36,7 @@ public class Query {
 			
 			//stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("queryWhere Message: " + ex.getMessage());
+			//System.out.println("queryWhere Message: " + ex.getMessage());
 		}
 		
 		return rs;
@@ -47,7 +47,7 @@ public class Query {
 		ResultSet rs = null;
 		String statement = "SELECT " + select + " FROM " + from;
 		Vector<Object> names = new Vector<Object>();
-		System.out.println(statement);
+		//System.out.println(statement);
 		try {
 
 			stmt = con.createStatement();
@@ -64,7 +64,7 @@ public class Query {
 			
 			stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("queryWhere Message: " + ex.getMessage());
+			//System.out.println("queryWhere Message: " + ex.getMessage());
 		}
 		
 		return names;
@@ -74,7 +74,7 @@ public class Query {
 		Statement stmt;
 		ResultSet rs = null;
 		Vector<Object> names = new Vector<Object>();
-		System.out.println(query);
+		//System.out.println(query);
 		try {
 
 			stmt = con.createStatement();
@@ -91,7 +91,7 @@ public class Query {
 			
 			stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("queryWhere Message: " + ex.getMessage());
+			//System.out.println("queryWhere Message: " + ex.getMessage());
 		}
 		
 		return names;
@@ -100,7 +100,7 @@ public class Query {
 	public ResultSet stockQuery(Connection con, String query) {
 		Statement stmt;
 		ResultSet rs = null;
-		System.out.println(query);
+		//System.out.println(query);
 		try {
 
 			stmt = con.createStatement();
@@ -108,7 +108,7 @@ public class Query {
 			
 			//stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("stockQuery Message: " + ex.getMessage());
+			//System.out.println("stockQuery Message: " + ex.getMessage());
 		}
 		
 		return rs;
@@ -117,7 +117,7 @@ public class Query {
 	public int stockUpdate(Connection con, String query) {
 		Statement stmt;
 		int count = -1;
-		System.out.println(query);
+		//System.out.println(query);
 		try {
 
 			stmt = con.createStatement();
@@ -125,7 +125,7 @@ public class Query {
 			con.commit();
 			stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("stockUpdate Message: " + ex.getMessage());
+			//System.out.println("stockUpdate Message: " + ex.getMessage());
 		}
 		
 		return count;

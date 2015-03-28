@@ -64,8 +64,8 @@ public class createTables {
 				stmt.executeQuery(queries[i]);
 				stmt.close();
 			} catch (SQLException ex) {
-				System.out.println("Couldn't create creates table. Message: "
-						+ ex.getMessage());
+				//System.out.println("Couldn't create creates table. Message: "
+				//		+ ex.getMessage());
 			}
 		}
 	}
@@ -77,8 +77,8 @@ public class createTables {
 			stmt.executeQuery("INSERT INTO login VALUES('leilamethnani@gmail.com', 'secret')");
 			stmt.close();
 		} catch (SQLException ex) {
-			System.out.println("Couldn't create insert user"
-					+ ex.getMessage());
+			//System.out.println("Couldn't create insert user"
+			//		+ ex.getMessage());
 		}
 	}
 }
