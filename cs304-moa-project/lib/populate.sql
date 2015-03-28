@@ -96,7 +96,7 @@ ON DELETE CASCADE);
 
 -- event
 INSERT INTO event values
-('Jones'' Wedding', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 0);
+('Jones Wedding', '2014-04-30 10:00:00', '2014-05-09 16:00:00', 0);
 
 INSERT INTO event values
 ('Legacy Awards Dinner','2015-04-30 10:00:00', '2015-05-09 16:00:00', 50);
@@ -158,28 +158,22 @@ INSERT INTO member_1 values
 
 INSERT INTO member_1 values
 ('Suzie', 17, 'Rek Beach', NULL, '1122334455', NULL);
---INSERT INTO  values
---(17, 45);
+
 
 INSERT INTO member_1 values
 ('Farshid', 50, '1234 EOSC', 'il-os@ubc.ca', '0314897556', '0001-01-01');
-INSERT INTO  values
-(50, 50);
+
 
 INSERT INTO member_1 values
 ('Darla', 101, NULL, 'marlborough@school.ca', '5703040404', '2007-12-13');
-INSERT INTO  values
-(101, 45);
+
 
 INSERT INTO member_1 values
 ('Kimmy', 30, '5589 NYC', 'molewoman@babysitter.com', '0000000000', '2014-06-06');
-INSERT INTO  values
-(30, 50);
+
 
 INSERT INTO member_1 values
 ('Lady', 29, '6565 Gage', 'sheep@calender.com', '6048756681', '2015-02-06');
-INSERT INTO  values
-(29, 50);
 
 -- object_has
 INSERT INTO object_has_1 values
@@ -242,13 +236,13 @@ INSERT INTO creates values
 
 -- exhibits
 INSERT INTO exhibits values
-('Jones'' Wedding', 4);
+('Jones Wedding', 4);
 
 INSERT INTO exhibits values
-('Jones'' Wedding', 5);
+('Jones Wedding', 5);
 
 INSERT INTO exhibits values
-('Jones'' Wedding', 10);
+('Jones Wedding', 10);
 
 INSERT INTO exhibits values
 ('Legacy Awards Dinner',5);
@@ -267,22 +261,22 @@ INSERT INTO exhibits values
 
 -- RSVPs
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Suzie', '7781122334');
+('Jones Wedding', 'Suzie', '7781122334');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Lady', '6048756681');
+('Jones Wedding', 'Lady', '6048756681');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Farshid', '0314897556');
+('Jones Wedding', 'Farshid', '0314897556');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Kimmy', '0000000000');
+('Jones Wedding', 'Kimmy', '0000000000');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Darla', '5703040404');
+('Jones Wedding', 'Darla', '5703040404');
 
 INSERT INTO RSVPs values
-('Jones'' Wedding', 'Suzie', '1122334455');
+('Jones Wedding', 'Suzie', '1122334455');
 
 INSERT INTO RSVPs values
 ('Legacy Awards Dinner','Farshid', '0314897556');

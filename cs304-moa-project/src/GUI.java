@@ -272,12 +272,13 @@ public class GUI {
 
 		tabs.addTab("Exhibit", exhibit);
 		tabs.setMnemonicAt(1, KeyEvent.VK_2);
-		
+
 		if (!isAdmin) {
-			tabs.addTab("Events", RSVP);
+			tabs.addTab("Events", RSVPmem);
 		} else {
-			tabs.addTab("Events2", RSVPmem);
-        }
+
+			tabs.addTab("Events", RSVP);
+		}
 		tabs.setMnemonicAt(2, KeyEvent.VK_3);
 		tabs.addTab("Artists", Artist);
 		tabs.setMnemonicAt(3, KeyEvent.VK_4);
@@ -657,106 +658,91 @@ public class GUI {
 
 	private JPanel RSVPTab() {
 		Query q = new Query();
-		JPanel main = new JPanel(new BorderLayout());
-		
-		String query = "SELECT e.title FROM event e WHERE e.title NOT IN" +
-				   " (SELECT e1.title FROM event e1, RSVPs r WHERE r.mname ='" +
-				   login_name + "' AND r.phone ='" + login_phone + "' AND e1.title = r.title)";
-		
+		String query = "SELECT e.title FROM event e WHERE e.title NOT IN"
+				+ " (SELECT e1.title FROM event e1, RSVPs r WHERE r.mname ='"
+				+ login_name + "' AND r.phone ='" + login_phone
+				+ "' AND e1.title = r.title)";
+
+		String query2 = "SELECT e1.title FROM event e1, RSVPs r WHERE r.mname ='"
+				+ login_name
+				+ "' AND r.phone ='"
+				+ login_phone
+				+ "' AND e1.title = r.title";
+
 		Vector<Object> names = q.querySelectOne(con, query);
-		DefaultComboBoxModel model= new DefaultComboBoxModel(names);
+		DefaultComboBoxModel model = new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
-		
+
+		Vector<Object> events = q.querySelectOne(con, query2);
+		DefaultComboBoxModel model2 = new DefaultComboBoxModel(events);
+		final JComboBox comboBox2 = new JComboBox(model2);
+
+		JPanel p = new JPanel(new BorderLayout());
+		JPanel p2 = new JPanel(new BorderLayout());
+		JPanel boxPanel = new JPanel(new GridLayout(2, 1));
+		JPanel buttonPanel = new JPanel(new GridLayout(2, 1));
+		final JPanel editPanel = new JPanel(new BorderLayout());
+		JPanel footer = new JPanel(new BorderLayout());
+
+		p.add(boxPanel, BorderLayout.WEST);
+		p.add(buttonPanel, BorderLayout.CENTER);
+
+		boxPanel.setBorder(BorderFactory.createEmptyBorder(200, 10, 200, 10));
+		buttonPanel
+				.setBorder(BorderFactory.createEmptyBorder(200, 10, 200, 10));
+		p.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 100));
+
+		p2.add(p, BorderLayout.CENTER);
+
+		p2.add(p, BorderLayout.CENTER);
+
 		JButton RSVP = new JButton("RSVP to Event");
+		JButton unattend = new JButton("Unattend this Event");
+
+		unattend.addActionListener(new ActionListener() {
+			Query q = new Query();
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int count = q.stockUpdate(con,
+						"DELETE from RSVPs WHERE mname='" + login_name
+								+ "' AND phone='" + login_phone
+								+ "' AND title='" + comboBox2.getSelectedItem()
+								+ "'");
+//				mainFrame.validate();
+//				mainFrame.repaint();
+
+				if (count != 1) {
+					System.out.println("Error unRSVPing");
+				}
+			}
+		});
+
 		RSVP.addActionListener(new ActionListener() {
 			Query q = new Query();
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +comboBox.getSelectedItem()+
-						"', '" + login_name + "', '" + login_phone + "')");
-				
+				int count = q.stockUpdate(con, "INSERT into RSVPs values ('"
+						+ comboBox.getSelectedItem() + "', '" + login_name
+						+ "', '" + login_phone + "')");
+//				mainFrame.validate();
+//				mainFrame.repaint();
+
 				if (count != 1) {
 					System.out.println("Error RSVPing");
 				}
 			}
 		});
-		
-		main.add(comboBox, BorderLayout.CENTER);
-		main.add(RSVP, BorderLayout.EAST);
-		
-		return main;
+		boxPanel.add(comboBox);
+		boxPanel.add(comboBox2);
+
+		buttonPanel.add(RSVP);
+		buttonPanel.add(unattend);
+
+		return p2;
 	}
 
-	/*
-	 * EMILY'S ARTIST CODE. COMBINE WITH ONE BELOW private void
-	 * searchArtistPanel(JPanel p3) { // TODO Auto-generated method stub JPanel
-	 * aLabelPanel = new JPanel(new GridLayout(2, 1)); JPanel aFieldPanel = new
-	 * JPanel(new GridLayout(2, 1)); JPanel aSearchPanel = new JPanel(new
-	 * GridLayout(2,1));
-	 * 
-	 * JLabel aNameLabel = new JLabel("Search by artist name: ", JLabel.RIGHT);
-	 * JLabel aNatLabel = new JLabel("Search by artist nationality: ",
-	 * JLabel.RIGHT);
-	 * 
-	 * final JTextField artistName = new JTextField(20); final JTextField
-	 * artistNat = new JTextField(20);
-	 * 
-	 * JButton aNameButton = new JButton("Search"); JButton aNatButton = new
-	 * JButton("Search");
-	 * 
-	 * aLabelPanel.add(aNameLabel); aFieldPanel.add(artistName);
-	 * aLabelPanel.add(aNatLabel); aFieldPanel.add(artistNat);
-	 * aSearchPanel.add(aNameButton); aSearchPanel.add(aNatButton);
-	 * 
-	 * artistName.addActionListener(new ActionListener() {
-	 * 
-	 * @Override public void actionPerformed(ActionEvent e) {
-	 * System.out.println("Search Data Base for " + artistName.getText()); }
-	 * 
-	 * });
-	 * 
-	 * artistName.requestFocus();
-	 * 
-	 * artistNat.addActionListener(new ActionListener() {
-	 * 
-	 * @Override public void actionPerformed(ActionEvent e) {
-	 * System.out.println("Search Data Base for " + artistNat.getText()); }
-	 * 
-	 * });
-	 * 
-	 * aNameButton.addActionListener(new ActionListener() { Query q = new
-	 * Query();
-	 * 
-	 * @Override public void actionPerformed(ActionEvent e) { ResultSet rs;
-	 * String table = "artist"; if
-	 * (artistName.getText().contains("%")||artistName.getText().contains("_")){
-	 * rs = q.queryWhere(con, "*", table, "(aname like '" + artistName.getText()
-	 * + "')"); } else{ rs = q.queryWhere(con, "*", table, "(aname='" +
-	 * artistName.getText() + "')"); }
-	 * 
-	 * // names of columns String title = "Artist Searching"; ImageIcon icon =
-	 * new ImageIcon("lib/artist.png"); tablePopUp(rs, title, icon); } });
-	 * 
-	 * aNatButton.addActionListener(new ActionListener() { Query q = new
-	 * Query();
-	 * 
-	 * @Override public void actionPerformed(ActionEvent e) { ResultSet rs;
-	 * String table = "artist"; if
-	 * (artistNat.getText().contains("%")||artistNat.getText().contains("_")){
-	 * rs = q.queryWhere(con, "aname, nationality", table, "(nationality like '"
-	 * + artistNat.getText() + "')"); } else{ rs = q.queryWhere(con,
-	 * "aname, nationality", table, "(nationality='" + artistNat.getText() +
-	 * "')"); }
-	 * 
-	 * // names of columns String title = "Artist Searching"; ImageIcon icon =
-	 * new ImageIcon("lib/artist.png"); tablePopUp(rs, title, icon); } });
-	 * 
-	 * aLabelPanel.setOpaque(false); p3.add(aLabelPanel, BorderLayout.WEST);
-	 * p3.add(aFieldPanel, BorderLayout.CENTER); p3.add(aSearchPanel,
-	 * BorderLayout.EAST); p3.setBorder(BorderFactory.createEmptyBorder(10, 10,
-	 * 360, 50)); }
-	 */
 	private JPanel createArtistTab() {
 		// JPanel p3 = createTab("Search for Artist");
 		JPanel p3 = new JPanel(new BorderLayout());
