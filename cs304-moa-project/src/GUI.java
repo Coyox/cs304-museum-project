@@ -669,11 +669,11 @@ public class GUI {
 				+ login_phone
 				+ "' AND e1.title = r.title";
 
-		Vector<Object> names = q.querySelectOne(con, query);
+		final Vector<Object> names = q.querySelectOne(con, query);
 		DefaultComboBoxModel model = new DefaultComboBoxModel(names);
 		final JComboBox comboBox = new JComboBox(model);
 
-		Vector<Object> events = q.querySelectOne(con, query2);
+		final Vector<Object> events = q.querySelectOne(con, query2);
 		DefaultComboBoxModel model2 = new DefaultComboBoxModel(events);
 		final JComboBox comboBox2 = new JComboBox(model2);
 
@@ -711,7 +711,11 @@ public class GUI {
 								+ "'");
 //				mainFrame.validate();
 //				mainFrame.repaint();
-
+				if (!events.isEmpty()) {
+					comboBox.setSelectedIndex(0);
+				} else {
+					comboBox.setSelectedIndex(-1);
+				}
 				if (count != 1) {
 					System.out.println("Error unRSVPing");
 				}
@@ -723,12 +727,15 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int count = q.stockUpdate(con, "INSERT into RSVPs values ('"
-						+ comboBox.getSelectedItem() + "', '" + login_name
-						+ "', '" + login_phone + "')");
-//				mainFrame.validate();
-//				mainFrame.repaint();
-
+				String event = (String) comboBox.getSelectedItem();
+				int count = q.stockUpdate(con, "INSERT into RSVPs values ('" +event+
+						"', '" + login_name + "', '" + login_phone + "')");
+				names.remove(event);
+				if (!names.isEmpty()) {
+					comboBox.setSelectedIndex(0);
+				} else {
+					comboBox.setSelectedIndex(-1);
+				}
 				if (count != 1) {
 					System.out.println("Error RSVPing");
 				}
@@ -788,17 +795,23 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				artistName.requestFocus();
+				ResultSet rs;
 				Query q = new Query();
 				String select = "aname as name";
+				String name = artistName.getText();
 				if (date.isSelected()) {
 					select = select + ", dateOfBirth";
 				}
 				if (nat.isSelected()) {
 					select = select + ", nationality";
 				}
-				ResultSet rs = q.queryWhere(con, select, "artist", "aname = '"
-						+ artistName.getText() + "'");
-				System.out.println("aname = '" + artistName.getText() + "'");
+				if(name.isEmpty()){
+					rs = q.query(con, select, "artist");
+				} else{
+					rs = q.queryWhere(con, select, "artist", "aname = '"
+							+ artistName.getText() + "'");
+					System.out.println("aname = '" + artistName.getText() + "'");
+				}
 				tablePopUp(rs, "Artists", null);
 				artistName.setText("");
 			}
@@ -807,18 +820,25 @@ public class GUI {
 		aNatButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				ResultSet rs;
 				Query q = new Query();
 				String select = "aname as name";
+				String nationality = artistNat.getText();
 				if (date.isSelected()) {
 					select = select + ", dateOfBirth";
 				}
 				if (nat.isSelected()) {
 					select = select + ", nationality";
 				}
-				ResultSet rs = q.queryWhere(con, select, "artist",
-						" nationality = '" + artistNat.getText() + "'");
-				System.out.println("nationality = '" + artistNat.getText()
+				
+				if (nationality.isEmpty()){
+					rs = q.query(con, select, "artist");
+				} else {
+				rs = q.queryWhere(con, select, "artist",
+						" nationality = '" + nationality + "'");
+				System.out.println("nationality = '" + nationality
 						+ "'");
+				}
 				tablePopUp(rs, "Artists", null);
 				artistNat.setText("");
 				artistNat.requestFocus();
