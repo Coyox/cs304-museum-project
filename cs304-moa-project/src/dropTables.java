@@ -22,8 +22,8 @@ public class dropTables {
 						+ " CASCADE CONSTRAINTS");
 				stmt.close();
 			} catch (SQLException ex) {
-				System.out.println("Couldn't drop tables. Message: "
-						+ ex.getMessage());
+				//System.out.println("Couldn't drop tables. Message: "
+				//		+ ex.getMessage());
 			}
 		}
 	}

@@ -30,13 +30,14 @@ public class moa {
 			// Load the Oracle JDBC driver
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
+			//System.out.println("Message: " + ex.getMessage());
+			
 			System.exit(-1);
 		}
 		if (connect("ora_k8w8", "a20713137")) {
 		//if (connect("ora_b6m8", "a52417128")) {
 			gui = new GUI(con);
-			showMenu();
+			//showMenu();
 		}
 	}
 
@@ -54,98 +55,15 @@ public class moa {
 		try {
 			con = DriverManager.getConnection(connectURL, username, password);
 
-			System.out.println("\nConnected to Oracle!");
+			//System.out.println("\nConnected to Oracle!");
 			return true;
 		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
+			//System.out.println("Message: " + ex.getMessage());
 			return false;
 		}
 	}
 
-	private void showMenu() {
-		// gui.start();
-		gui.signIn();
-		int choice;
-		boolean quit;
-
-		quit = false;
-
-		try {
-			// disable auto commit mode
-			con.setAutoCommit(false);
-
-			while (!quit) {
-				System.out
-						.print("\n\nHey there! What would you like to do?: \n");
-				System.out.print("1.  Browse Artifacts\n");
-				System.out.print("2.  Browse Events\n");
-				System.out.print("3.  Browse Exhibits\n");
-				System.out.print("4.  Browse Artists\n");
-				System.out.print("5.  Quit\n");
-				System.out.print("7.  Query\n");
-				System.out.print("8.  Delete Member\n");
-				System.out.print("9.  Update Member\n");
-				System.out.print("10. Test division\n>>");
-				try {
-					choice = Integer.parseInt(in.readLine());
-				} catch (Exception e) {
-					choice = 0;
-				}
-				System.out.println(" ");
-
-				switch (choice) {
-				case 1:
-					browseArtifacts();
-					break;
-				case 2:
-					browseEvents();
-					break;
-				case 3:
-					browseExhibits();
-					break;
-				case 4:
-					browseArtists();
-					break;
-				case 5:
-					quit = true;
-					break;
-				case 7:
-					enterQuery();
-					break;
-				case 8:
-					deleteMember();
-					break;
-				case 9:
-					updateMember();
-					break;
-				case 10:
-					excuteQuery();
-					break;
-				default:
-					System.out.println("Please enter a valid choice.");
-					// wait for RETURN before displaying menu again
-					wait = in.readLine();
-
-				}
-			}
-
-			con.close();
-			in.close();
-			System.out.println("\nGood Bye!\n\n");
-			System.exit(0);
-		} catch (IOException e) {
-			System.out.println("IOException!");
-
-			try {
-				con.close();
-				System.exit(-1);
-			} catch (SQLException ex) {
-				System.out.println("Message: " + ex.getMessage());
-			}
-		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
-		}
-	}
+	
 
 	private void excuteQuery() {
 		Statement stmt;
