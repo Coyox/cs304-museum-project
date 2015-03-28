@@ -133,7 +133,7 @@ public class GUI {
 
 	// insert new member into member table
 	private void signUp() {
-		final moa m = new moa(con);
+		final Member m = new Member();
 		mainFrame.dispose();
 		setUpFrame("Sign Up", 400, 500);
 
@@ -185,7 +185,7 @@ public class GUI {
 					String email = fields[3].getText();
 					String phone = fields[4].getText();
 					try {
-						m.insert(mname, age, addr, email, phone);
+						m.insert(con, mname, age, addr, email, phone);
 						JOptionPane.showMessageDialog(mainFrame, "Success");
 						signIn();
 					} catch (SQLException e1) {

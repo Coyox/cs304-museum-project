@@ -48,7 +48,8 @@ public class moa {
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
-		if (connect("ora_k8w8", "a20713137")) {
+		// if (connect("ora_k8w8", "a20713137")) {
+		if (connect("ora_b6m8", "a52417128")) {
 			// if the username and password are valid,
 			// remove the login window and display a text menu
 			// resetDB();
@@ -58,8 +59,8 @@ public class moa {
 			showMenu();
 		}
 	}
-	
-	public moa(Connection conn){
+
+	public moa(Connection conn) {
 		con = conn;
 	}
 
@@ -88,7 +89,7 @@ public class moa {
 	}
 
 	private void showMenu() {
-		//gui.start();
+		// gui.start();
 		gui.signIn();
 		int choice;
 		boolean quit;
@@ -107,7 +108,6 @@ public class moa {
 				System.out.print("3.  Browse Exhibits\n");
 				System.out.print("4.  Browse Artists\n");
 				System.out.print("5.  Quit\n");
-				System.out.print("6.  Insert Member\n");
 				System.out.print("7.  Query\n");
 				System.out.print("8.  Delete Member\n");
 				System.out.print("9.  Update Member\n");
@@ -134,9 +134,6 @@ public class moa {
 					break;
 				case 5:
 					quit = true;
-					break;
-				case 6:
-					insertMember();
 					break;
 				case 7:
 					enterQuery();
@@ -178,16 +175,15 @@ public class moa {
 
 	private void excuteQuery() {
 		Statement stmt;
-		//Division
-		//Find the events RSVPed by every member.
-		String query1 = "SELECT e.title, e.startDate, e.fee FROM event e " +
-				"WHERE NOT EXISTS ( SELECT * FROM member_1 m WHERE NOT EXISTS" +
-				"(SELECT * FROM RSVPs r WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))";
-		//Aggregation
-		//Find the name, phone and age of the oldest member.
-		String query2 ="SELECT m.mname, m.phone, m.age " +
-				"FROM member_1 m " +
-				"WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
+		// Division
+		// Find the events RSVPed by every member.
+		String query1 = "SELECT e.title, e.startDate, e.fee FROM event e "
+				+ "WHERE NOT EXISTS ( SELECT * FROM member_1 m WHERE NOT EXISTS"
+				+ "(SELECT * FROM RSVPs r WHERE e.title=r.title AND m.mname=r.mname AND m.phone=r.phone))";
+		// Aggregation
+		// Find the name, phone and age of the oldest member.
+		String query2 = "SELECT m.mname, m.phone, m.age " + "FROM member_1 m "
+				+ "WHERE m.age=(SELECT MAX(m2.age) FROM member_1 m2)";
 		String[] colNames;
 		int[] colType;
 		String result;
@@ -229,7 +225,6 @@ public class moa {
 		} catch (SQLException ex) {
 			System.out.println("Message: " + ex.getMessage());
 		}
-		
 
 	}
 
@@ -378,11 +373,6 @@ public class moa {
 		}
 	}
 
-	private void showMember() {
-		// TODO Auto-generated method stub
-		System.out.println("This method will show member.");
-	}
-
 	private void deleteMember() {
 		String mname;
 		String phoneNumber;
@@ -417,128 +407,6 @@ public class moa {
 			}
 		}
 		System.out.println("Deleted " + count + " row(s).");
-		// wait for RETURN before displaying menu again
-		try {
-			wait = in.readLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void insert(String mname, int age, String addr, String email,
-			String phoneNumber) throws SQLException {
-		int memberFee;
-		Date signUpDate;
-
-		PreparedStatement ps;
-		PreparedStatement ps2;
-		PreparedStatement ps3;
-
-		try {
-			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?,?)");
-			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
-
-			ps.setString(1, mname);
-			ps.setInt(2, age);
-			if (addr.length() == 0) {
-				ps.setString(3, null);
-			} else {
-				ps.setString(3, addr);
-			}
-			ps.setString(4, email);
-			ps.setString(5, phoneNumber);
-
-			memberFee = calculateFee(age);
-			ps2.setInt(2, memberFee);
-			ps2.setInt(1, age);
-
-			signUpDate = Calendar.getInstance().getTime();
-			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
-			ps.setDate(6, sqlDate);
-
-			ps.executeUpdate();
-			ps2.executeUpdate();
-			// commit work
-			con.commit();
-			ps.close();
-			ps2.close();
-		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
-			throw ex;
-		}
-	}
-
-	private void insertMember() {
-		String mname;
-		int age;
-		int memberFee;
-		Date signUpDate;
-		String addr;
-		String email;
-		String phoneNumber;
-		PreparedStatement ps;
-		PreparedStatement ps2;
-		PreparedStatement ps3;
-
-		try {
-			ps = con.prepareStatement("INSERT INTO member_1 VALUES (?,?,?,?,?)");
-			ps2 = con.prepareStatement("INSERT INTO member_2 VALUES (?,?)");
-			ps3 = con.prepareStatement("INSERT INTO member_3 VALUES (?,?)");
-
-			System.out.print("\nMember Name: ");
-			mname = in.readLine();
-			ps.setString(1, mname);
-
-			System.out.print("\nMember Age: ");
-			age = Integer.parseInt(in.readLine());
-			ps.setInt(2, age);
-
-			System.out.print("\nAddress: ");
-			addr = in.readLine();
-
-			if (addr.length() == 0) {
-				ps.setString(3, null);
-			} else {
-				ps.setString(3, addr);
-			}
-
-			System.out.print("\nE-Mail: ");
-			email = in.readLine();
-			ps.setString(4, email);
-
-			System.out.print("\nMember Phone Number: ");
-			phoneNumber = in.readLine();
-			ps.setString(5, phoneNumber);
-
-			memberFee = calculateFee(age);
-			ps2.setInt(2, memberFee);
-			ps2.setInt(1, age);
-
-			signUpDate = Calendar.getInstance().getTime();
-			java.sql.Date sqlDate = new java.sql.Date(signUpDate.getTime());
-			ps3.setString(1, email);
-			ps3.setDate(2, sqlDate);
-
-			ps.executeUpdate();
-			ps2.executeUpdate();
-			ps3.executeUpdate();
-
-			// commit work
-			con.commit();
-
-			ps.close();
-		} catch (IOException e) {
-			System.out.println("IOException!");
-		} catch (SQLException ex) {
-			System.out.println("Message: " + ex.getMessage());
-			try {
-				// undo the insert
-				con.rollback();
-			} catch (SQLException ex2) {
-				System.out.println("Message: " + ex2.getMessage());
-				System.exit(-1);
-			}
-		}
 		// wait for RETURN before displaying menu again
 		try {
 			wait = in.readLine();
@@ -605,15 +473,6 @@ public class moa {
 			e.printStackTrace();
 		}
 	}
-
-	private int calculateFee(int age) {
-		if (age < 19 || age > 65) {
-			return 45;
-		} else {
-			return 50;
-		}
-	}
-
 
 	public static void main(String args[]) {
 		// String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment()
