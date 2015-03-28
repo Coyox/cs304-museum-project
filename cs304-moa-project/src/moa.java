@@ -1,21 +1,9 @@
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.Vector;
+
 // for reading from the command line
 import java.io.*;
 
-// for the login window
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.font.TextAttribute;
-
-import javax.swing.SpringLayout;
-import javax.swing.table.DefaultTableModel;
 
 public class moa {
 
@@ -30,9 +18,6 @@ public class moa {
 	private Connection con;
 	private Boolean isAdmin = false;
 	private GUI gui;
-
-	private String login_name;
-	private String login_phone;
 
 	@SuppressWarnings("unused")
 	private String wait;
@@ -50,11 +35,6 @@ public class moa {
 		}
 		// if (connect("ora_k8w8", "a20713137")) {
 		if (connect("ora_b6m8", "a52417128")) {
-			// if the username and password are valid,
-			// remove the login window and display a text menu
-			// resetDB();
-
-			// /////////////UNCOMMENT HERE FOR LOGIN ETC///////////////
 			gui = new GUI(con);
 			showMenu();
 		}
@@ -62,12 +42,6 @@ public class moa {
 
 	public moa(Connection conn) {
 		con = conn;
-	}
-
-	private void resetDB() {
-		new dropTables(con);
-		createTables create = new createTables(con);
-		create.exampleUser();
 	}
 
 	/*
